@@ -50,6 +50,7 @@ sh_body (void)
       puts ("read succeeded");
       exit (1);
     }
+  pthread_testcancel ();
 
   pthread_cleanup_pop (0);
 }
