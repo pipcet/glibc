@@ -139,6 +139,9 @@
 
 2015-10-09  Adhemerval Zanella  <adhemerval.zanella@linaro.org>
 
+	* sysdeps/unix/sysv/linux/x86_64/pthread_cond_timedwait.S
+	* sysdeps/unix/sysv/linux/x86_64/pthread_cond_wait.S
+
 	* sysdeps/unix/sysv/linux/i386/i686/pthread_cond_timedwait.S: Remove
 	file.
 	* sysdeps/unix/sysv/linux/i386/pthread_cond_timedwait.S: Likewise.
