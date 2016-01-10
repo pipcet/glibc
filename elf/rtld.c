@@ -2337,20 +2337,6 @@ process_dl_audit (char *str)
    all the entries.  */
 extern char **_environ attribute_hidden;
 
-#include <tunables/tunables.h>
-
-static bool
-get_ld_env_entry (char *runp, char **envline)
-{
-  if (__glibc_unlikely (runp[0] == 'L') && runp[1] == 'D' && runp[2] == '_')
-    {
-      *envline = &runp[3];
-      return true;
-    }
-
-  *envline = runp;
-  return false;
-}
 
 static void
 process_envvars (enum mode *modep)
@@ -2364,28 +2350,17 @@ process_envvars (enum mode *modep)
   GLRO(dl_profile_output)
     = &"/var/tmp\0/var/profile"[__libc_enable_secure ? 9 : 0];
 
-  for (runp = _environ; *runp != NULL; ++runp)
+  while ((envline = _dl_next_ld_env_entry (&runp)) != NULL)
     {
       size_t len = 0;
-
-      bool is_ld_entry = get_ld_env_entry (*runp, &envline);
 
       while (envline[len] != '\0' && envline[len] != '=')
 	++len;
 
       if (envline[len] != '=')
-	/* This is a variable at the end of the string without
+	/* This is a "LD_" variable at the end of the string without
 	   a '=' character.  Ignore it since otherwise we will access
 	   invalid memory below.  */
-	continue;
-
-      /* Tunables list.  */
-      if (!__libc_enable_secure && len == 14
-	  && memcmp (envline, "GLIBC_TUNABLES", 14) == 0)
-	tunables_init (&envline[15]);
-
-      /* From here on, only process the LD_* variables.  */
-      if (!is_ld_entry)
 	continue;
 
       switch (len)
