@@ -21,35 +21,6 @@
 #include <unistd.h>
 #include <ldsodefs.h>
 
-/* Walk through the environment of the process and return all entries
-   starting with `LD_'.  */
-char *
-internal_function
-_dl_next_ld_env_entry (char ***position)
-{
-  char **current = *position;
-  char *result = NULL;
-
-  while (*current != NULL)
-    {
-      if (__builtin_expect ((*current)[0] == 'L', 0)
-	  && (*current)[1] == 'D' && (*current)[2] == '_')
-	{
-	  result = &(*current)[3];
-
-	  /* Save current position for next visit.  */
-	  *position = ++current;
-
-	  break;
-	}
-
-      ++current;
-    }
-
-  return result;
-}
-
-
 /* In ld.so __environ is not exported.  */
 extern char **__environ attribute_hidden;
 
