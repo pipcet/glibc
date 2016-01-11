@@ -38,6 +38,9 @@
 #include <kernel-features.h>
 #include <libc-internal.h>
 #include <pthread-pids.h>
+#if BUILD_TUNABLES
+# include <tunables/tunables.h>
+#endif
 
 #ifndef TLS_MULTIPLE_THREADS_IN_TCB
 /* Pointer to the corresponding variable in libc.  */
@@ -297,7 +300,7 @@ extern void **__libc_dl_error_tsd (void) __attribute__ ((const));
 static bool __nptl_initial_report_events __attribute_used__;
 
 void
-__pthread_initialize_minimal_internal (void)
+__pthread_initialize_minimal_internal (int argc, char **argv, char **envp)
 {
 #ifndef SHARED
   /* Unlike in the dynamically linked case the dynamic linker has not
@@ -309,6 +312,10 @@ __pthread_initialize_minimal_internal (void)
      will initialize the thread register which is subsequently
      used.  */
   __asm __volatile ("");
+#endif
+
+#if BUILD_TUNABLES
+  __tunables_init (envp);
 #endif
 
   /* Minimal initialization of the thread descriptor.  */

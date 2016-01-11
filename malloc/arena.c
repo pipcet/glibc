@@ -19,6 +19,11 @@
 
 #include <stdbool.h>
 
+#if BUILD_TUNABLES
+# define TUNABLE_NAMESPACE malloc
+# include <tunables/tunables.h>
+#endif
+
 /* Compile-time constants.  */
 
 #define HEAP_MIN_SIZE (32 * 1024)
@@ -332,6 +337,61 @@ ptmalloc_unlock_all2 (void)
 # endif
 #endif  /* !NO_THREADS */
 
+#if BUILD_TUNABLES
+static void
+tunable_set_mallopt_top_pad (const char *val)
+{
+  __libc_mallopt (M_TOP_PAD, atoi (val));
+}
+
+static void
+tunable_set_mallopt_perturb (const char *val)
+{
+  __libc_mallopt (M_PERTURB, atoi (val));
+}
+
+static void
+tunable_set_mallopt_mmap_max (const char *val)
+{
+  __libc_mallopt (M_MMAP_MAX, atoi (val));
+}
+
+static void
+tunable_set_mallopt_arena_max (const char *val)
+{
+  __libc_mallopt (M_ARENA_MAX, atoi (val));
+}
+
+static void
+tunable_set_mallopt_arena_test (const char *val)
+{
+  __libc_mallopt (M_ARENA_TEST, atoi (val));
+}
+
+static void
+tunable_set_mallopt_trim_threshold (const char *val)
+{
+  __libc_mallopt (M_TRIM_THRESHOLD, atoi (val));
+}
+
+static void
+tunable_set_mallopt_mmap_threshold (const char *val)
+{
+  __libc_mallopt (M_MMAP_THRESHOLD, atoi (val));
+}
+
+static void
+tunable_set_mallopt_check (const char *val)
+{
+  if (val[0])
+    {
+      __libc_mallopt (M_CHECK_ACTION, (int) (val[0] - '0'));
+      if (check_action != 0)
+        __malloc_check_init ();
+    }
+}
+
+#else
 /* Initialization routine. */
 #include <string.h>
 extern char **_environ;
@@ -366,6 +426,7 @@ next_env_entry (char ***position)
 
   return result;
 }
+#endif
 
 
 #ifdef SHARED
@@ -401,6 +462,29 @@ ptmalloc_init (void)
 
   thread_arena = &main_arena;
   thread_atfork (ptmalloc_lock_all, ptmalloc_unlock_all, ptmalloc_unlock_all2);
+
+#if BUILD_TUNABLES
+  COMPAT_TUNABLES_NAMESPACE_BEGIN (8);
+
+  COMPAT_TUNABLE_REGISTER_SECURE (check, "MALLOC_CHECK_",
+				  tunable_set_mallopt_check);
+  COMPAT_TUNABLE_REGISTER (top_pad, "MALLOC_TOP_PAD_",
+			   tunable_set_mallopt_top_pad);
+  COMPAT_TUNABLE_REGISTER (perturb, "MALLOC_PERTURB_",
+			   tunable_set_mallopt_perturb);
+  COMPAT_TUNABLE_REGISTER (mmap_threshold, "MALLOC_MMAP_THRESHOLD_",
+			   tunable_set_mallopt_mmap_threshold);
+  COMPAT_TUNABLE_REGISTER (trim_threshold, "MALLOC_TRIM_THRESHOLD_",
+			   tunable_set_mallopt_trim_threshold);
+  COMPAT_TUNABLE_REGISTER (mmap_max, "MALLOC_MMAP_MAX_",
+			   tunable_set_mallopt_mmap_max);
+  COMPAT_TUNABLE_REGISTER (arena_max, "MALLOC_ARENA_MAX",
+			   tunable_set_mallopt_arena_max);
+  COMPAT_TUNABLE_REGISTER (arena_test, "MALLOC_ARENA_TEST",
+			   tunable_set_mallopt_arena_test);
+
+  COMPAT_TUNABLES_NAMESPACE_INIT ();
+#else
   const char *s = NULL;
   if (__glibc_likely (_environ != NULL))
     {
@@ -469,6 +553,8 @@ ptmalloc_init (void)
       if (check_action != 0)
         __malloc_check_init ();
     }
+#endif
+
   void (*hook) (void) = atomic_forced_read (__malloc_initialize_hook);
   if (hook != NULL)
     (*hook)();

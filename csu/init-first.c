@@ -26,6 +26,9 @@
 #include <sys/param.h>
 #include <sys/types.h>
 #include <libc-internal.h>
+#if BUILD_TUNABLES
+# include <tunables/tunables.h>
+#endif
 
 #include <ldsodefs.h>
 
@@ -95,6 +98,10 @@ _init (int argc, char **argv, char **envp)
 
 #if defined SHARED && !defined NO_CTORS_DTORS_SECTIONS
   __libc_global_ctors ();
+#endif
+
+#if BUILD_TUNABLES
+  __tunables_init (__environ);
 #endif
 }
 

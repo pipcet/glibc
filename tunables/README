@@ -1,0 +1,93 @@
+			TUNABLE FRAMEWORK
+			=================
+
+The tunable framework allows modules within glibc to register variables that
+may be tweaked through an environment variable or an API call.  It aims to
+enforce a strict namespace rule to bring consistency to naming of these tunable
+environment variables across the project.
+
+ADDING A NEW TUNABLE
+--------------------
+
+The TOP_NAMESPACE is defined by default as 'glibc' and it may be overridden in
+distributions for specific tunables if they want to add their own tunables.
+Downstream implementations are discouraged from using the 'glibc' namespace for
+tunables they don't already have consensus to push upstream.
+
+There are two steps to adding a tunable:
+
+1. Add a tunable ID:
+
+Modules that wish to use the tunables interface must define the
+TUNABLE_NAMESPACE macro.  Following this, for each tunable you want to
+register, call the TUNABLE_REGISTER macro.
+
+The TUNABLE_REGISTER macro takes the following arguments:
+
+- id:		The short name of the tunable.  It will be concatenated with
+		the TOP_NAMESPACE and TUNABLE_NAMESPACE to build the full ID of
+		the tunable.
+
+- setter:	A function that accepts a string input and initializes the
+		tunable variable.  The prototype of the function should be as
+		follows:
+
+		void setter_func (const char *)
+
+2. Add to tunables.list:
+
+This file nests tunable ids inside their tunable namespace within curly braces
+and multiple such namespaces are in turn nested inside their top namespaces in
+a similar manner.  The malloc and resolv snippets for example could look like
+this:
+
+glibc {
+  malloc {
+    check
+    top_pad
+  }
+  resolv {
+    secure_dns
+  }
+}
+
+Add your tunable in this hierarchy using the proper nesting for your namespace
+and top namespace.  If the top namespace is not glibc, create a new snippet
+with its own hierarchy, separate from the glibc hierarchy.
+
+ADDING A LEGACY TUNABLE
+-----------------------
+
+One may add tunables for variables that are currently controlled by users with
+environment variables.  Multiple such variables should be defined together for
+better performance by using the COMPAT_TUNABLES_NAMESPACE_BEGIN macro, which
+accepts a numeric parameter with the number of tunables you intend to register
+in the block.
+
+Individual tunables are then registered using the COMPAT_TUNABLE_REGISTER and
+COMPAT_TUNABLE_REGISTER_SECURE macros.  They take the following parameters:
+
+- id:		The tunable ID, similar to the normal way of adding a tunable
+
+- env:		The name of the legacy environment variable so that one may
+		read its value and use it.
+
+- setter:	The setter function, similar to the normal way of adding a
+		tunable.
+
+COMPAT_TUNABLE_REGISTER reads the environment variable only for non-setuid
+binaries, whereas COMPAT_TUNABLE_REGISTER_SECURE always attempts to read the
+environment variable.  Use COMPAT_TUNABLE_REGISTER_SECURE with care.
+
+You will also have to add the tunable id to tunables/tunables.list.
+
+DO NOT ADD NEW TUNABLES USING THIS MECHANISM!
+
+FUTURE WORK
+-----------
+
+The framework currently only allows a one-time initialization of variables
+through environment variables and in some cases, modification of variables via
+an API call.  A future goal for this project is to allow tweaking of some
+values in a running process, possibly through some kind of shared memory
+mechanism.

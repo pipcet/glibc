@@ -1,0 +1,12 @@
+glibc {
+  malloc {
+    check
+    top_pad
+    perturb
+    mmap_threshold
+    trim_threshold
+    mmap_max
+    arena_max
+    arena_test
+  }
+}
