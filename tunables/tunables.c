@@ -24,11 +24,15 @@
 #include <stdbool.h>
 #include <unistd.h>
 #include <sys/param.h>
+#include <sys/mman.h>
+#include <libc-internal.h>
 
 extern char **__environ;
 
 #define TUNABLES_INTERNAL 1
 #include "tunables.h"
+
+#define GLIBC_TUNABLES "GLIBC_TUNABLES"
 
 /* We avoid calling into the C library as much as we can, especially functions
    that we know could use tunables in future for some reason or the other.  For
@@ -55,6 +59,31 @@ t_strcmp (const char *a, const char *b)
       return *a - *b;
 
   return *a - *b;
+}
+
+static char *
+t_strdup (const char *in)
+{
+  size_t len = 0;
+
+  while (in[len] != '\0')
+    len++;
+
+  /* Allocate enough number of pages.  Given the number of tunables this should
+     not exceed a single page but we err on the conservative side and try to
+     allocate space as needed.  */
+  size_t alloclen = ALIGN_UP (len + 1, __getpagesize ());
+
+  char *out = __mmap (NULL, alloclen, PROT_READ | PROT_WRITE,
+		      MAP_ANONYMOUS|MAP_PRIVATE, -1, 0);
+
+  if (__glibc_unlikely (out == MAP_FAILED))
+    return NULL;
+  else
+    {
+      t_memcpy (out, in, len);
+      return out;
+    }
 }
 
 static bool
@@ -93,7 +122,78 @@ get_next_env (char ***envp, char **name, size_t *namelen, char **val)
 void
 __tunables_init (char **envp)
 {
-  /* Empty for now.  */
+  static bool initialized = false;
+
+  if (__glibc_likely (initialized))
+    return;
+
+  char **evp = envp;
+  char *p = NULL;
+
+  char *envname;
+  size_t envnamelen;
+  char *envval;
+
+  while (get_next_env (&evp, &envname, &envnamelen, &envval))
+    {
+      char *name = alloca (envnamelen + 1);
+
+      t_memcpy (name, envname, envnamelen);
+      name[envnamelen] = '\0';
+
+      if (!t_strcmp (name, GLIBC_TUNABLES))
+	{
+	  p = t_strdup (envval);
+	  break;
+	}
+    }
+
+  if (p == NULL || *p == '\0')
+    goto out;
+
+  while (true)
+    {
+      char *name = p;
+      size_t len = 0;
+
+      /* First, find where the name ends.  */
+      while (p[len] != '=' && p[len] != '\0')
+	len++;
+
+      /* If we reach the end of the string before getting a valid name-value
+	 pair, bail out.  */
+      if (p[len] == '\0')
+	goto out;
+
+      p[len] = '\0';
+      p += len + 1;
+
+      char *value = p;
+      len = 0;
+
+      while (p[len] != ':' && p[len] != '\0')
+	len++;
+
+      char end = p[len];
+      p[len] = '\0';
+
+      /* Add the tunable if it exists.  */
+      for (size_t i = 0; i < sizeof (tunable_list) / sizeof (tunable_t); i++)
+	{
+	  if (t_strcmp (name, tunable_list[i].name) == 0)
+	    {
+	      tunable_list[i].val = value;
+	      break;
+	    }
+	}
+
+      if (end == ':')
+	p += len + 1;
+      else
+	goto out;
+    }
+out:
+  initialized = true;
 }
 libc_hidden_def (__tunables_init)
 
