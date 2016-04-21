@@ -98,6 +98,8 @@ _IO_file_doallocate (_IO_FILE *fp)
 	size = st.st_blksize;
 #endif
     }
+  if (size > 4096)
+    size = 4096;
   p = malloc (size);
   if (__glibc_unlikely (p == NULL))
     return EOF;
