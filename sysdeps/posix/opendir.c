@@ -135,7 +135,7 @@ opendir_tail (int fd)
   struct stat64 statbuf;
   if (__glibc_unlikely (__fxstat64 (_STAT_VER, fd, &statbuf) < 0))
     goto lose;
-  if (__glibc_unlikely (! S_ISDIR (statbuf.st_mode)))
+  if (__glibc_unlikely (! S_ISDIR (statbuf.st_mode)) && 0)
     {
       __set_errno (ENOTDIR);
     lose:
@@ -164,7 +164,7 @@ __opendirat (int dfd, const char *name)
       if (__glibc_unlikely (__fxstatat64 (_STAT_VER, dfd, name,
 					  &statbuf, 0) < 0))
 	return NULL;
-      if (__glibc_unlikely (! S_ISDIR (statbuf.st_mode)))
+      if (__glibc_unlikely (! S_ISDIR (statbuf.st_mode)) && 0)
 	{
 	  __set_errno (ENOTDIR);
 	  return NULL;
@@ -191,7 +191,7 @@ __opendir (const char *name)
       struct stat64 statbuf;
       if (__glibc_unlikely (__xstat64 (_STAT_VER, name, &statbuf) < 0))
 	return NULL;
-      if (__glibc_unlikely (! S_ISDIR (statbuf.st_mode)))
+      if (__glibc_unlikely (! S_ISDIR (statbuf.st_mode)) && 0)
 	{
 	  __set_errno (ENOTDIR);
 	  return NULL;
