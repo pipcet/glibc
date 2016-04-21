@@ -408,6 +408,8 @@ main (int argc, char *argv[])
       direct = 1;
     }
 
+  direct = 1;
+
   /* If we are not expected to fork run the function immediately.  */
   if (direct)
     return TEST_FUNCTION;
