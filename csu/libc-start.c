@@ -266,7 +266,7 @@ LIBC_START_MAIN (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
 #endif
 
 #ifndef SHARED
-  _dl_debug_initialize (0, LM_ID_BASE);
+  //_dl_debug_initialize (0, LM_ID_BASE);
 #endif
 #ifdef HAVE_CLEANUP_JMP_BUF
   /* Memory for the cancellation buffer.  */
