@@ -95,6 +95,7 @@ _IO_new_fdopen (int fd, const char *mode)
 	}
       break;
     }
+#undef F_GETFL
 #ifdef F_GETFL
   int fd_flags = _IO_fcntl (fd, F_GETFL);
 #ifndef O_ACCMODE
