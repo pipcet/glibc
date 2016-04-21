@@ -32,6 +32,7 @@
 #include <sysdep-cancel.h>
 #include <tls.h>
 #include <stap-probe.h>
+#include <atomic.h>
 
 #include <dl-unmap-segments.h>
 

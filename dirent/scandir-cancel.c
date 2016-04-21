@@ -17,6 +17,7 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include <dirent.h>
+#include <stdlib.h>
 
 void
 __scandir_cancel_handler (void *arg)

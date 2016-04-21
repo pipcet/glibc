@@ -29,6 +29,7 @@
 # include <gmon/sprofil.c>
 #else
 
+#include <sigcontextinfo.h>
 #include <libc-internal.h>
 
 struct region

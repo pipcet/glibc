@@ -35,6 +35,7 @@
 
 #include <stddef.h>
 
+#include <unistd.h>
 
 /* These magic symbols are provided by the linker.  */
 extern void (*__preinit_array_start []) (int, char **, char **)

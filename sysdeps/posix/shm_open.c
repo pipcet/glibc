@@ -18,6 +18,8 @@
 
 #include <unistd.h>
 
+#include <posix_opt.h>
+
 #if ! _POSIX_MAPPED_FILES
 
 # include <rt/shm_open.c>

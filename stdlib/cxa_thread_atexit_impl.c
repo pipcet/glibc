@@ -74,6 +74,7 @@
 
 #include <stdlib.h>
 #include <ldsodefs.h>
+#include <atomic.h>
 
 typedef void (*dtor_func) (void *);
 

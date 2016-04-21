@@ -20,6 +20,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <dirstream.h>
+#include <libc-lock.h>
 
 /* Rewind DIRP to the beginning of the directory.  */
 void

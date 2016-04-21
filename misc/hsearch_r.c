@@ -17,6 +17,7 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include <errno.h>
+#include <limits.h>
 #include <malloc.h>
 #include <string.h>
 #include <stdint.h>
