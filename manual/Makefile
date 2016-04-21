@@ -166,7 +166,7 @@ generated += libc.dvi libc.pdf libc.tmp libc.info*			      \
 	     $(foreach index,$(indices),libc.$(index) libc.$(index)s)	      \
 	     libc.log libc.aux libc.toc					      \
 	     $(libc-texi-generated)					      \
-	     stamp-libm-err stamp-version
+	     stamp-libm-err stamp-version stamp-pkgvers
 
 include ../Rules
 
