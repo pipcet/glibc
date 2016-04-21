@@ -1,0 +1,1 @@
+/* defined in open.c */
