@@ -158,6 +158,7 @@ _dl_relocate_object (struct link_map *l, struct r_scope_elem *scope[],
   const char *errstring = NULL;
   int lazy = reloc_mode & RTLD_LAZY;
   int skip_ifunc = reloc_mode & __RTLD_NOIFUNC;
+  (void) skip_ifunc;
 
 #ifdef SHARED
   /* If we are auditing, install the same handlers we need for profiling.  */
@@ -230,6 +231,7 @@ _dl_relocate_object (struct link_map *l, struct r_scope_elem *scope[],
 
     /* String table object symbols.  */
     const char *strtab = (const void *) D_PTR (l, l_info[DT_STRTAB]);
+    (void) strtab;
 
     /* This macro is used as a callback from the ELF_DYNAMIC_RELOCATE code.  */
 #define RESOLVE_MAP(ref, version, r_type) \

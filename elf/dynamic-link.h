@@ -192,12 +192,13 @@ elf_machine_lazy_rel (struct link_map *map,
 
 /* This can't just be an inline function because GCC is too dumb
    to inline functions containing inlines themselves.  */
-# define ELF_DYNAMIC_RELOCATE(map, lazy, consider_profile, skip_ifunc) \
-  do {									      \
-    int edr_lazy = elf_machine_runtime_setup ((map), (lazy),		      \
-					      (consider_profile));	      \
-    ELF_DYNAMIC_DO_REL ((map), edr_lazy, skip_ifunc);			      \
-    ELF_DYNAMIC_DO_RELA ((map), edr_lazy, skip_ifunc);			      \
+# define ELF_DYNAMIC_RELOCATE(map, lazy, consider_profile, skip_ifunc)  \
+  do {                                                                  \
+    int edr_lazy = elf_machine_runtime_setup ((map), (lazy),            \
+					      (consider_profile));      \
+    (void) edr_lazy;                                                    \
+    ELF_DYNAMIC_DO_REL ((map), edr_lazy, skip_ifunc);                   \
+    ELF_DYNAMIC_DO_RELA ((map), edr_lazy, skip_ifunc);                  \
   } while (0)
 
 #endif

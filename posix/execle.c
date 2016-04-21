@@ -20,6 +20,8 @@
 #include <errno.h>
 #include <sys/param.h>
 
+typedef long ptrdiff_t;
+
 /* Execute PATH with all arguments after PATH until a NULL pointer,
    and the argument after that for environment.  */
 int

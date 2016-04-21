@@ -24,6 +24,7 @@ unsigned long int
 __getauxval (unsigned long int type)
 {
   ElfW(auxv_t) *p;
+  (void)p;
 
   if (type == AT_HWCAP)
     return GLRO(dl_hwcap);

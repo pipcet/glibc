@@ -20,6 +20,8 @@
 #include <errno.h>
 #include <sys/param.h>
 
+typedef long ptrdiff_t;
+
 /* Execute FILE, searching in the `PATH' environment variable if
    it contains no slashes, with all arguments after FILE until a
    NULL pointer and environment from `environ'.  */
