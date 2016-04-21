@@ -95,7 +95,7 @@ __execvpe (const char *file, char *const argv[], char *const envp[])
   size_t path_len = __strnlen (path, PATH_MAX - 1) + 1;
 
   if ((file_len > NAME_MAX)
-      || !__libc_alloca_cutoff (path_len + file_len + 1))
+      || !__libc_use_alloca (path_len + file_len + 1))
     {
       errno = ENAMETOOLONG;
       return -1;
