@@ -20,7 +20,7 @@
 
 /* Perform file control operations on FD.  */
 int
-__fcntl (int fd, int cmd, ...)
+__libc_fcntl (int fd, int cmd, ...)
 {
   if (fd < 0)
     {
@@ -31,7 +31,9 @@ __fcntl (int fd, int cmd, ...)
   __set_errno (ENOSYS);
   return -1;
 }
-libc_hidden_def (__fcntl)
-stub_warning (fcntl)
+libc_hidden_def (__libc_fcntl)
+weak_alias (__libc_fcntl, __fcntl)
+libc_hidden_weak (__fcntl)
+weak_alias (__libc_fcntl, fcntl)
 
-weak_alias (__fcntl, fcntl)
+stub_warning (fcntl)
