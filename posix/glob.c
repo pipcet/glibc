@@ -600,9 +600,9 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 	  if (home_dir == NULL || home_dir[0] == '\0')
 	    home_dir = "SYS:";
 # else
-#  ifdef WINDOWS32
+#  if defined( WINDOWS32) || defined (__ASMJS__)
 	  if (home_dir == NULL || home_dir[0] == '\0')
-	    home_dir = "c:/users/default"; /* poor default */
+	    home_dir = (char *)"c:/users/default"; /* poor default */
 #  else
 	  if (home_dir == NULL || home_dir[0] == '\0')
 	    {
@@ -766,7 +766,7 @@ glob (const char *pattern, int flags, int (*errfunc) (const char *, int),
 	    }
 	  dirname_modified = 1;
 	}
-# if !defined _AMIGA && !defined WINDOWS32
+# if !defined _AMIGA && !defined WINDOWS32 && !defined __ASMJS__
       else
 	{
 	  char *end_name = strchr (dirname, '/');
