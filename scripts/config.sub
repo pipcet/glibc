@@ -2,7 +2,7 @@
 # Configuration validation subroutine script.
 #   Copyright 1992-2016 Free Software Foundation, Inc.
 
-timestamp='2016-01-01'
+timestamp='2016-02-14'
 
 # This file is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -375,6 +375,7 @@ case $basic_machine in
 	| alpha64-* | alpha64ev[4-8]-* | alpha64ev56-* | alpha64ev6[78]-* \
 	| alphapca5[67]-* | alpha64pca5[67]-* | arc-* | arceb-* \
 	| arm-*  | armbe-* | armle-* | armeb-* | armv*-* \
+                                                     | asmjs-*-* \
 	| avr-* | avr32-* \
 	| ba-* \
 	| be32-* | be64-* \
@@ -520,8 +521,9 @@ case $basic_machine in
 		basic_machine=i386-pc
 		os=-aros
 		;;
-	asmjs)
-		basic_machine=asmjs-unknown
+	asmjs-*)
+	        basic_machine=asmjs-virtual
+                os=-asmjs
 		;;
 	aux)
 		basic_machine=m68k-apple
@@ -1399,7 +1401,7 @@ case $os in
 	      | -morphos* | -superux* | -rtmk* | -rtmk-nova* | -windiss* \
 	      | -powermax* | -dnix* | -nx6 | -nx7 | -sei* | -dragonfly* \
 	      | -skyos* | -haiku* | -rdos* | -toppers* | -drops* | -es* \
-	      | -onefs* | -tirtos*)
+	      | -onefs* | -tirtos* | -asmjs* )
 	# Remember, each alternative MUST END IN *, to match a version number.
 		;;
 	-qnx*)
