@@ -26,4 +26,7 @@
 #define ADD_VARIABLES	uid
 #define BUFLEN		NSS_BUFLEN_PASSWD
 
-#include "../nss/getXXbyYY.c"
+struct passwd *getpwuid(uid_t uid)
+{
+  return 0;
+}
