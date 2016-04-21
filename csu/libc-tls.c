@@ -101,6 +101,8 @@ init_static_tls (size_t memsz, size_t align)
   GL(dl_tls_static_nelem) = GL(dl_tls_max_dtv_idx);
 }
 
+char storage[4096];
+
 void
 __libc_setup_tls (size_t tcbsize, size_t tcbalign)
 {
@@ -142,11 +144,13 @@ __libc_setup_tls (size_t tcbsize, size_t tcbalign)
      _dl_allocate_tls_storage (in elf/dl-tls.c) does using __libc_memalign
      and dl_tls_static_align.  */
   tcb_offset = roundup (memsz + GL(dl_tls_static_size), max_align);
-  tlsblock = __sbrk (tcb_offset + tcbsize + max_align);
+  tlsblock = /*__sbrk*/ malloc (tcb_offset + tcbsize + max_align);
+  tlsblock = (void *)storage;
 #elif TLS_DTV_AT_TP
   tcb_offset = roundup (tcbsize, align ?: 1);
   tlsblock = __sbrk (tcb_offset + memsz + max_align
 		     + TLS_PRE_TCB_SIZE + GL(dl_tls_static_size));
+  tlsblock = (void *)storage;
   tlsblock += TLS_PRE_TCB_SIZE;
 #else
   /* In case a model with a different layout for the TCB and DTV
