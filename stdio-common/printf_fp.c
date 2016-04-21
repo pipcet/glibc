@@ -278,6 +278,7 @@ __printf_fp_l (FILE *fp, locale_t loc,
 	decimalwc = _nl_lookup_word (loc, LC_NUMERIC,
 				      _NL_NUMERIC_DECIMAL_POINT_WC);
     }
+  decimal = ".";
   /* The decimal point character must not be zero.  */
   assert (*decimal != '\0');
   assert (decimalwc != L'\0');

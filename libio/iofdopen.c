@@ -58,7 +58,7 @@ _IO_new_fdopen (int fd, const char *mode)
   /* Decide whether we modify the offset of the file we attach to and seek to
      the end of file.  We only do this if the mode is 'a' and if the file
      descriptor did not have O_APPEND in its flags already.  */
-  bool do_seek = false;
+  int do_seek = 0;
 
   switch (*mode)
     {
@@ -128,7 +128,7 @@ _IO_new_fdopen (int fd, const char *mode)
      */
   if ((read_write & _IO_IS_APPENDING) && !(fd_flags & O_APPEND))
     {
-      do_seek = true;
+      do_seek = 1;
 #ifdef F_SETFL
       if (_IO_fcntl (fd, F_SETFL, fd_flags | O_APPEND) == -1)
 #endif

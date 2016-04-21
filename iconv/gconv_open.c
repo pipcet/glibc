@@ -39,7 +39,7 @@ __gconv_open (const char *toset, const char *fromset, __gconv_t *handle,
   int conv_flags = 0;
   const char *errhand;
   const char *ignore;
-  bool translit = false;
+  int translit = 0;
 
   /* Find out whether any error handling method is specified.  */
   errhand = strchr (toset, '/');
@@ -66,7 +66,7 @@ __gconv_open (const char *toset, const char *fromset, __gconv_t *handle,
 	  while (tok != NULL)
 	    {
 	      if (__strcasecmp_l (tok, "TRANSLIT", _nl_C_locobj_ptr) == 0)
-		translit = true;
+		translit = 1;
 	      else if (__strcasecmp_l (tok, "IGNORE", _nl_C_locobj_ptr) == 0)
 		/* Set the flag to ignore all errors.  */
 		conv_flags |= __GCONV_IGNORE_ERRORS;

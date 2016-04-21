@@ -516,6 +516,7 @@ do_lookup_x (const char *undef_name, uint_fast32_t new_hash,
 #endif
               (void) i;
               (void) s;
+              goto skip;
 	    }
 
 	  switch (ELFW(ST_BIND) (sym->st_info))
