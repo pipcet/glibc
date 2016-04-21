@@ -848,7 +848,7 @@ endif	# $(+cflags) == ""
 libio-include = -I$(..)libio
 
 # List of non-library modules that we build.
-built-modules = iconvprogs iconvdata ldconfig lddlibc4 libmemusage \
+built-modules = libc libm iconvprogs iconvdata ldconfig lddlibc4 libmemusage \
 		libSegFault libpcprofile librpcsvc locale-programs \
 		memusagestat nonlib nscd extramodules libnldbl
 
@@ -988,8 +988,6 @@ subdir-srcdirs = $(foreach dir,$(subdirs),\
 	sed '/^[ 	]*#/d;/^[ 	]*$$/d' $< > $@T
 	mv -f $@T $@
 
-ifeq (yes, $(build-shared))
-
 # To generate a header to support more than one ABI for different
 # architecture variants, the CPU/Makefile defines abi-variants to be a
 # list of names for those variants (e.g. 32 64), and, for each variant,
@@ -1006,9 +1004,7 @@ endif
 # Process the shlib-versions file, which tells us what shared library
 # version numbers to use when we install shared objects on this system.
 # We need to wait until $(subdirs) is complete.
-ifeq ($(sysd-sorted-done),t)
 -include $(common-objpfx)soversions.mk
-ifndef avoid-generated
 # This lets add-ons give more-specific matches that override defaults
 # in the top-level file.
 $(common-objpfx)shlib-versions.v.i: \
@@ -1033,28 +1029,9 @@ $(common-objpfx)soversions.mk: $(common-objpfx)soversions.i $(..)Makeconfig
 	 done; \
 	 echo soversions.mk-done = t;) < $< > $@T; exit 0
 	mv -f $@T $@
-endif
-endif
 
 postclean-generated += soversions.mk soversions.i \
 		       shlib-versions.v shlib-versions.v.i
-
-before-compile += $(common-objpfx)libc-modules.h
-ifeq ($(soversions.mk-done),t)
-# Generate a header with macro definitions for use with the IS_IN macro.
-# These are the possible values for the MODULE_NAME macro defined when building
-# sources, to identify which module the translation unit is going to be built
-# into.
-$(common-objpfx)libc-modules.h: $(common-objpfx)libc-modules.stmp; @:
-$(common-objpfx)libc-modules.stmp: $(..)scripts/gen-libc-modules.awk \
-				   $(common-objpfx)soversions.i
-	$(AWK) -v buildlist="$(subst -,_,$(built-modules))" -f $^ > ${@:stmp=T}
-	$(move-if-change) ${@:stmp=T} ${@:stmp=h}
-	touch $@
-
-endif
-
-common-generated += libc-modules.h libc-modules.stmp
 
 # The name under which the run-time dynamic linker is installed.
 # We are currently going for the convention that `/lib/ld.so.1'
@@ -1071,8 +1048,19 @@ ifndef rtld-version-installed-name
 rtld-version-installed-name = ld-$(version).so
 endif
 
-endif # build-shared
+before-compile += $(common-objpfx)libc-modules.h
+# Generate a header with macro definitions for use with the IS_IN macro.
+# These are the possible values for the MODULE_NAME macro defined when building
+# sources, to identify which module the translation unit is going to be built
+# into.
+$(common-objpfx)libc-modules.h: $(common-objpfx)libc-modules.stmp; @:
+$(common-objpfx)libc-modules.stmp: $(..)scripts/gen-libc-modules.awk \
+				   $(common-objpfx)soversions.i
+	$(AWK) -v buildlist="$(subst -,_,$(built-modules))" -f $^ > ${@:stmp=T}
+	$(move-if-change) ${@:stmp=T} ${@:stmp=h}
+	touch $@
 
+common-generated += libc-modules.h libc-modules.stmp
 
 ifeq ($(build-shared),yes)
 libdl = $(common-objpfx)dlfcn/libdl.so$(libdl.so-version)

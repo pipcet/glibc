@@ -221,7 +221,6 @@ $(objpfx)test-as-const-%.c: $(..)scripts/gen-as-const.awk $(..)Makerules \
 	mv -f $@T $@
 endif
 
-ifeq (yes,$(build-shared))
 # Generate the header containing the names of all shared libraries.
 # We use a stamp file to avoid unnecessary recompilations.
 before-compile += $(common-objpfx)gnu/lib-names.h
@@ -282,7 +281,6 @@ $(common-objpfx)$(lib-names-stmp-abi): $(..)scripts/lib-names.awk \
 	touch $@
 endif
 common-generated += $(lib-names-h-abi) $(lib-names-stmp-abi)
-endif
 
 ###############################################################################
 # NOTE!  Everything adding to before-compile needs to come before this point! #
