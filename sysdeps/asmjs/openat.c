@@ -59,13 +59,7 @@ __libc_openat (int fd, const char *file, int oflag, ...)
 
   return ret;
 }
-libc_hidden_def (__libc_open)
-weak_alias (__libc_open, __open)
-libc_hidden_weak (__open)
-weak_alias (__libc_open, open)
-
-/* open64 is just an alias.  */
-strong_alias (__libc_open, __libc_open64)
-strong_alias (__libc_open64, __open64)
-libc_hidden_def (__open64)
-weak_alias (__libc_open64, open64)
+libc_hidden_def (__libc_openat)
+weak_alias (__libc_openat, __openat)
+libc_hidden_weak (__openat)
+weak_alias (__libc_openat, openat)

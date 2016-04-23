@@ -9,6 +9,7 @@
     .import3 thinthin,abort,__thinthin_abort
     .import3 thinthin,exit,__thinthin_exit
     .import3 thinthin,open,__thinthin_open
+    .import3 thinthin,openat,__thinthin_openat
     .import3 thinthin,read,__thinthin_read
     .import3 thinthin,chdir,__thinthin_chdir
     .import3 thinthin,access,__thinthin_access
