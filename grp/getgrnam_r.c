@@ -25,4 +25,17 @@
 #define ADD_PARAMS	const char *name
 #define ADD_VARIABLES	name
 
-#include <nss/getXXbyYY_r.c>
+int __getgrnam_r(const char *name, struct group *grp,
+               char *buf, size_t buflen, struct group **result)
+{
+  (void)name;
+  (void)grp;
+  (void)buf;
+  (void)buflen;
+
+  *result = (void *)0;
+
+  return 0;
+}
+
+//#include <nss/getXXbyYY_r.c>
