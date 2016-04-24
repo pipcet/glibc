@@ -850,7 +850,7 @@ libio-include = -I$(..)libio
 # List of non-library modules that we build.
 built-modules = iconvprogs iconvdata ldconfig lddlibc4 libmemusage \
 		libSegFault libpcprofile librpcsvc locale-programs \
-		memusagestat nonlib extramodules libnldbl nscd \
+		memusagestat nonlib nscd extramodules libnldbl \
 		libc libm
 
 in-module = $(subst -,_,$(firstword $(libof-$(basename $(@F))) \
