@@ -1030,7 +1030,7 @@ int      __posix_memalign(void **, size_t, size_t);
 #define M_MMAP_MAX             -4
 
 #ifndef DEFAULT_MMAP_MAX
-#define DEFAULT_MMAP_MAX       (65536)
+#define DEFAULT_MMAP_MAX       (0)
 #endif
 
 #include <malloc.h>
