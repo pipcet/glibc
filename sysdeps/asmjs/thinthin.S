@@ -30,3 +30,5 @@
     .import3 thinthin,isatty,__thinthin_isatty
     .import3 thinthin,ppoll,__thinthin_ppoll
     .import3 thinthin,ioctl_p,__thinthin_ioctl_p
+    .import3 thinthin,sbrk,__thinthin_sbrk
+    .import3 thinthin,brk,__thinthin_brk
