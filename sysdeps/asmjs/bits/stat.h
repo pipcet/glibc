@@ -82,15 +82,13 @@
 struct stat
   {
     __dev_t st_dev;			/* Device.  */
-    unsigned int __pad1;
-
-    __ino_t __st_ino;			/* 32bit file serial number.	*/
-    __mode_t st_mode;			/* File mode.  */
+    __ino64_t st_ino;			/* 32bit file serial number.	*/
     __nlink_t st_nlink;			/* Link count.  */
+    __mode_t st_mode;			/* File mode.  */
     __uid_t st_uid;			/* User ID of the file's owner.	*/
     __gid_t st_gid;			/* Group ID of the file's group.*/
-    __dev_t st_rdev;			/* Device number, if device.  */
     unsigned int __pad2;
+    __dev_t st_rdev;			/* Device number, if device.  */
     __off64_t st_size;			/* Size of file, in bytes.  */
     __blksize_t st_blksize;		/* Optimal block size for I/O.  */
 
@@ -116,7 +114,6 @@ struct stat
     __time_t st_ctime;			/* Time of last status change.  */
     unsigned long int st_ctimensec;	/* Nsecs of last status change.  */
 # endif
-    __ino64_t st_ino;			/* File serial number.		*/
     unsigned long long reserved[7];
   };
 
