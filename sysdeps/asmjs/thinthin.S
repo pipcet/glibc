@@ -32,3 +32,5 @@
     .import3 thinthin,ioctl_p,__thinthin_ioctl_p
     .import3 thinthin,sbrk,__thinthin_sbrk
     .import3 thinthin,brk,__thinthin_brk
+    .import3 thinthin,getcwd,__thinthin_getcwd
+
