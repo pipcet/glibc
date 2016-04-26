@@ -33,4 +33,6 @@
     .import3 thinthin,sbrk,__thinthin_sbrk
     .import3 thinthin,brk,__thinthin_brk
     .import3 thinthin,getcwd,__thinthin_getcwd
+    .import3 thinthin,fcntl_v,__thinthin_fcntl_v
+    .import3 thinthin,fcntl_i,__thinthin_fcntl_i
 
