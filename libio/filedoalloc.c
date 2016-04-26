@@ -94,6 +94,10 @@ _IO_file_doallocate (_IO_FILE *fp)
 	    fp->_flags |= _IO_LINE_BUF;
 	}
 #if _IO_HAVE_ST_BLKSIZE
+#if 0
+      if (fp->_fileno > 2)
+        fprintf(stderr, "st_blksize %d\n", (int)st.st_blksize);
+#endif
       if (st.st_blksize > 0)
 	size = st.st_blksize;
 #endif
