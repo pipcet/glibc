@@ -28,19 +28,30 @@ extern int __thinthin_ioctl_p (int, unsigned long, void *)
 int
 __ioctl (int fd, unsigned long int request, ...)
 {
-  switch (request) {
-  case FIONREAD:
+  int ret;
+  switch (request)
     {
-      va_list arg;
-      void *ptr;
-      va_start (arg, request);
-      ptr = va_arg (arg, void *);
-      va_end (arg);
-      return __thinthin_ioctl_p(fd, request, ptr);
+    case FIONREAD:
+      {
+        va_list arg;
+        void *ptr;
+        va_start (arg, request);
+        ptr = va_arg (arg, void *);
+        va_end (arg);
+        ret = __thinthin_ioctl_p(fd, request, ptr);
+        break;
+      }
+    default:
+      ret = -ENOSYS;
+      break;
     }
-  }
-  __set_errno (ENOSYS);
-  return -1;
+
+  if (ret < 0)
+    {
+      errno = -ret;
+      ret = -1;
+    }
+  return -ret;
 }
 
 weak_alias (__ioctl, ioctl)
