@@ -37,3 +37,4 @@
     .import3 thinthin,fcntl_i,__thinthin_fcntl_i
     .import3 thinthin,truncate,__thinthin_truncate
     .import3 thinthin,ftruncate,__thinthin_ftruncate
+    .import3 thinthin,linkat,__thinthin_linkat
