@@ -36,7 +36,8 @@ extern __thread int errno attribute_tls_model_ie;
 
 # endif	/* IS_IN_LIB */
 
-# define __set_errno(val) (errno = (val))
+#include <stdio.h>
+# define __set_errno(val) ({ if ((val) == ENOSYS) fprintf(stderr, "ENOSYS at %s:%d\n", __FILE__, __LINE__); (errno = (val)); })
 
 # ifndef __ASSEMBLER__
 extern int *__errno_location (void) __THROW __attribute__ ((__const__))
