@@ -27,8 +27,7 @@
 #include <sysdep.h>
 #include <sys/syscall.h>
 
-extern int __thinthin_getcwd(char *, int)
-  __attribute__((stackcall));
+#include "thinthin.h"
 
 /* If we compile the file for use in ld.so we don't need the feature
    that getcwd() allocates the buffers itself.  */
@@ -69,12 +68,7 @@ __getcwd (char *buf, size_t size)
 
   int retval;
 
-  retval = __thinthin_getcwd (path, alloc_size);
-  if (retval < 0)
-    {
-      errno = -retval;
-      retval = -1;
-    }
+  retval = __THINTHIN_SYSCALL(getcwd, path, alloc_size);
   if (retval >= 0)
     {
 #ifndef NO_ALLOCATION

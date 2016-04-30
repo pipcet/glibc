@@ -19,15 +19,14 @@
 
 #include <unistd.h>
 #include <sys/stat.h>
+#include <errno.h>
 
-#include "asmjs.h"
-
-extern int __thinthin_access(const char *, int) __attribute__((stackcall));
+#include "thinthin.h"
 
 /* Test for access to FILE.  */
 int
 __access (const char *file, int type)
 {
-  return __thinthin_access(file, type);
+  return __THINTHIN_SYSCALL(access, file, type);
 }
 weak_alias (__access, access)

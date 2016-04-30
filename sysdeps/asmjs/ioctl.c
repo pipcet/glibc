@@ -20,15 +20,13 @@
 #include <stdarg.h>
 #include <sys/ioctl.h>
 
-extern int __thinthin_ioctl_p (int, unsigned long, void *)
-  __attribute__((stackcall));
+#include "thinthin.h"
 
 /* Perform the I/O control operation specified by REQUEST on FD.
    The actual type and use of ARG and the return value depend on REQUEST.  */
 int
 __ioctl (int fd, unsigned long int request, ...)
 {
-  int ret;
   switch (request)
     {
     case FIONREAD:
@@ -38,20 +36,13 @@ __ioctl (int fd, unsigned long int request, ...)
         va_start (arg, request);
         ptr = va_arg (arg, void *);
         va_end (arg);
-        ret = __thinthin_ioctl_p(fd, request, ptr);
+        return __THINTHIN_SYSCALL(ioctl_p, fd, request, ptr);
         break;
       }
     default:
-      ret = -ENOSYS;
-      break;
+      __set_errno (ENOSYS);
+      return -1;
     }
-
-  if (ret < 0)
-    {
-      errno = -ret;
-      ret = -1;
-    }
-  return -ret;
 }
 
 weak_alias (__ioctl, ioctl)

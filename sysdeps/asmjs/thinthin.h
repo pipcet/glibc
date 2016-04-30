@@ -26,7 +26,7 @@ extern int __thinthin_chdir(const char *)
   __attribute__((stackcall));
 extern int __thinthin_close(int)
   __attribute__((stackcall));
-extern void __thinthin_exit(int)
+extern int __thinthin_exit(int)
   __attribute__((stackcall));
 extern int __thinthin_faccessat(int, const char *, int, int)
   __attribute__((stackcall));
@@ -77,7 +77,40 @@ extern int __thinthin_wait4(int, int *, int, struct rusage *)
 
 struct stat;
 extern int __thinthin_stat (const char *file, struct stat *buf)
-  __attribute__ ((stackcall));
+  __attribute__((stackcall));
 extern int __thinthin_fstat (int fd, struct stat *buf)
+  __attribute__((stackcall));
+
+extern int __thinthin_unlinkat(int dirfd, const char *path, int)
+  __attribute__((stackcall));
+
+struct pollfd;
+extern int __thinthin_ppoll(struct pollfd *fds, int nfds,
+                            const void *, const void *)
+  __attribute__((stackcall));
+
+extern int __thinthin_openat (int fd, const char *file, int oflag, int mode)
+  __attribute__((stackcall));
+
+extern int __thinthin_openat (int fd, const char *file, int oflag, int mode)
+  __attribute__((stackcall));
+
+extern int __thinthin_pipe2(int *__pipedes, int flags)
   __attribute__ ((stackcall));
 
+extern int __thinthin_read (int, void *, int)
+  __attribute__((stackcall));
+
+extern int __thinthin_renameat2 (int, const char *, int, const char *, int)
+  __attribute__((stackcall));
+
+extern int __thinthin_mkdirat (int, const char *, int)
+  __attribute__((stackcall));
+
+extern int __thinthin_readlinkat (int, const char *, char *, int)
+  __attribute__((stackcall));
+
+struct timespec;
+extern int __thinthin_utimensat(int, const char *, const struct timespec *,
+                                int)
+  __attribute__((stackcall));

@@ -20,14 +20,15 @@
 
 #include <unistd.h>
 #include <stdlib.h>
+#include <errno.h>
 
-extern void __thinthin_exit(int) __attribute__((stackcall));
+#include "thinthin.h"
 
 void
 _exit (int status)
 {
   for (;;)
-    __thinthin_exit (status);
+    __THINTHIN_SYSCALL (exit, status);
 }
 libc_hidden_def (_exit)
 rtld_hidden_def (_exit)

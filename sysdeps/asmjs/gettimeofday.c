@@ -19,8 +19,7 @@
 #include <errno.h>
 #include <sys/time.h>
 
-extern int __thinthin_gettimeofday(struct timeval *, struct timezone *)
-  __attribute__((stackcall));
+#include "thinthin.h"
 
 /* Get the current time of day and timezone information,
    putting it into *TV and *TZ.  If TZ is NULL, *TZ is not filled.
@@ -28,15 +27,7 @@ extern int __thinthin_gettimeofday(struct timeval *, struct timezone *)
 int
 __gettimeofday (struct timeval *tv, struct timezone *tz)
 {
-  int ret = __thinthin_gettimeofday(tv, tz);
-
-  if (ret < 0)
-    {
-      __set_errno (-ret);
-      ret = -1;
-    }
-
-  return ret;
+  return __THINTHIN_SYSCALL(gettimeofday, tv, tz);
 }
 libc_hidden_def (__gettimeofday)
 weak_alias (__gettimeofday, gettimeofday)

@@ -19,15 +19,15 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include <unistd.h>
+#include <errno.h>
+#include <fcntl.h>
 
-#include "asmjs.h"
-
-extern int __thinthin_unlink(const char *) __attribute__((stackcall));
+#include "thinthin.h"
 
 /* Remove the link named NAME.  */
 int
 __unlink (const char *name)
 {
-  return __thinthin_unlink(name);
+  return __THINTHIN_SYSCALL(unlinkat, AT_FDCWD, name, 0);
 }
 weak_alias (__unlink, unlink)

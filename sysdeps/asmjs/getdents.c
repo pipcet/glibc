@@ -21,21 +21,11 @@
 #include <stdio.h>
 #include <errno.h>
 
-/* this probably breaks with the new varargs CC */
-extern ssize_t __thinthin_getdents(int, char *, size_t)
-  __attribute__((stackcall));
+#include "thinthin.h"
 
 ssize_t
 internal_function
 __getdents (int fd, char *buf, size_t nbytes)
 {
-  ssize_t ret = __thinthin_getdents(fd, buf, nbytes);
-
-  if (ret < 0)
-    {
-      __set_errno(-ret);
-      return -1;
-    }
-
-  return ret;
+  return __THINTHIN_SYSCALL(getdents, fd, buf, nbytes);
 }

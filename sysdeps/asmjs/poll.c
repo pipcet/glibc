@@ -25,9 +25,7 @@
 #include <poll.h>
 #include <unistd.h>
 
-extern int __thinthin_ppoll(struct pollfd *fds, nfds_t nfds,
-                            const struct timespec *, const sigset_t *)
-  __attribute__((stackcall));
+#include "thinthin.h"
 
 /* Check the first NFDS descriptors each in READFDS (if not NULL) for read
    readiness, in WRITEFDS (if not NULL) for write readiness, and in EXCEPTFDS
@@ -47,7 +45,7 @@ __poll(struct pollfd *fds, nfds_t nfds, int timeout)
       tmo.tv_nsec = 1000000 * (timeout%1000);
       tmo_p = &tmo;
     }
-  int ret = __thinthin_ppoll(fds, nfds, tmo_p, NULL);
+  int ret = __THINTHIN_SYSCALL(ppoll, fds, nfds, tmo_p, NULL);
 
   if (ret < 0)
     {

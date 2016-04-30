@@ -1,7 +1,5 @@
 /* Copyright (C) 1991-2016 Free Software Foundation, Inc.
-   Copyright (C) 2016 Pip Cet <pipcet@gmail.com>
-
-   This file is NOT part of the GNU C Library.
+   This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -17,35 +15,16 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <sysdep.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <errno.h>
-#include <unistd.h>
-#include <stddef.h>
 
 #include "thinthin.h"
 
-/* Write NBYTES of BUF to FD.  Return the number written, or -1.  */
-ssize_t
-__libc_write (int fd, const void *buf, size_t nbytes)
+pid_t
+__wait4 (__pid_t pid, int *stat_loc, int options, struct rusage *usage)
 {
-  if (nbytes == 0)
-    return 0;
-  if (fd < 0)
-    {
-      __set_errno (EBADF);
-      return -1;
-    }
-  if (buf == NULL)
-    {
-      __set_errno (EINVAL);
-      return -1;
-    }
-
-  return __THINTHIN_SYSCALL(write, fd, buf, nbytes);
+  return __THINTHIN_SYSCALL (wait4, pid, stat_loc, options, usage);
 }
-libc_hidden_def (__libc_write)
-stub_warning (write)
 
-weak_alias (__libc_write, __write)
-libc_hidden_weak (__write)
-weak_alias (__libc_write, write)
+weak_alias (__wait4, wait4)

@@ -21,8 +21,7 @@
 #include <string.h>
 #include <unistd.h>
 
-extern int __thinthin_gethostname(char *, int)
-  __attribute__((stackcall));
+#include "thinthin.h"
 
 /* Put the name of the current host in no more than LEN bytes of NAME.
    The result is null-terminated if LEN is large enough for the full
@@ -30,13 +29,6 @@ extern int __thinthin_gethostname(char *, int)
 int
 __gethostname (char *name, size_t len)
 {
-  int ret = __thinthin_gethostname (name, len);
-  if (ret < 0)
-    {
-      __set_errno (-ret);
-      return -1;
-    }
-
-  return ret;
+  return __THINTHIN_SYSCALL(gethostname, name, len);
 }
 weak_alias (__gethostname, gethostname)

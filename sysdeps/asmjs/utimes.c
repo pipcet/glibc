@@ -1,7 +1,5 @@
 /* Copyright (C) 1991-2016 Free Software Foundation, Inc.
-   Copyright (C) 2016 Pip Cet <pipcet@gmail.com>
-
-   This file is NOT part of the GNU C Library.
+   This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -17,35 +15,29 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <sysdep.h>
+#include <sys/time.h>
 #include <errno.h>
-#include <unistd.h>
 #include <stddef.h>
 
 #include "thinthin.h"
 
-/* Write NBYTES of BUF to FD.  Return the number written, or -1.  */
-ssize_t
-__libc_write (int fd, const void *buf, size_t nbytes)
+/* Change the access time of FILE to TVP[0] and
+   the modification time of FILE to TVP[1].  */
+int
+__utimes (const char *file, const struct timeval tvp[2])
 {
-  if (nbytes == 0)
-    return 0;
-  if (fd < 0)
-    {
-      __set_errno (EBADF);
-      return -1;
-    }
-  if (buf == NULL)
+  if (file == NULL)
     {
       __set_errno (EINVAL);
       return -1;
     }
 
-  return __THINTHIN_SYSCALL(write, fd, buf, nbytes);
-}
-libc_hidden_def (__libc_write)
-stub_warning (write)
+  struct timespec ts[2];
 
-weak_alias (__libc_write, __write)
-libc_hidden_weak (__write)
-weak_alias (__libc_write, write)
+  TIMEVAL_TO_TIMESPEC(tvp[0], ts);
+  TIMEVAL_TO_TIMESPEC(tvp[1], &ts[1]);
+
+  return __THINTHIN_SYSCALL(utimensat, AT_FDCWD, file, ts, 0);
+}
+
+weak_alias (__utimes, utimes)

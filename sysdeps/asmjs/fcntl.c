@@ -18,18 +18,14 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <stdarg.h>
+#include <stdio.h>
 
-extern int __thinthin_fcntl_v(int, int)
-  __attribute__((stackcall));
-extern int __thinthin_fcntl_i(int, int, int)
-  __attribute__((stackcall));
+#include "thinthin.h"
 
 /* Perform file control operations on FD.  */
 int
 __libc_fcntl (int fd, int cmd, ...)
 {
-  int ret;
-
   if (fd < 0)
     {
       __set_errno (EBADF);
@@ -39,34 +35,26 @@ __libc_fcntl (int fd, int cmd, ...)
   switch (cmd)
     {
     case F_GETFL:
-      ret = __thinthin_fcntl_v (fd, cmd);
-      break;
+    case F_GETFD:
+      return __THINTHIN_SYSCALL (fcntl_v, fd, cmd);
     case F_SETFD:
+    case F_DUPFD:
+    case F_DUPFD_CLOEXEC:
       {
         va_list arg;
         int i;
         va_start (arg, cmd);
         i = va_arg (arg, int);
         va_end (arg);
-        ret = __thinthin_fcntl_i (fd, cmd, i);
-        break;
+        return __THINTHIN_SYSCALL (fcntl_i, fd, cmd, i);
       }
     default:
-      ret = -ENOSYS;
-      break;
+      fprintf(stderr, "unknown fcntl %08x\n", cmd);
+      __set_errno (ENOSYS);
+      return -1;
     }
-
-  if (ret < 0)
-    {
-      errno = -ret;
-      ret = -1;
-    }
-
-  return ret;
 }
 libc_hidden_def (__libc_fcntl)
 weak_alias (__libc_fcntl, __fcntl)
 libc_hidden_weak (__fcntl)
 weak_alias (__libc_fcntl, fcntl)
-
-stub_warning (fcntl)

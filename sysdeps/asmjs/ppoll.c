@@ -23,15 +23,13 @@
 #include <poll.h>
 #include <unistd.h>
 
-extern int __thinthin_ppoll(struct pollfd *fds, nfds_t nfds,
-                            const struct timespec *, const sigset_t *)
-  __attribute__((stackcall));
+#include "thinthin.h"
 
 int
 __ppoll(struct pollfd *fds, nfds_t nfds,
         const struct timespec *ts, const sigset_t *sigmask)
 {
-  int ret = __thinthin_ppoll(fds, nfds, ts, sigmask);
+  int ret = __THINTHIN_SYSCALL(ppoll, fds, nfds, ts, sigmask);
 
   if (ret < 0)
     {

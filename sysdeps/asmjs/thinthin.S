@@ -20,7 +20,7 @@
     .import3 thinthin,readdir,__thinthin_readdir
     .import3 thinthin,fdopen,__thinthin_fdopen
     .import3 thinthin,fclose,__thinthin_fclose
-    .import3 thinthin,unlink,__thinthin_unlink
+    .import3 thinthin,unlinkat,__thinthin_unlinkat
     .import3 thinthin,rename,__thinthin_rename
     .import3 thinthin,lseek,__thinthin_lseek
     .import3 thinthin,getdents,__thinthin_getdents
@@ -38,3 +38,12 @@
     .import3 thinthin,truncate,__thinthin_truncate
     .import3 thinthin,ftruncate,__thinthin_ftruncate
     .import3 thinthin,linkat,__thinthin_linkat
+    .import3 thinthin,pipe2,__thinthin_pipe2
+    .import3 thinthin,fork,__thinthin_fork
+    .import3 thinthin,execve,__thinthin_execve
+    .import3 thinthin,fchmodat,__thinthin_fchmodat
+    .import3 thinthin,renameat2,__thinthin_renameat2
+    .import3 thinthin,wait4,__thinthin_wait4
+    .import3 thinthin,mkdirat,__thinthin_mkdirat
+    .import3 thinthin,readlinkat,__thinthin_readlinkat
+    .import3 thinthin,utimensat,__thinthin_utimensat

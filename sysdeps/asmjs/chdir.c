@@ -21,16 +21,13 @@
 #include <stddef.h>
 #include <unistd.h>
 
-#include "asmjs.h"
-
-extern int __thinthin_chdir(const char *) __attribute__((stackcall));
+#include "thinthin.h"
 
 /* Change the current directory to PATH.  */
 int
 __chdir (const char *path)
 {
-  return __thinthin_chdir(path);
+  return __THINTHIN_SYSCALL(chdir, path);
 }
-stub_warning (chdir)
 
 weak_alias (__chdir, chdir)

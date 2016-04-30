@@ -23,8 +23,7 @@
 #include <sysdep.h>
 #include <sys/syscall.h>
 
-extern int __thinthin_ftruncate(int, int)
-  __attribute__((stackcall));
+#include "thinthin.h"
 
 /* Truncate the file referenced by FD to LENGTH bytes.  */
 int
@@ -32,16 +31,7 @@ __ftruncate64 (int fd, off64_t length)
 {
   unsigned int low = length & 0xffffffff;
   //unsigned int high = length >> 32;
-  int result;
 
-  result = __thinthin_ftruncate(fd, low);
-
-  if (result < 0)
-    {
-      errno = -result;
-      result = -1;
-    }
-
-  return result;
+  return __THINTHIN_SYSCALL(ftruncate, fd, low);
 }
 weak_alias (__ftruncate64, ftruncate64)

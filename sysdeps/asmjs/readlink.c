@@ -1,7 +1,5 @@
 /* Copyright (C) 1991-2016 Free Software Foundation, Inc.
-   Copyright (C) 2016 Pip Cet <pipcet@gmail.com>
-
-   This file is NOT part of the GNU C Library.
+   This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -17,35 +15,18 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <sysdep.h>
 #include <errno.h>
 #include <unistd.h>
-#include <stddef.h>
-
+#include <fcntl.h>
 #include "thinthin.h"
 
-/* Write NBYTES of BUF to FD.  Return the number written, or -1.  */
+/* Read the contents of the symbolic link PATH into no more than
+   LEN bytes of BUF.  The contents are not null-terminated.
+   Returns the number of characters read, or -1 for errors.  */
 ssize_t
-__libc_write (int fd, const void *buf, size_t nbytes)
+__readlink (const char *path, char *buf, size_t len)
 {
-  if (nbytes == 0)
-    return 0;
-  if (fd < 0)
-    {
-      __set_errno (EBADF);
-      return -1;
-    }
-  if (buf == NULL)
-    {
-      __set_errno (EINVAL);
-      return -1;
-    }
-
-  return __THINTHIN_SYSCALL(write, fd, buf, nbytes);
+  return __THINTHIN_SYSCALL(readlinkat, AT_FDCWD, path, buf, len);
 }
-libc_hidden_def (__libc_write)
-stub_warning (write)
 
-weak_alias (__libc_write, __write)
-libc_hidden_weak (__write)
-weak_alias (__libc_write, write)
+weak_alias (__readlink, readlink)

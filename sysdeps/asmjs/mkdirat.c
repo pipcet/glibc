@@ -1,7 +1,5 @@
 /* Copyright (C) 1991-2016 Free Software Foundation, Inc.
-   Copyright (C) 2016 Pip Cet <pipcet@gmail.com>
-
-   This file is NOT part of the GNU C Library.
+   This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -17,35 +15,37 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <sysdep.h>
 #include <errno.h>
-#include <unistd.h>
+#include <fcntl.h>
 #include <stddef.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "thinthin.h"
 
-/* Write NBYTES of BUF to FD.  Return the number written, or -1.  */
-ssize_t
-__libc_write (int fd, const void *buf, size_t nbytes)
+/* Create a directory named PATH relative to FD with protections MODE.  */
+int
+mkdirat (int fd, const char *path, mode_t mode)
 {
-  if (nbytes == 0)
-    return 0;
-  if (fd < 0)
-    {
-      __set_errno (EBADF);
-      return -1;
-    }
-  if (buf == NULL)
+  if (path == NULL)
     {
       __set_errno (EINVAL);
       return -1;
     }
 
-  return __THINTHIN_SYSCALL(write, fd, buf, nbytes);
-}
-libc_hidden_def (__libc_write)
-stub_warning (write)
+  if (fd != AT_FDCWD && path[0] != '/')
+    {
+      /* Check FD is associated with a directory.  */
+      struct stat64 st;
+      if (__fxstat64 (_STAT_VER, fd, &st) != 0)
+	return -1;
 
-weak_alias (__libc_write, __write)
-libc_hidden_weak (__write)
-weak_alias (__libc_write, write)
+      if (!S_ISDIR (st.st_mode))
+	{
+	  __set_errno (ENOTDIR);
+	  return -1;
+	}
+    }
+
+  return __THINTHIN_SYSCALL(mkdirat, fd, path, mode);
+}

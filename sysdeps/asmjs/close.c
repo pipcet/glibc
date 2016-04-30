@@ -19,16 +19,15 @@
    <http://www.gnu.org/licenses/>.  */
 
 #include <unistd.h>
+#include <errno.h>
 
-extern int __thinthin_close(int) __attribute__((stackcall));
-
-#include "asmjs.h"
+#include "thinthin.h"
 
 /* Close the file descriptor FD.  */
 int
 __close (int fd)
 {
-  return __thinthin_close(fd);
+  return __THINTHIN_SYSCALL(close, fd);
 }
 libc_hidden_def (__close)
 strong_alias (__close, __libc_close)

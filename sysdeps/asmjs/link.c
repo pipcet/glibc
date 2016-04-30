@@ -20,31 +20,19 @@
 #include <stddef.h>
 #include <unistd.h>
 
-extern int __thinthin_linkat(int, const char *, int, const char *,
-                             int)
-  __attribute__((stackcall));
+#include "thinthin.h"
 
 /* Make a link to FROM called TO.  */
 int
 __link (const char *from, const char *to)
 {
-  int res;
-
   if (from == NULL || to == NULL)
     {
       __set_errno (EINVAL);
       return -1;
     }
 
-  res = __thinthin_linkat(AT_FDCWD, from, AT_FDCWD, to, 0);
-
-  if (res < 0)
-    {
-      errno = -res;
-      res = -1;
-    }
-
-  return res;
+  return __THINTHIN_SYSCALL(linkat, AT_FDCWD, from, AT_FDCWD, to, 0);
 }
 
 weak_alias (__link, link)

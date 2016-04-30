@@ -31,24 +31,12 @@
 #include <limits.h>
 #include <stdint.h>
 
-extern int __thinthin_stat (const char *file, struct stat *buf)
-  __attribute__ ((stackcall));
-extern int __thinthin_fstat (int fd, struct stat *buf)
-  __attribute__ ((stackcall));
+#include "thinthin.h"
 
 int
 __fxstat (int vers, int fd, struct stat *buf)
 {
-  int ret = __thinthin_fstat (fd, buf);
-
-  if (ret < 0)
-    {
-      __set_errno (-ret);
-
-      return -1;
-    }
-
-  return ret;
+  return __THINTHIN_SYSCALL (fstat, fd, buf);
 }
 
 hidden_def (__fxstat)
@@ -57,16 +45,7 @@ weak_alias (__fxstat, _fxstat)
 int
 __fxstat64 (int vers, int fd, struct stat64 *buf)
 {
-  int ret = __thinthin_fstat (fd, (struct stat *)buf);
-
-  if (ret < 0)
-    {
-      __set_errno (-ret);
-
-      return -1;
-    }
-
-  return ret;
+  return __THINTHIN_SYSCALL (fstat, fd, (struct stat *)buf);
 }
 
 hidden_def (__fxstat64)
@@ -76,16 +55,7 @@ weak_alias (__fxstat64, _fxstat64)
 int
 __xstat (int vers, const char *file, struct stat *buf)
 {
-  int ret = __thinthin_stat (file, buf);
-
-  if (ret < 0)
-    {
-      __set_errno (-ret);
-
-      return -1;
-    }
-
-  return ret;
+  return __THINTHIN_SYSCALL (stat, file, buf);
 }
 hidden_def (__xstat)
 weak_alias (__xstat, _xstat)

@@ -18,24 +18,19 @@
 #include <errno.h>
 #include <unistd.h>
 
+#include "thinthin.h"
+
 /* sbrk.c expects this.  */
 void *__curbrk = (void *)(32*1024*1024);
-
-extern int __thinthin_brk(void *) __attribute__((stackcall));
 
 /* Set the end of the process's data space to ADDR.
    Return 0 if successful, -1 if not.  */
 int
 __brk (void *addr)
 {
-  int ret = __thinthin_brk(addr);
+  int ret = __THINTHIN_SYSCALL(brk, addr);
 
-  if (ret < 0)
-    {
-      errno = -ret;
-      ret = -1;
-    }
-  else
+  if (ret >= 0)
     {
       __curbrk = addr;
     }

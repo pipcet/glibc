@@ -23,10 +23,7 @@
 #include <stdio.h>
 #include <errno.h>
 
-#include "asmjs.h"
-
-extern int __thinthin_openat (int fd, const char *file, int oflag, int mode)
-  __attribute__((stackcall));
+#include "thinthin.h"
 
 /* Open FILE with access OFLAG.  If OFLAG includes O_CREAT,
    a third argument is the file protection.  */
@@ -34,9 +31,6 @@ int
 __libc_openat (int fd, const char *file, int oflag, ...)
 {
   mode_t mode = 0;
-  int ret;
-
-  errno = 0;
 
   if (oflag & O_CREAT)
     {
@@ -44,20 +38,12 @@ __libc_openat (int fd, const char *file, int oflag, ...)
       va_start (arg, oflag);
       mode = va_arg (arg, mode_t);
       va_end (arg);
-      ret = __thinthin_openat(fd, file, oflag, mode);
+      return __THINTHIN_SYSCALL(openat, fd, file, oflag, mode);
     }
   else
     {
-      ret = __thinthin_openat(fd, file, oflag, 0);
+      return __THINTHIN_SYSCALL(openat, fd, file, oflag, 0);
     }
-
-  if (ret < 0)
-    {
-      __set_errno (-ret);
-      return -1;
-    }
-
-  return ret;
 }
 libc_hidden_def (__libc_openat)
 weak_alias (__libc_openat, __openat)

@@ -21,15 +21,12 @@
 #include <unistd.h>
 #include <stddef.h>
 
-extern ssize_t __thinthin_write(int, const void *, size_t)
-  __attribute__((stackcall));
+#include "thinthin.h"
 
 /* Write NBYTES of BUF to FD.  Return the number written, or -1.  */
 ssize_t
 __libc_write (int fd, const void *buf, size_t nbytes)
 {
-  ssize_t ret;
-
   if (nbytes == 0)
     return 0;
   if (fd < 0)
@@ -43,18 +40,9 @@ __libc_write (int fd, const void *buf, size_t nbytes)
       return -1;
     }
 
-  ret = __thinthin_write(fd, buf, nbytes);
-
-  if (ret < 0)
-    {
-      __set_errno (-ret);
-      return -1;
-    }
-
-  return ret;
+  return __THINTHIN_SYSCALL(write, fd, buf, nbytes);
 }
 libc_hidden_def (__libc_write)
-stub_warning (write)
 
 weak_alias (__libc_write, __write)
 libc_hidden_weak (__write)

@@ -21,10 +21,7 @@
 #include <time.h>
 #include <sys/time.h>
 
-#include "asmjs.h"
-
-extern int __thinthin_gettimeofday(struct timeval *tv, void *tz)
-  __attribute__((stackcall));
+#include "thinthin.h"
 
 /* XXX with the default includes, gettimeofday->time->gettimeofday
  * loops endlessly */
@@ -33,7 +30,7 @@ time_t
 time (time_t *timer)
 {
   struct timeval tv;
-  __thinthin_gettimeofday(&tv, NULL);
+  __THINTHIN_SYSCALL(gettimeofday, &tv, NULL);
 
   *timer = tv.tv_sec;
 

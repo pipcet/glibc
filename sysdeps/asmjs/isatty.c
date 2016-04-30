@@ -18,16 +18,15 @@
 
 #include <unistd.h>
 #include <termios.h>
+#include <errno.h>
 
-extern int __thinthin_isatty(int)
-  __attribute__((stackcall));
-
+#include "thinthin.h"
 
 /* Return 1 if FD is a terminal, 0 if not.  */
 int
 __isatty (int fd)
 {
-  return __thinthin_isatty(fd);
+  return __THINTHIN_SYSCALL(isatty, fd);
 }
 
 weak_alias (__isatty, isatty)

@@ -20,16 +20,12 @@
 #include <stddef.h>
 #include <unistd.h>
 
-extern int __thinthin_linkat(int, const char *, int, const char *,
-                             int)
-  __attribute__((stackcall));
+#include "thinthin.h"
 
 /* Make a link to FROM relative to FROMFD called TO relative to TOFD.  */
 int
 linkat (int fromfd, const char *from, int tofd, const char *to, int flags)
 {
-  int res;
-
   if (from == NULL || to == NULL)
     {
       __set_errno (EINVAL);
@@ -43,13 +39,5 @@ linkat (int fromfd, const char *from, int tofd, const char *to, int flags)
       return -1;
     }
 
-  res = __thinthin_linkat(fromfd, from, tofd, to, flags);
-
-  if (res < 0)
-    {
-      errno = -res;
-      res = -1;
-    }
-
-  return res;
+  return __THINTHIN_SYSCALL(linkat, fromfd, from, tofd, to, flags);
 }

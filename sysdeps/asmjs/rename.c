@@ -19,24 +19,13 @@
 
 #include <unistd.h>
 #include <errno.h>
+#include <fcntl.h>
 
-#include "asmjs.h"
-
-extern int __thinthin_rename(const char *, const char *)
-  __attribute__((stackcall));
+#include "thinthin.h"
 
 /* Rename the file OLD to NEW.  */
 int
 rename (const char *old, const char *new)
 {
-  int ret = __thinthin_rename(old, new);
-
-  if (ret < 0)
-    {
-      __set_errno (-ret);
-
-      return -1;
-    }
-
-  return ret;
+  return __THINTHIN_SYSCALL(renameat2, AT_FDCWD, old, AT_FDCWD, new, 0);
 }

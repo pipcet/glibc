@@ -1,7 +1,6 @@
-/* Check file access permission.
-   Copyright (C) 2015-2016 Free Software Foundation, Inc.
-   Copyright (C) 2016 Pip Cet <pipcet@gmail.com>
-   This file is NOT part of the GNU C Library.
+/* Copyright (C) 2011-2016 Free Software Foundation, Inc.
+   This file is part of the GNU C Library.
+   Contributed by Chris Metcalf <cmetcalf@tilera.com>, 2011.
 
    The GNU C Library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -14,19 +13,23 @@
    Lesser General Public License for more details.
 
    You should have received a copy of the GNU Lesser General Public
-   License along with the GNU C Library; if not, see
+   License along with the GNU C Library.  If not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <unistd.h>
-#include <sys/stat.h>
 #include <errno.h>
+#include <unistd.h>
+#include <stddef.h>
 
 #include "thinthin.h"
 
-/* Test for access to FILE.  */
+/* Create a one-way communication channel (__pipe).
+   If successful, two file descriptors are stored in PIPEDES;
+   bytes written on PIPEDES[1] can be read from PIPEDES[0].
+   Returns 0 if successful, -1 if not.  */
 int
-__faccessat (int fd, const char *file, int type, int flag)
+__pipe (int __pipedes[2])
 {
-  return __THINTHIN_SYSCALL (faccessat, fd, file, type, flag);
+  return __THINTHIN_SYSCALL(pipe2, __pipedes, 0);
 }
-weak_alias (__faccessat, faccessat)
+libc_hidden_def (__pipe)
+weak_alias (__pipe, pipe)
