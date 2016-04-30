@@ -35,6 +35,8 @@ extern int __thinthin_fcntl_v(int, int)
   __attribute__((stackcall));
 extern int __thinthin_fcntl_i(int, int, int)
   __attribute__((stackcall));
+extern int __thinthin_fcntl_p(int, int, void *)
+  __attribute__((stackcall));
 
 extern int __thinthin_fork(void)
   __attribute__((stackcall));

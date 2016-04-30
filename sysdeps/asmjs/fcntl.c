@@ -48,6 +48,17 @@ __libc_fcntl (int fd, int cmd, ...)
         va_end (arg);
         return __THINTHIN_SYSCALL (fcntl_i, fd, cmd, i);
       }
+    case F_GETLK:
+    case F_SETLK:
+    case F_SETLKW:
+      {
+        va_list arg;
+        void *p;
+        va_start (arg, cmd);
+        p = va_arg (arg, void *);
+        va_end (arg);
+        return __THINTHIN_SYSCALL (fcntl_p, fd, cmd, p);
+      }
     default:
       fprintf(stderr, "unknown fcntl %08x\n", cmd);
       __set_errno (ENOSYS);
