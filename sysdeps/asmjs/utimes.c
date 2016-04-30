@@ -18,6 +18,7 @@
 #include <sys/time.h>
 #include <errno.h>
 #include <stddef.h>
+#include <fcntl.h>
 
 #include "thinthin.h"
 
@@ -34,8 +35,8 @@ __utimes (const char *file, const struct timeval tvp[2])
 
   struct timespec ts[2];
 
-  TIMEVAL_TO_TIMESPEC(tvp[0], ts);
-  TIMEVAL_TO_TIMESPEC(tvp[1], &ts[1]);
+  TIMEVAL_TO_TIMESPEC(&tvp[0], &ts[0]);
+  TIMEVAL_TO_TIMESPEC(&tvp[1], &ts[1]);
 
   return __THINTHIN_SYSCALL(utimensat, AT_FDCWD, file, ts, 0);
 }
