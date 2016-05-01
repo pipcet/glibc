@@ -15,62 +15,74 @@ __str_\module:
         .pushsection .javascript%S,"a"
 function f_$
         .codetextlabel \name
-    (pc,sp,r0,r1,rpc,rfp) {
-        pc = pc|0;
-        sp = sp|0;
+        /*
+        \name
+        */
+    (dpc,sp1,r0,r1,rpc,pc0) {
+        dpc = dpc|0;
+        sp1 = sp1|0;
         r0 = r0|0;
         r1 = r1|0;
         rpc = rpc|0;
-        rfp = rfp|0;
+        pc0 = pc0|0;
+        var pc = 0;
         var fp = 0;
         var rp = 0;
         var a = 0;
+        var sp = 0;
+        pc = (dpc+pc0)|0;
+        sp = (sp1-16)|0;
         mainloop:
         while(1) {
-        switch (pc|0) {
+        switch (dpc|0) {
         .codetextlabeldeffirst \name
         .labeldef_debug .LFB0
         .cfi_startproc
-        sp = (sp|0)-16|0;
+        sp = (sp|0)-24|0;
         fp = sp|0;
         rp = fp|1;
-        pc = $
-        .codetextlabel \name\().0
-        >>4;
+        dpc = $
+        .dpc \name\().0
+        ;
         break mainloop;
         .codetextlabeldef \name\().0
-// 3 "import-macro-c.c" 1
         rp = foreign_extcall(
                 .datatextlabel __str_\module
                 |0,
                 .datatextlabel __str_\name
-                |0, pc|0, sp+16|0)|0;
+                |0, pc|0, sp+24|0)|0;
         if (rp & 3) {
             rp = fp|1;
-            pc = $
-            .codetextlabel \name\().0
-            >>4;
+            dpc = $
+            .dpc \name\().0
+            ;
             break mainloop;
         } else {
             rp = fp|1;
-            pc = $
-            .codetextlabel \name\().1
-            >>4;
+            dpc = $
+            .dpc \name\().1
+            ;
             break mainloop;
         }
         .codetextlabeldef \name\().1
-// 0 "" 2
-        return fp+16|0;
+        return fp+24|0;
         .set __asmjs_fallthrough, 0
         .cfi_endproc
         .labeldef_debug .LFE0
         .codetextlabeldeflast .ends.\name
  default:
-        rp = sp|0;
-        pc = HEAP32[rp+4>>2]>>4;
-        sp = HEAP32[rp+8>>2]|0;
-        fp = rp|0;
-        continue;
+        if ((dpc+pc0)|0 == 0) {
+            rp = sp|0;
+            pc0 = HEAP32[rp+4>>2]>>4;
+            pc = HEAP32[rp+8>>2]>>4 ;
+            dpc = (pc - pc0)|0;
+            rpc = HEAP32[rp+12>>2]|0;
+            sp = HEAP32[rp+16>>2]|0;
+            fp = rp|0;
+            continue;
+        } else {
+            foreign_abort(0, dpc|0, pc0|0, 0, 0);
+        }
         }
         {
         bogotics = (bogotics|0)-1|0;
@@ -84,10 +96,12 @@ function f_$
         }
         }
         if ((rp & 3) == 1) {
-        HEAP32[fp+0>>2] = 0x0000000f;
-        HEAP32[fp+4>>2] = pc<<4;
-        HEAP32[fp+8>>2] = sp|0;
-        HEAP32[fp+12>>2] = 16;
+        HEAP32[fp+0>>2] = (fp+24)|0;
+        HEAP32[fp+4>>2] = pc0<<4;
+        HEAP32[fp+8>>2] = (pc0+dpc)<<4;
+        HEAP32[fp+12>>2] = rpc|0;
+        HEAP32[fp+16>>2] = sp|0;
+        HEAP32[fp+20>>2] = 0x00000000;
         }
         return rp|0;}
 
