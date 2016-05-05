@@ -98,7 +98,7 @@ extern int __thinthin_openat (int fd, const char *file, int oflag, int mode)
   __attribute__((stackcall));
 
 extern int __thinthin_pipe2(int *__pipedes, int flags)
-  __attribute__ ((stackcall));
+  __attribute__((stackcall));
 
 extern int __thinthin_read (int, void *, int)
   __attribute__((stackcall));
@@ -115,4 +115,10 @@ extern int __thinthin_readlinkat (int, const char *, char *, int)
 struct timespec;
 extern int __thinthin_utimensat(int, const char *, const struct timespec *,
                                 int)
+  __attribute__((stackcall));
+
+extern int __thinthin_dup2(int, int)
+  __attribute__((stackcall));
+
+extern int __thinthin_clock_gettime(int, struct timespec *)
   __attribute__((stackcall));

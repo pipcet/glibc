@@ -48,3 +48,5 @@
     .import3 thinthin,mkdirat,__thinthin_mkdirat
     .import3 thinthin,readlinkat,__thinthin_readlinkat
     .import3 thinthin,utimensat,__thinthin_utimensat
+    .import3 thinthin,dup2,__thinthin_dup2
+    .import3 thinthin,clock_gettime,__thinthin_clock_gettime
