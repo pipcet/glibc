@@ -38,6 +38,8 @@
 	sp = sp-24|0;
 	.labeldef_debug .LCFI0
         .codetextlabeldef .L_setjmp_0
+        foreign_abort(-1|0, rpc|0, a0|0, r0|0, fp|0);
+        foreign_abort(-1|0, HEAP32[a0>>2]|0, HEAP32[a0+4>>2]|0, HEAP32[a0+8>>2]|0, HEAP32[a0+12>>2]|0);
         HEAP32[r0>>2] = rpc|0;
         HEAP32[r0+4>>2] = a0|0;
         HEAP32[r0+8>>2] = fp+80|0;
