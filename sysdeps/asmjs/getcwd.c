@@ -1,6 +1,7 @@
-/* Determine current working directory.  Linux version.
+/* Determine current working directory.
    Copyright (C) 1997-2016 Free Software Foundation, Inc.
-   This file is part of the GNU C Library.
+   This file is NOT part of the GNU C Library.
+   Based on code which was:
    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1997.
 
    The GNU C Library is free software; you can redistribute it and/or
