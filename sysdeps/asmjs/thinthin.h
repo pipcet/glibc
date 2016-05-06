@@ -122,3 +122,12 @@ extern int __thinthin_dup2(int, int)
 
 extern int __thinthin_clock_gettime(int, struct timespec *)
   __attribute__((stackcall));
+
+extern int __thinthin_getuid(void)
+  __attribute__((stackcall));
+extern int __thinthin_getgid(void)
+  __attribute__((stackcall));
+extern int __thinthin_geteuid(void)
+  __attribute__((stackcall));
+extern int __thinthin_getegid(void)
+  __attribute__((stackcall));

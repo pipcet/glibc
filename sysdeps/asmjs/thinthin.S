@@ -50,3 +50,7 @@
     .import3 thinthin,utimensat,__thinthin_utimensat
     .import3 thinthin,dup2,__thinthin_dup2
     .import3 thinthin,clock_gettime,__thinthin_clock_gettime
+    .import3 thinthin,getuid,__thinthin_getuid
+    .import3 thinthin,getgid,__thinthin_getgid
+    .import3 thinthin,geteuid,__thinthin_geteuid
+    .import3 thinthin,getegid,__thinthin_getegid
