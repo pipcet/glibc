@@ -26,9 +26,7 @@
 int
 __fork (void)
 {
-  errno = -ENOSYS;
-  return -1;
-  //return __THINTHIN_SYSCALL(fork);
+  return __THINTHIN_SYSCALL(fork);
 }
 libc_hidden_def (__fork)
 
