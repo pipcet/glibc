@@ -29,5 +29,3 @@ __ftruncate (int fd, off_t length)
 }
 
 weak_alias (__ftruncate, ftruncate)
-
-stub_warning (ftruncate)

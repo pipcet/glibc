@@ -44,7 +44,6 @@ __libc_write (int fd, const void *buf, size_t nbytes)
   return __THINTHIN_SYSCALL(write, fd, buf, nbytes);
 }
 libc_hidden_def (__libc_write)
-stub_warning (write)
 
 weak_alias (__libc_write, __write)
 libc_hidden_weak (__write)
