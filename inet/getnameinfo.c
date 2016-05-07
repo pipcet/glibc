@@ -54,6 +54,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <libc-lock.h>
 #include <scratch_buffer.h>
 
+#ifndef IFNAMSIZ
+#define IFNAMSIZ 16
+#endif
+
 #ifdef HAVE_LIBIDN
 # include <libidn/idna.h>
 extern int __idna_to_unicode_lzlz (const char *input, char **output,

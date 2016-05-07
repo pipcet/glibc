@@ -75,7 +75,7 @@ yp_bind_client_create (const char *domain, dom_binding *ysd,
 					      SOCK_CLOEXEC);
 }
 
-#if USE_BINDINGDIR
+#ifdef USE_BINDINGDIR
 static void
 yp_bind_file (const char *domain, dom_binding *ysd)
 {
@@ -173,7 +173,7 @@ __yp_bind (const char *domain, dom_binding **ypdb)
 	return YPERR_RESRC;
     }
 
-#if USE_BINDINGDIR
+#ifdef USE_BINDINGDIR
   /* Try binding dir at first if we have no binding */
   if (ysd->dom_client == NULL)
     yp_bind_file (domain, ysd);
@@ -338,7 +338,7 @@ do_ypcall (const char *domain, u_long prog, xdrproc_t xargs,
       __yp_unbind (ydb);
     }
 
-#if USE_BINDINGDIR
+#ifdef USE_BINDINGDIR
   /* If we support binding dir data, we have a third chance:
      Ask ypbind.  */
   if (status != YPERR_SUCCESS)

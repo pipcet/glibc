@@ -22,7 +22,5 @@
 int
 sockatmark (int fd)
 {
-  int answ;
-
-  return __ioctl (fd, SIOCATMARK, &answ) == -1 ? -1 : answ;
+  return 0;
 }

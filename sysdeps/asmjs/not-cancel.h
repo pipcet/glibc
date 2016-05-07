@@ -17,6 +17,8 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
+#include <unistd.h>
+
 /* By default we have none.  Map the name to the normal functions.  */
 #define open_not_cancel(name, flags, mode) \
   __libc_open (name, flags, mode)
