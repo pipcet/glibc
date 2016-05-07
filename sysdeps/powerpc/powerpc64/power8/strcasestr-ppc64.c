@@ -1,6 +1,6 @@
-/* Copyright (C) 2000-2016 Free Software Foundation, Inc.
+/* Optimized strcasestr implementation for PowerPC64/POWER8.
+   Copyright (C) 2016 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
-   Contributed by Mark Kettenis <kettenis@phys.uva.nl>, 2000.
 
    The GNU C Library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -16,23 +16,14 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <sys/cdefs.h>		/* Needs to come before <hesiod.h>.  */
-#include <hesiod.h>
-#include <resolv.h>
-#include <stddef.h>
+#include <string.h>
 
-#include "nss_hesiod.h"
+#define STRCASESTR __strcasestr_ppc
+#undef libc_hidden_builtin_def
+#define libc_hidden_builtin_def(__name)
 
-void *
-_nss_hesiod_init (void)
-{
-  void *context;
+#undef weak_alias
+#define weak_alias(a,b)
+extern __typeof (strcasestr) __strcasestr_ppc attribute_hidden;
 
-  if (hesiod_init (&context) == -1)
-    return NULL;
-
-  /* Use the default (per-thread) resolver state.  */
-  __hesiod_res_set (context, &_res, NULL);
-
-  return context;
-}
+#include <string/strcasestr.c>

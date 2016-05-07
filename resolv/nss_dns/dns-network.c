@@ -62,6 +62,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <stddef.h>
 
 #include "nsswitch.h"
 #include <arpa/inet.h>
@@ -234,9 +235,6 @@ _nss_dns_getnetbyaddr_r (uint32_t net, int type, struct netent *result,
 }
 
 
-#undef offsetof
-#define offsetof(Type, Member) ((size_t) &((Type *) NULL)->Member)
-
 static enum nss_status
 getanswer_r (const querybuf *answer, int anslen, struct netent *result,
 	     char *buffer, size_t buflen, int *errnop, int *h_errnop,
@@ -345,10 +343,23 @@ getanswer_r (const querybuf *answer, int anslen, struct netent *result,
       if (n < 0 || res_dnok (bp) == 0)
 	break;
       cp += n;
+
+      if (end_of_message - cp < 10)
+	{
+	  __set_h_errno (NO_RECOVERY);
+	  return NSS_STATUS_UNAVAIL;
+	}
+
       GETSHORT (type, cp);
       GETSHORT (class, cp);
       cp += INT32SZ;		/* TTL */
-      GETSHORT (n, cp);
+      uint16_t rdatalen;
+      GETSHORT (rdatalen, cp);
+      if (end_of_message - cp < rdatalen)
+	{
+	  __set_h_errno (NO_RECOVERY);
+	  return NSS_STATUS_UNAVAIL;
+	}
 
       if (class == C_IN && type == T_PTR)
 	{
@@ -370,7 +381,7 @@ getanswer_r (const querybuf *answer, int anslen, struct netent *result,
 	      cp += n;
 	      return NSS_STATUS_UNAVAIL;
 	    }
-	  cp += n;
+	  cp += rdatalen;
          if (alias_pointer + 2 < &net_data->aliases[MAX_NR_ALIASES])
            {
              *alias_pointer++ = bp;
@@ -381,6 +392,9 @@ getanswer_r (const querybuf *answer, int anslen, struct netent *result,
              ++have_answer;
            }
 	}
+      else
+	/* Skip over unknown record data.  */
+	cp += rdatalen;
     }
 
   if (have_answer)

@@ -193,16 +193,11 @@ am_pm       "";""
 % Define time representation in 12-hour format with "am_pm", to be referenced by the "%r"
 % The "" means that this format is not supported.
 t_fmt_ampm  ""
+week 7;19971130;1
 END LC_TIME
 
 LC_MESSAGES
-% The affirmative response -
-% "^[yY]"
-yesexpr     "<U005E><U005B><U0079><U0059><U005D>"
-
-% The negative response -
-% "^[nN]"
-noexpr      "<U005E><U005B><U006E><U004E><U005D>"
+copy "en_US"
 END LC_MESSAGES
 
 LC_PAPER

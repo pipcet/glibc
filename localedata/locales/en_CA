@@ -133,20 +133,21 @@ d_fmt       "<U0025><U0064><U002F><U0025><U006D><U002F><U0025><U0079>"
 t_fmt       "<U0025><U0072>"
 am_pm       "<U0041><U004D>";"<U0050><U004D>"
 t_fmt_ampm  "<U0025><U0049><U003A><U0025><U004D><U003A><U0025><U0053><U0020><U0025><U0070>"
+week 7;19971130;1
 END LC_TIME
 
 LC_MESSAGES
-% Yes - Display only the English "Yes." While Canada is bilingual it would be
-%       difficult to display two words e.g. Yes|Oui, where one word is expected.
+% Accept both English "Yes" and French "Oui" as Canada is bilingual.
+yesexpr "<U005E><U005B><U002B><U0031><U0079><U0059><U006F><U004F><U005D>"
+% Accept both Engish "No" and French "Non" as Canada is bilingual.
+noexpr  "<U005E><U005B><U002D><U0030><U006E><U004E><U005D>"
+% yes - Display only the English "yes". While Canada is bilingual it would be
+%       difficult to display two words e.g. yes|oui, where one word is expected.
 %       Thus given that the majority of the population is Anglophone we use only
 %       the English word for yesstr.
-yesstr      "<U0059><U0065><U0073>"
-% No - Display only the English "No." See the rationale for yesstr.
-nostr       "<U004E><U006F>"
-% ^[yYoO].* - Accept both English "Yes" and French "Oui" as Canada is bilingual.
-yesexpr     "<U005E><U005B><U0079><U0059><U006F><U004F><U005D><U002E><U002A>"
-% ^[nN].* - Accept both Engish "No" and French "Non" as Canada is bilingual.
-noexpr      "<U005E><U005B><U006E><U004E><U005D><U002E><U002A>"
+yesstr  "<U0079><U0065><U0073>"
+% no - Display only the English "no". See the rationale for yesstr.
+nostr   "<U006E><U006F>"
 END LC_MESSAGES
 
 LC_PAPER

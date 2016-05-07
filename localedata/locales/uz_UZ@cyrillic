@@ -267,13 +267,18 @@ t_fmt       "<U0025><U0054>"
 am_pm       "";""
 t_fmt_ampm  ""
 date_fmt    "<U0025><U0064><U0020><U0025><U0042><U002C><U0020><U0025><U0059><U0020><U0439><U0438><U043B><U002C><U0020><U0025><U0041>"
+week 7;19971130;1
+first_weekday 2
 END LC_TIME
 
 LC_MESSAGES
-yesstr  "<U04B2><U0430>"
-nostr   "<U0419><U045E><U049B>"
-yesexpr "<U005E><U005B><U04B2><U04B3><U0059><U0079><U005D><U002E><U002A>"
-noexpr  "<U005E><U005B><U0419><U0439><U004E><U006E><U005D><U002E><U002A>"
+% Note: "No" is "yo‘q" which conflicts with English "yes".
+% This is why "jo‘q" & "jJ" is also accepted as "no".
+yesexpr "<U005E><U005B><U002B><U0031><U04B2><U04B3><U0048><U0068><U005D>"
+noexpr  "<U005E><U005B><U002D><U0030><U0419><U0439><U004E><U006E><U0059>/
+<U0079><U004A><U006A><U005D>"
+yesstr  "<U04B3><U0430>"
+nostr   "<U0439><U045E><U049B>"
 END LC_MESSAGES
 
 LC_PAPER

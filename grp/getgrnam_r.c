@@ -18,6 +18,7 @@
 
 #include <grp.h>
 
+#include <grp-merge.h>
 
 #define LOOKUP_TYPE	struct group
 #define FUNCTION_NAME	getgrnam
@@ -25,17 +26,7 @@
 #define ADD_PARAMS	const char *name
 #define ADD_VARIABLES	name
 
-int __getgrnam_r(const char *name, struct group *grp,
-               char *buf, size_t buflen, struct group **result)
-{
-  (void)name;
-  (void)grp;
-  (void)buf;
-  (void)buflen;
+#define DEEPCOPY_FN	__copy_grp
+#define MERGE_FN	__merge_grp
 
-  *result = (void *)0;
-
-  return 0;
-}
-
-//#include <nss/getXXbyYY_r.c>
+#include <nss/getXXbyYY_r.c>

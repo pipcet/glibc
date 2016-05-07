@@ -124,13 +124,13 @@ d_fmt       "<U0025><U0064><U002F><U0025><U006D><U002F><U0025><U0079>"
 t_fmt       "<U0025><U0054>"
 am_pm       "";""
 t_fmt_ampm  ""
-first_workday 2
+week 7;19971130;4
 first_weekday 2
 END LC_TIME
 
 LC_MESSAGES
-yesexpr     "<U005E><U005B><U0065><U0045><U0079><U0059><U005D><U002E><U002A>"
-noexpr      "<U005E><U005B><U006E><U004E><U005D><U002E><U002A>"
+yesexpr "<U005E><U005B><U002B><U0031><U0065><U0045><U0079><U0059><U005D>"
+noexpr  "<U005E><U005B><U002D><U0030><U006E><U004E><U005D>"
 END LC_MESSAGES
 
 LC_PAPER

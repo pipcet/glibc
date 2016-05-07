@@ -144,14 +144,13 @@ t_fmt       "<U0025><U0049><U6642><U0025><U004D><U5206><U0025><U0053>/
 % Update by Roger So <roger.so@sw-linux.com>
 t_fmt_ampm  "<U0025><U0070><U0020><U0025><U0049><U003A><U0025><U004D>/
 <U003A><U0025><U0053>"
+week 7;19971130;1
 END LC_TIME
 
 
 LC_MESSAGES
-% yesexpr     "^[<y><Y><CJK Shi4>]"
-% noexpr      "^[<n><N><CJK Bu4><CJK Fou3>]"
-yesexpr "<U005E><U005B><U0079><U0059><U662F><U005D>"
-noexpr  "<U005E><U005B><U006E><U004E><U4E0D><U5426><U005D>"
+yesexpr "<U005E><U005B><U002B><U0031><U0079><U0059><U662F><U005D>"
+noexpr  "<U005E><U005B><U002D><U0030><U006E><U004E><U4E0D><U5426><U005D>"
 END LC_MESSAGES
 
 

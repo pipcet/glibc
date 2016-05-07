@@ -1820,18 +1820,14 @@ am_pm    "<U1796><U17D2><U179A><U17B9><U1780>";"<U179B><U17D2><U1784><U17B6><U17
 %<U0020><U0025><U0045><U0079><U0020><U0025><U0048><U003A><U0025><U004D>/
 %<U003A><U0025><U0053><U0020><U0025><U005A>"
 
+week 7;19971130;1
 END LC_TIME
 
 LC_MESSAGES
-
-yesstr   "yes:YES:y:Y"
-
-nostr    "no:NO:n:N"
-
-yesexpr  "^[yY]([eE][sS])?"
-
-noexpr   "^[nN][oO]?"
-
+yesexpr "^[+1yY]([eE][sS])?"
+noexpr  "^[-0nN][oO]?"
+yesstr  "<U1794><U17B6><U1791><U002F><U1785><U17B6><U179F><U200B><U17D6><U0020><U0079>"
+nostr   "<U1791><U17C1><U200B><U17D6><U0020><U006E>"
 END LC_MESSAGES
 
 LC_PAPER
