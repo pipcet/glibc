@@ -4,3 +4,4 @@ ieee754/flt-32
 posix
 gnu
 init_array
+unix/inet
