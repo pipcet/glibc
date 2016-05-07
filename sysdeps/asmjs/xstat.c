@@ -30,13 +30,14 @@
 #include <stdio.h>
 #include <limits.h>
 #include <stdint.h>
+#include <fcntl.h>
 
 #include "thinthin.h"
 
 int
 __fxstat (int vers, int fd, struct stat *buf)
 {
-  return __THINTHIN_SYSCALL (fstat, fd, buf);
+  return __THINTHIN_SYSCALL (newfstatat, fd, "", buf, AT_EMPTY_PATH);
 }
 
 hidden_def (__fxstat)
@@ -45,7 +46,7 @@ weak_alias (__fxstat, _fxstat)
 int
 __fxstat64 (int vers, int fd, struct stat64 *buf)
 {
-  return __THINTHIN_SYSCALL (fstat, fd, (struct stat *)buf);
+  return __THINTHIN_SYSCALL (newfstatat, fd, "", (struct stat *)buf, AT_EMPTY_PATH);
 }
 
 hidden_def (__fxstat64)
@@ -55,7 +56,7 @@ weak_alias (__fxstat64, _fxstat64)
 int
 __xstat (int vers, const char *file, struct stat *buf)
 {
-  return __THINTHIN_SYSCALL (stat, file, buf);
+  return __THINTHIN_SYSCALL (newfstatat, AT_FDCWD, file, buf, 0);
 }
 hidden_def (__xstat)
 weak_alias (__xstat, _xstat)

@@ -13,10 +13,8 @@
     .import3 thinthin,read,__thinthin_read
     .import3 thinthin,chdir,__thinthin_chdir
     .import3 thinthin,access,__thinthin_access
-    .import3 thinthin,stat,__thinthin_stat
     .import3 thinthin,time,__thinthin_time
     .import3 thinthin,close,__thinthin_close
-    .import3 thinthin,fstat,__thinthin_fstat
     .import3 thinthin,readdir,__thinthin_readdir
     .import3 thinthin,fdopen,__thinthin_fdopen
     .import3 thinthin,fclose,__thinthin_fclose
@@ -54,3 +52,4 @@
     .import3 thinthin,getgid,__thinthin_getgid
     .import3 thinthin,geteuid,__thinthin_geteuid
     .import3 thinthin,getegid,__thinthin_getegid
+    .import3 thinthin,newfstatat,__thinthin_newfstatat
