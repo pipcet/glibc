@@ -16,118 +16,55 @@
     (long long)resultvar;                                               \
   })
 
-extern int __thinthin_access(const char *, int)
-  __attribute__((stackcall));
-extern int __thinthin_execve(const char *, char *const *, char *const *)
-  __attribute__((stackcall));
-extern int __thinthin_brk(void *)
-  __attribute__((stackcall));
-extern int __thinthin_chdir(const char *)
-  __attribute__((stackcall));
-extern int __thinthin_close(int)
-  __attribute__((stackcall));
-extern int __thinthin_exit(int)
-  __attribute__((stackcall));
-extern int __thinthin_faccessat(int, const char *, int, int)
-  __attribute__((stackcall));
-
-extern int __thinthin_fcntl_v(int, int)
-  __attribute__((stackcall));
-extern int __thinthin_fcntl_i(int, int, int)
-  __attribute__((stackcall));
-extern int __thinthin_fcntl_p(int, int, void *)
-  __attribute__((stackcall));
-
-extern int __thinthin_fork(void)
-  __attribute__((stackcall));
-extern int __thinthin_ftruncate(int, int)
-  __attribute__((stackcall));
-
-
-extern int __thinthin_getcwd(char *, int)
-  __attribute__((stackcall));
-/* this probably breaks with the new varargs CC */
-extern ssize_t __thinthin_getdents(int, char *, size_t)
-  __attribute__((stackcall));
-extern int __thinthin_gethostname(char *, int)
-  __attribute__((stackcall));
-struct timeval;
-struct timezone;
-extern int __thinthin_gettimeofday(struct timeval *, struct timezone *)
-  __attribute__((stackcall));
-
-extern ssize_t __thinthin_write(int, const void *, size_t)
-  __attribute__((stackcall));
-extern int __thinthin_ioctl_p (int, unsigned long, void *)
-  __attribute__((stackcall));
-
-extern int __thinthin_isatty(int)
-  __attribute__((stackcall));
-
-extern int __thinthin_linkat(int, const char *, int, const char *, int)
-  __attribute__((stackcall));
-
-extern int __thinthin_lseek (int, int, int)
-  __attribute__((stackcall));
-
-extern int __thinthin_fchmodat(int, const char *, int, int)
-  __attribute__((stackcall));
-
-struct rusage;
-extern int __thinthin_wait4(int, int *, int, struct rusage *)
-  __attribute__((stackcall));
-
-struct stat;
-extern int __thinthin_stat (const char *file, struct stat *buf)
-  __attribute__((stackcall));
-extern int __thinthin_fstat (int fd, struct stat *buf)
-  __attribute__((stackcall));
-
-extern int __thinthin_unlinkat(int dirfd, const char *path, int)
-  __attribute__((stackcall));
+#define __AS __attribute__((stackcall))
 
 struct pollfd;
-extern int __thinthin_ppoll(struct pollfd *fds, int nfds,
-                            const void *, const void *)
-  __attribute__((stackcall));
-
-extern int __thinthin_openat (int fd, const char *file, int oflag, int mode)
-  __attribute__((stackcall));
-
-extern int __thinthin_openat (int fd, const char *file, int oflag, int mode)
-  __attribute__((stackcall));
-
-extern int __thinthin_pipe2(int *__pipedes, int flags)
-  __attribute__((stackcall));
-
-extern int __thinthin_read (int, void *, int)
-  __attribute__((stackcall));
-
-extern int __thinthin_renameat2 (int, const char *, int, const char *, int)
-  __attribute__((stackcall));
-
-extern int __thinthin_mkdirat (int, const char *, int)
-  __attribute__((stackcall));
-
-extern int __thinthin_readlinkat (int, const char *, char *, int)
-  __attribute__((stackcall));
-
+struct rusage;
+struct stat;
 struct timespec;
-extern int __thinthin_utimensat(int, const char *, const struct timespec *,
-                                int)
-  __attribute__((stackcall));
+struct timeval;
+struct timezone;
 
-extern int __thinthin_dup2(int, int)
-  __attribute__((stackcall));
+extern int __thinthin_access(const char *, int) __AS;
+extern int __thinthin_brk(void *) __AS;
+extern int __thinthin_chdir(const char *) __AS;
+extern int __thinthin_clock_gettime(int, struct timespec *) __AS;
+extern int __thinthin_close(int) __AS;
+extern int __thinthin_dup2(int, int) __AS;
+extern int __thinthin_execve(const char *, char *const *, char *const *) __AS;
+extern int __thinthin_exit(int) __AS;
+extern int __thinthin_faccessat(int, const char *, int, int) __AS;
+extern int __thinthin_fchmodat(int, const char *, int, int) __AS;
+extern int __thinthin_fcntl_i(int, int, int) __AS;
+extern int __thinthin_fcntl_p(int, int, void *) __AS;
+extern int __thinthin_fcntl_v(int, int) __AS;
+extern int __thinthin_fork(void) __AS;
+extern int __thinthin_fstat(int fd, struct stat *buf) __AS;
+extern int __thinthin_ftruncate(int, int) __AS;
+extern int __thinthin_getcwd(char *, int) __AS;
+extern int __thinthin_getegid(void) __AS;
+extern int __thinthin_geteuid(void) __AS;
+extern int __thinthin_getgid(void) __AS;
+extern int __thinthin_gethostname(char *, int) __AS;
+extern int __thinthin_gettimeofday(struct timeval *, struct timezone *) __AS;
+extern int __thinthin_getuid(void) __AS;
+extern int __thinthin_ioctl_p (int, unsigned long, void *) __AS;
+extern int __thinthin_isatty(int) __AS;
+extern int __thinthin_linkat(int, const char *, int, const char *, int) __AS;
+extern int __thinthin_lseek (int, int, int) __AS;
+extern int __thinthin_mkdirat (int, const char *, int) __AS;
+extern int __thinthin_openat (int fd, const char *file, int oflag, int mode) __AS;
+extern int __thinthin_openat (int fd, const char *file, int oflag, int mode) __AS;
+extern int __thinthin_pipe2(int *__pipedes, int flags) __AS;
+extern int __thinthin_ppoll(struct pollfd *fds, int nfds, const void *, const void *) __AS;
+extern int __thinthin_read (int, void *, int) __AS;
+extern int __thinthin_readlinkat (int, const char *, char *, int) __AS;
+extern int __thinthin_renameat2 (int, const char *, int, const char *, int) __AS;
+extern int __thinthin_stat (const char *file, struct stat *buf) __AS;
+extern int __thinthin_unlinkat(int dirfd, const char *path, int) __AS;
+extern int __thinthin_utimensat(int, const char *, const struct timespec *, int) __AS;
+extern int __thinthin_wait4(int, int *, int, struct rusage *) __AS;
+extern ssize_t __thinthin_getdents(int, char *, size_t) __AS;
+extern ssize_t __thinthin_write(int, const void *, size_t) __AS;
 
-extern int __thinthin_clock_gettime(int, struct timespec *)
-  __attribute__((stackcall));
-
-extern int __thinthin_getuid(void)
-  __attribute__((stackcall));
-extern int __thinthin_getgid(void)
-  __attribute__((stackcall));
-extern int __thinthin_geteuid(void)
-  __attribute__((stackcall));
-extern int __thinthin_getegid(void)
-  __attribute__((stackcall));
+#undef __AS
