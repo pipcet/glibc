@@ -34,6 +34,7 @@ extern int __thinthin_dup2(int, int) __AS;
 extern int __thinthin_execve(const char *, char *const *, char *const *) __AS;
 extern int __thinthin_exit(int) __AS;
 extern int __thinthin_faccessat(int, const char *, int, int) __AS;
+extern int __thinthin_fchmod(int, int) __AS;
 extern int __thinthin_fchmodat(int, const char *, int, int) __AS;
 extern int __thinthin_fcntl_i(int, int, int) __AS;
 extern int __thinthin_fcntl_p(int, int, void *) __AS;

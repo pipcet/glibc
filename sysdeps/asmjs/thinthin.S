@@ -40,6 +40,7 @@
     .import3 thinthin,pipe2,__thinthin_pipe2
     .import3 thinthin,fork,__thinthin_fork
     .import3 thinthin,execve,__thinthin_execve
+    .import3 thinthin,fchmod,__thinthin_fchmod
     .import3 thinthin,fchmodat,__thinthin_fchmodat
     .import3 thinthin,renameat2,__thinthin_renameat2
     .import3 thinthin,wait4,__thinthin_wait4
