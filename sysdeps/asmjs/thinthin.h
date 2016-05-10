@@ -47,6 +47,7 @@ extern int __thinthin_getegid(void) __AS;
 extern int __thinthin_geteuid(void) __AS;
 extern int __thinthin_getgid(void) __AS;
 extern int __thinthin_gethostname(char *, int) __AS;
+extern int __thinthin_getpid(void) __AS;
 extern int __thinthin_gettimeofday(struct timeval *, struct timezone *) __AS;
 extern int __thinthin_getuid(void) __AS;
 extern int __thinthin_ioctl_p (int, unsigned long, void *) __AS;

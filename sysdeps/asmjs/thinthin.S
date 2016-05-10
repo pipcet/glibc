@@ -54,3 +54,4 @@
     .import3 thinthin,geteuid,__thinthin_geteuid
     .import3 thinthin,getegid,__thinthin_getegid
     .import3 thinthin,newfstatat,__thinthin_newfstatat
+    .import3 thinthin,getpid,__thinthin_getpid
