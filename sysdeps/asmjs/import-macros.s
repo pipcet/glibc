@@ -11,6 +11,7 @@ __str_\module:
         .asciz "\module"
 .endif
         .text
+        .p2align 4+8
         .global \name
         .pushsection .javascript%S,"a"
 function f_$
