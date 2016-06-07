@@ -28,6 +28,9 @@ void *__curbrk = (void *)(32*1024*1024);
 int
 __brk (void *addr)
 {
+  __curbrk = addr;
+  return 0;
+#if 0
   int ret = __THINTHIN_SYSCALL(brk, addr);
 
   if (ret >= 0)
@@ -35,6 +38,7 @@ __brk (void *addr)
       __curbrk = addr;
     }
   return ret;
+#endif
 }
 
 weak_alias (__brk, brk)
