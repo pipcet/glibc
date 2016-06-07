@@ -220,7 +220,8 @@ __qsort_r (void *b, size_t n, size_t s, __compar_d_fn_t cmp, void *arg)
       /* It's somewhat large, so malloc it.  */
       int save = errno;
       tmp = malloc (size);
-      __set_errno (save);
+      if (errno != save)
+        __set_errno (save);
       if (tmp == NULL)
 	{
 	  /* Couldn't get space, so use the slower algorithm
