@@ -1,5 +1,6 @@
 /* This file is generated from errno.texi by errlist.awk.  */
 
+#include <errno.h>
 #include <libintl.h>
 
 #ifndef ERR_REMAP
@@ -1477,8 +1478,8 @@ TRANS error; @pxref{Cancel AIO Operations}. */
 
 #define NERR \
   (sizeof _sys_errlist_internal / sizeof _sys_errlist_internal [0])
-const int _sys_nerr_internal = NERR;
- 
+int _sys_nerr_internal = NERR;
+
 #if IS_IN (libc) && !defined ERRLIST_NO_COMPAT
 # include <errlist-compat.c>
 #endif
@@ -1487,4 +1488,3 @@ const int _sys_nerr_internal = NERR;
 void dummy (void)
 { asm volatile (" @@@ %0 @@@ " : : "i" (ERR_REMAP (ERR_MAX))); }
 #endif
-

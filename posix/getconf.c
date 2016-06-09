@@ -493,7 +493,9 @@ environment SPEC.\n\n"));
 
   const char *spec = NULL;
   char buf[sizeof "POSIX_V6_LPBIG_OFFBIG"];
+#if 0
   char *argv0 = argv[0];
+#endif
   if (argc > 1 && strncmp (argv[1], "-v", 2) == 0)
     {
       if (argv[1][2] == '\0')
@@ -574,6 +576,7 @@ environment SPEC.\n\n"));
 #ifndef _POSIX_V7_LPBIG_OFFBIG
 	  case _SC_V7_LPBIG_OFFBIG:
 #endif
+#if 0
 	    {
 	      const char *args[argc + 3];
 	      size_t spec_len = strlen (spec);
@@ -588,6 +591,7 @@ environment SPEC.\n\n"));
 	      execv (getconf_name, (char * const *) args);
 	      error (4, errno, _("Couldn't execute %s"), getconf_name);
 	    }
+#endif
 	  default:
 	    break;
 	}

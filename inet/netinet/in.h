@@ -92,6 +92,10 @@ enum
     IPPROTO_MAX
   };
 
+#ifndef __USE_KERNEL_IPV6_DEFS
+#define __USE_KERNEL_IPV6_DEFS 0
+#endif
+
 /* If __USE_KERNEL_IPV6_DEFS is 1 then the user has included the kernel
    network headers first and we should use those ABI-identical definitions
    instead of our own, otherwise 0.  */
