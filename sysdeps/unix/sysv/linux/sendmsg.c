@@ -15,23 +15,34 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <errno.h>
-#include <signal.h>
 #include <sys/socket.h>
-
 #include <sysdep-cancel.h>
 #include <socketcall.h>
-#include <kernel-features.h>
-#include <sys/syscall.h>
+#include <shlib-compat.h>
 
 ssize_t
 __libc_sendmsg (int fd, const struct msghdr *msg, int flags)
 {
+  /* POSIX specifies that both msghdr::msg_iovlen and msghdr::msg_controllen
+     to be int and socklen_t respectively.  However Linux defines it as
+     both size_t.  So for 64-bit it requires some adjustments by copying to
+     temporary header and zeroing the pad fields.  */
+#if __WORDSIZE == 64
+  struct msghdr hdr;
+  if (msg != NULL)
+    {
+      hdr = *msg;
+      hdr.__glibc_reserved1 = 0;
+      hdr.__glibc_reserved2 = 0;
+      msg = &hdr;
+    }
+#endif
+
 #ifdef __ASSUME_SENDMSG_SYSCALL
   return SYSCALL_CANCEL (sendmsg, fd, msg, flags);
 #else
   return SOCKETCALL_CANCEL (sendmsg, fd, msg, flags);
 #endif
 }
-weak_alias (__libc_sendmsg, sendmsg)
 weak_alias (__libc_sendmsg, __sendmsg)
+versioned_symbol (libc, __libc_sendmsg, sendmsg, GLIBC_2_24);

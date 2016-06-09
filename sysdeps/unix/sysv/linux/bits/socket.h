@@ -27,6 +27,8 @@
 #include <stddef.h>
 
 #include <sys/types.h>
+#include <endian.h>
+#include <bits/wordsize.h>
 
 /* Type for length arguments in socket calls.  */
 #ifndef __socklen_t_defined
@@ -82,7 +84,8 @@ typedef __socklen_t socklen_t;
 #define PF_ALG		38	/* Algorithm sockets.  */
 #define PF_NFC		39	/* NFC sockets.  */
 #define PF_VSOCK	40	/* vSockets.  */
-#define PF_MAX		41	/* For now..  */
+#define PF_KCM		41	/* Kernel Connection Multiplexor.  */
+#define PF_MAX		42	/* For now..  */
 
 /* Address families.  */
 #define AF_UNSPEC	PF_UNSPEC
@@ -129,6 +132,7 @@ typedef __socklen_t socklen_t;
 #define AF_ALG		PF_ALG
 #define AF_NFC		PF_NFC
 #define AF_VSOCK	PF_VSOCK
+#define AF_KCM		PF_KCM
 #define AF_MAX		PF_MAX
 
 /* Socket level values.  Others are defined in the appropriate headers.
@@ -142,6 +146,21 @@ typedef __socklen_t socklen_t;
 #define SOL_ATM		264	/* ATM layer (cell level).  */
 #define SOL_AAL		265	/* ATM Adaption Layer (packet level).  */
 #define SOL_IRDA	266
+#define SOL_NETBEUI	267
+#define SOL_LLC		268
+#define SOL_DCCP	269
+#define SOL_NETLINK	270
+#define SOL_TIPC	271
+#define SOL_RXRPC	272
+#define SOL_PPPOL2TP	273
+#define SOL_BLUETOOTH	274
+#define SOL_PNPIPE	275
+#define SOL_RDS		276
+#define SOL_IUCV	277
+#define SOL_CAIF	278
+#define SOL_ALG		279
+#define SOL_NFC		280
+#define SOL_KCM		281
 
 /* Maximum queue length specifiable by listen.  */
 #define SOMAXCONN	128
@@ -158,16 +177,16 @@ struct sockaddr
 
 
 /* Structure large enough to hold any socket address (with the historical
-   exception of AF_UNIX).  We reserve 128 bytes.  */
+   exception of AF_UNIX).  */
 #define __ss_aligntype	unsigned long int
-#define _SS_SIZE	128
-#define _SS_PADSIZE	(_SS_SIZE - (2 * sizeof (__ss_aligntype)))
+#define _SS_PADSIZE \
+  (_SS_SIZE - __SOCKADDR_COMMON_SIZE - sizeof (__ss_aligntype))
 
 struct sockaddr_storage
   {
     __SOCKADDR_COMMON (ss_);	/* Address family, etc.  */
-    __ss_aligntype __ss_align;	/* Force desired alignment.  */
     char __ss_padding[_SS_PADSIZE];
+    __ss_aligntype __ss_align;	/* Force desired alignment.  */
   };
 
 
@@ -213,6 +232,8 @@ enum
 #define MSG_MORE	MSG_MORE
     MSG_WAITFORONE	= 0x10000, /* Wait for at least one packet to return.*/
 #define MSG_WAITFORONE	MSG_WAITFORONE
+    MSG_BATCH		= 0x40000, /* sendmmsg: more messages coming.  */
+#define MSG_BATCH	MSG_BATCH
     MSG_FASTOPEN	= 0x20000000, /* Send data in TCP SYN.  */
 #define MSG_FASTOPEN	MSG_FASTOPEN
 
@@ -231,13 +252,32 @@ struct msghdr
     socklen_t msg_namelen;	/* Length of address data.  */
 
     struct iovec *msg_iov;	/* Vector of data to send/receive into.  */
-    size_t msg_iovlen;		/* Number of elements in the vector.  */
+#if __WORDSIZE == 64
+# if __BYTE_ORDER == __BIG_ENDIAN
+    int __glibc_reserved1;	/* Pad to adjust Linux size to POSIX defined
+				   size for msg_iovlen.  */
+    int msg_iovlen;		/* Number of elements in the vector.  */
+# else
+    int msg_iovlen;
+    int __glibc_reserved1;
+# endif
+#else
+    int msg_iovlen;
+#endif
 
     void *msg_control;		/* Ancillary data (eg BSD filedesc passing). */
-    size_t msg_controllen;	/* Ancillary data buffer length.
-				   !! The type should be socklen_t but the
-				   definition of the kernel is incompatible
-				   with this.  */
+#if __WORDSIZE == 64
+# if __BYTE_ORDER == __BIG_ENDIAN
+    int __glibc_reserved2;	/* Pad to adjust Linux size to POSIX defined
+				   size for msg_controllen.  */
+    socklen_t msg_controllen;	/* Ancillary data buffer length.  */
+# else
+    socklen_t msg_controllen;
+    int __glibc_reserved2;
+# endif
+#else
+    socklen_t msg_controllen;
+#endif
 
     int msg_flags;		/* Flags on received message.  */
   };
@@ -245,11 +285,19 @@ struct msghdr
 /* Structure used for storage of ancillary data object information.  */
 struct cmsghdr
   {
-    size_t cmsg_len;		/* Length of data in cmsg_data plus length
-				   of cmsghdr structure.
-				   !! The type should be socklen_t but the
-				   definition of the kernel is incompatible
-				   with this.  */
+#if __WORDSIZE == 64
+# if __BYTE_ORDER == __BIG_ENDIAN
+    int __glibc_reserved1;	/* Pad toadjust Linux size to POSIX defined
+				   size for cmsg_len.  */
+    socklen_t cmsg_len;		/* Length of data in cmsg_data plus length
+				   of cmsghdr structure.  */
+# else
+    socklen_t cmsg_len;
+    int __glibc_reserved1;
+# endif
+#else
+    socklen_t cmsg_len;
+#endif
     int cmsg_level;		/* Originating protocol.  */
     int cmsg_type;		/* Protocol specific type.  */
 #if (!defined __STRICT_ANSI__ && __GNUC__ >= 2) || __STDC_VERSION__ >= 199901L

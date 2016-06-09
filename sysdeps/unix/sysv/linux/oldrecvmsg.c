@@ -1,4 +1,5 @@
-/* Copyright (C) 2011-2016 Free Software Foundation, Inc.
+/* Compatibility version of recvmsg.
+   Copyright (C) 2016 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -15,12 +16,25 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include "string/memmove.c"
-
-#if !defined memmove && IS_IN (libc)
+#include <sys/socket.h>
+#include <sysdep-cancel.h>
+#include <socketcall.h>
 #include <shlib-compat.h>
 
-#if SHLIB_COMPAT (libc, GLIBC_2_2_5, GLIBC_2_14)
-compat_symbol (libc, memmove, memcpy, GLIBC_2_2_5);
-#endif
+/* Both libc.so and libpthread.so provides sendmsg, so we need to
+   provide the compat symbol for both libraries.  */
+#if SHLIB_COMPAT (MODULE_NAME, GLIBC_2_0, GLIBC_2_24)
+
+/* We can use the same struct layout for old symbol version since
+   size is the same.  */
+ssize_t
+__old_recvmsg (int fd, struct msghdr *msg, int flags)
+{
+# ifdef __ASSUME_RECVMSG_SYSCALL
+  return SYSCALL_CANCEL (recvmsg, fd, msg, flags);
+# else
+  return SOCKETCALL_CANCEL (recvmsg, fd, msg, flags);
+# endif
+}
+compat_symbol (MODULE_NAME, __old_recvmsg, recvmsg, GLIBC_2_0);
 #endif
