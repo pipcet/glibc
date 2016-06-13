@@ -2,7 +2,7 @@
     .set __gcc_pc_update, 0
     .set __asmjs_fallthrough, 1
     .include "asmjs-macros.s"
-    .include "import-macros.s"
+    .include "asmjs-import-macros.s"
 
     .import3 thinthin,write,__thinthin_write
     .import3 thinthin,malloc,__thinthin_malloc
