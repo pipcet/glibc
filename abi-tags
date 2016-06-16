@@ -31,6 +31,7 @@
 .*-.*-nacl.*		6	42.0.0	# earliest compatible Chromium version
 
 asmjs-virtual-.*        7       0.0.0
+wasm-virtual-.*         8       0.0.0
 
 # There is no catch-all default here because every supported OS that uses
 # ELF must have its own unique ABI tag.
