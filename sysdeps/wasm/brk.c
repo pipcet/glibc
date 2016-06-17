@@ -21,14 +21,16 @@
 #include "thinthin.h"
 
 /* sbrk.c expects this.  */
-void *__curbrk = (void *)(32*1024*1024);
+void *__curbrk = (void *)(16*1024*1024);
 
 /* Set the end of the process's data space to ADDR.
    Return 0 if successful, -1 if not.  */
 int
 __brk (void *addr)
 {
-  __curbrk = addr;
+  if (addr)
+    __curbrk = addr;
+
   return 0;
 #if 0
   int ret = __THINTHIN_SYSCALL(brk, addr);
