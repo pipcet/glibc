@@ -3947,10 +3947,11 @@ while o=`echo $tail | sed 's/\.[^.]*$//'`; test $o != $tail; do
   ostry="$ostry /$o"
   tail=$o
 done
-o=`echo $tail | sed 's/[0-9]*$//'`
-if test $o != $tail; then
-  ostry="$ostry /$o"
-fi
+# HACK: wasm64 doesn't imply wasm.
+#o=`echo $tail | sed 's/[0-9]*$//'`
+#if test $o != $tail; then
+#  ostry="$ostry /$o"
+#fi
 # For linux-gnu, try linux-gnu, then linux.
 o=`echo $tail | sed 's/-.*$//'`
 if test $o != $tail; then

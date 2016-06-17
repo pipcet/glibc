@@ -1,0 +1,57 @@
+    .set __gcc_bogotics_backwards, 0
+    .set __gcc_pc_update, 0
+    .set __asmjs_fallthrough, 1
+    .include "wasm64-macros.s"
+    .include "wasm64-import-macros.s"
+
+    .import3 thinthin,write,__thinthin_write
+    .import3 thinthin,malloc,__thinthin_malloc
+    .import3 thinthin,abort,__thinthin_abort
+    .import3 thinthin,exit,__thinthin_exit
+    .import3 thinthin,open,__thinthin_open
+    .import3 thinthin,openat,__thinthin_openat
+    .import3 thinthin,read,__thinthin_read
+    .import3 thinthin,chdir,__thinthin_chdir
+    .import3 thinthin,access,__thinthin_access
+    .import3 thinthin,time,__thinthin_time
+    .import3 thinthin,close,__thinthin_close
+    .import3 thinthin,readdir,__thinthin_readdir
+    .import3 thinthin,fdopen,__thinthin_fdopen
+    .import3 thinthin,fclose,__thinthin_fclose
+    .import3 thinthin,unlinkat,__thinthin_unlinkat
+    .import3 thinthin,rename,__thinthin_rename
+    .import3 thinthin,lseek,__thinthin_lseek
+    .import3 thinthin,getdents,__thinthin_getdents
+    .import3 thinthin,gettimeofday,__thinthin_gettimeofday
+    .import3 thinthin,gethostname,__thinthin_gethostname
+    .import3 thinthin,faccessat,__thinthin_faccessat
+    .import3 thinthin,isatty,__thinthin_isatty
+    .import3 thinthin,ppoll,__thinthin_ppoll
+    .import3 thinthin,ioctl_p,__thinthin_ioctl_p
+    .import3 thinthin,sbrk,__thinthin_sbrk
+    .import3 thinthin,brk,__thinthin_brk
+    .import3 thinthin,getcwd,__thinthin_getcwd
+    .import3 thinthin,fcntl_v,__thinthin_fcntl_v
+    .import3 thinthin,fcntl_i,__thinthin_fcntl_i
+    .import3 thinthin,fcntl_p,__thinthin_fcntl_p
+    .import3 thinthin,truncate,__thinthin_truncate
+    .import3 thinthin,ftruncate,__thinthin_ftruncate
+    .import3 thinthin,linkat,__thinthin_linkat
+    .import3 thinthin,pipe2,__thinthin_pipe2
+    .import3 thinthin,fork,__thinthin_fork
+    .import3 thinthin,execve,__thinthin_execve
+    .import3 thinthin,fchmod,__thinthin_fchmod
+    .import3 thinthin,fchmodat,__thinthin_fchmodat
+    .import3 thinthin,renameat2,__thinthin_renameat2
+    .import3 thinthin,wait4,__thinthin_wait4
+    .import3 thinthin,mkdirat,__thinthin_mkdirat
+    .import3 thinthin,readlinkat,__thinthin_readlinkat
+    .import3 thinthin,utimensat,__thinthin_utimensat
+    .import3 thinthin,dup2,__thinthin_dup2
+    .import3 thinthin,clock_gettime,__thinthin_clock_gettime
+    .import3 thinthin,getuid,__thinthin_getuid
+    .import3 thinthin,getgid,__thinthin_getgid
+    .import3 thinthin,geteuid,__thinthin_geteuid
+    .import3 thinthin,getegid,__thinthin_getegid
+    .import3 thinthin,newfstatat,__thinthin_newfstatat
+    .import3 thinthin,getpid,__thinthin_getpid
