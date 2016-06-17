@@ -46,7 +46,7 @@
 	(return (i32.add (get_local $fp) (i32.const 80)))
 	.set __wasm_fallthrough, 0
 	.labeldef_debug .LFE0
-	.wasmtextlabeldeflast .ends.funcall
+	.wasmtextlabeldeflast .ends._setjmp
 	(set_local $rp (get_local $sp))
 		(set_local $pc0 (i32.shr_u (i32.load (i32.add (get_local $rp) (i32.const 4))) (i32.const 4)))
 		(set_local $dpc (i32.sub (i32.shr_u (i32.load (i32.add (get_local $rp) (i32.const 8))) (i32.const 4)) (get_local $pc0)))
