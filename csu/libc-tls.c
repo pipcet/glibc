@@ -115,8 +115,6 @@ __libc_setup_tls (size_t tcbsize, size_t tcbalign)
   size_t tcb_offset;
   const ElfW(Phdr) *phdr;
 
-  return;
-
   /* Look through the TLS segment if there is any.  */
   if (_dl_phdr != NULL)
     for (phdr = _dl_phdr; phdr < &_dl_phdr[_dl_phnum]; ++phdr)
