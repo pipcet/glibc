@@ -1,3 +1,5 @@
+#include <unistd.h>
+
 int __longjmp(void *env, int retval)
 {
 /*  asm volatile("foreign_abort(-1|0, HEAP32[r0>>2]|0, HEAP32[r0+4>>2]|0, HEAP32[r0+8>>2]|0, r0|0);\n\t"
@@ -12,5 +14,7 @@ int __longjmp(void *env, int retval)
                "rv = %O1;\n\t"
                "return %O2|3;\n\t"
                : : "r" (env), "r" (retval), "r" (0)); */
-  while(1) {}
+  while(1) {
+    write(2, "longjmp\n", 8);
+  }
 }
