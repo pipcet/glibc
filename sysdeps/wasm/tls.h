@@ -111,23 +111,23 @@ typedef struct {
 
 #define THREAD_SELF                                                     \
   ({                                                                    \
-    struct pthread *__self = NULL;                                             \
-/*    asm("%O0 = tp;" : "=r" (__self));  */                                 \
+    struct pthread *__self;                                             \
+    asm("(%S0 (i32.load (i32.const 8192)))" : "=r" (__self));           \
     if(0) fprintf(stderr, "THREAD_SELF from %p\n", __builtin_return_address(0)); \
     ((void **)__self)[1];                                                  \
   })
 
 #define THREAD_DTV()                                                    \
   ({                                                                    \
-    struct pthread *__self = NULL;                                             \
-/*    asm("%O0 = tp;" : "=r" (__self)); */                                  \
+    struct pthread *__self;                                             \
+    asm("(%S0 (i32.load (i32.const 8192)))" : "=r" (__self));           \
     if(0) fprintf(stderr, "THREAD_DTV() from %p\n", __builtin_return_address(0)); \
     *(dtv_t **)__self;                                                  \
   })
 
-#define TLS_INIT_TP(tcbp)                       \
-  ({                                            \
-/*    asm volatile("tp = %O0;" : : "r" (tcbp)); */                          \
+#define TLS_INIT_TP(tcbp)                                               \
+  ({                                                                    \
+    asm volatile("(i32.store (i32.const 8192) %0)" : : "r" (tcbp));       \
     if(0) fprintf(stderr, "TLS_INIT_TP() from %p\n", __builtin_return_address(0)); \
     NULL;                                       \
   })
