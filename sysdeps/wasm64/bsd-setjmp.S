@@ -42,7 +42,7 @@
         (i64.const 0) (get_local $sp) (get_local $r0) (get_local $r1) (get_local $rpc)
         .ncodetextlabel __sigjmp_save
         ))
-        (if (i64.and (get_local $rp) (i64.const 3)) (br $mainloop))
+        (if (i32.and (i32.wrap_i64 (get_local $rp)) (i64.const 3)) (br $mainloop))
 	(return (i64.add (get_local $fp) (i64.const 160)))
 	.set __wasm_fallthrough, 0
 	.labeldef_debug .LFE0
