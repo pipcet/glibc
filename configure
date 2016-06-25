@@ -3900,7 +3900,6 @@ __start:
 EOF
 libc_cv_ld_gnu_indirect_function=no
 if ${CC-cc} $CFLAGS $CPPFLAGS $LDFLAGS \
-	    -nostartfiles -nostdlib \
 	    -o conftest conftest.S 1>&5 2>&5; then
   # Do a link to see if the backend supports IFUNC relocs.
   $READELF -r conftest 1>&5
@@ -5291,7 +5290,6 @@ extern int glibc_conftest_frobozz;
 void _start() { glibc_conftest_frobozz = 1; }
 EOF
 if ${CC-cc} $CFLAGS $CPPFLAGS $LDFLAGS \
-	    -nostartfiles -nostdlib \
 	    -o conftest conftest.s conftest1.c 1>&5 2>&5; then
   libc_cv_asm_set_directive=yes
 else
@@ -5325,7 +5323,7 @@ EOF
 		  extern int bar;
 		  int main (void) { return bar; }
 EOF
-		  if { ac_try='${CC-cc} -nostdlib -nostartfiles conftest.c -o conftest conftest.so'
+		  if { ac_try='${CC-cc} conftest.c -o conftest conftest.so'
   { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
   (eval $ac_try) 2>&5
   ac_status=$?
@@ -5411,7 +5409,7 @@ __attribute__ ((destructor))  void dtor (void) { asm (""); }
 
 EOF
 if { ac_try='${CC-cc} $CFLAGS $CPPFLAGS $LDFLAGS -o conftest
-		       conftest.c -static -nostartfiles -nostdlib
+		       conftest.c -static
 		       1>&5'
   { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
   (eval $ac_try) 2>&5
@@ -5734,7 +5732,7 @@ if ${libc_cv_output_format+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   if libc_cv_output_format=`
-${CC-cc} -nostartfiles -nostdlib -Wl,--print-output-format 2>&5`
+${CC-cc} -nostdlib -Wl,--print-output-format 2>&5`
 then
   :
 else
