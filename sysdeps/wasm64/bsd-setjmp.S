@@ -4,7 +4,7 @@
 	.include "wasm64-macros.s"
 	.text
 	.global setjmp
-        defun setjmp, i64 i64 i64 i64 i64 i64 result i64
+        defun setjmp, FlllllllE
         i64.const -16
         get_local $sp1
         i64.add
