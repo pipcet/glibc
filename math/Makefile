@@ -63,7 +63,7 @@ libm-calls = e_acos e_acosh e_asin e_atan2 e_atanh e_cosh e_exp e_fmod	\
 	     s_fma s_lrint s_llrint s_lround s_llround e_exp10 w_log2	\
 	     s_issignaling $(calls:s_%=m_%) x2y2m1 k_casinh	\
 	     gamma_product k_standard lgamma_neg lgamma_product		\
-	     w_lgamma_compat
+	     w_lgamma_compat s_nextup s_nextdown
 
 dbl-only-routines := branred doasin dosincos halfulp mpa mpatan2	\
 		     mpatan mpexp mplog mpsqrt mptan sincos32 slowexp	\
@@ -301,6 +301,12 @@ ifneq ($(long-double-fcts),yes)
 # `double' instead of `long double'.
 math-CPPFLAGS += -DNO_LONG_DOUBLE -D_Mlong_double_=double
 endif
+
+# These files quiet sNaNs in a way that is optimized away without
+# -fsignaling-nans.
+CFLAGS-s_modf.c += -fsignaling-nans
+CFLAGS-s_modff.c += -fsignaling-nans
+CFLAGS-s_modfl.c += -fsignaling-nans
 
 # The -lieee library is actually an object file.
 # The module just defines the _LIB_VERSION_ variable.

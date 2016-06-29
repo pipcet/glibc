@@ -491,6 +491,15 @@ void *(*__morecore)(ptrdiff_t) = __default_morecore;
 #define HAVE_MREMAP 0
 #endif
 
+/* We may need to support __malloc_initialize_hook for backwards
+   compatibility.  */
+
+#if SHLIB_COMPAT (libc, GLIBC_2_0, GLIBC_2_24)
+# define HAVE_MALLOC_INIT_HOOK 1
+#else
+# define HAVE_MALLOC_INIT_HOOK 0
+#endif
+
 
 /*
   This version of malloc supports the standard SVID/XPG mallinfo
@@ -1841,7 +1850,12 @@ static void *realloc_hook_ini (void *ptr, size_t sz,
 static void *memalign_hook_ini (size_t alignment, size_t sz,
                                 const void *caller) __THROW;
 
+#if HAVE_MALLOC_INIT_HOOK
 void weak_variable (*__malloc_initialize_hook) (void) = NULL;
+compat_symbol (libc, __malloc_initialize_hook,
+	       __malloc_initialize_hook, GLIBC_2_0);
+#endif
+
 void weak_variable (*__free_hook) (void *__ptr,
                                    const void *) = NULL;
 void *weak_variable (*__malloc_hook)
@@ -4615,7 +4629,12 @@ musable (void *mem)
         return malloc_check_get_size (p);
 
       if (chunk_is_mmapped (p))
-        return chunksize (p) - 2 * SIZE_SZ;
+	{
+	  if (DUMPED_MAIN_ARENA_CHUNK (p))
+	    return chunksize (p) - SIZE_SZ;
+	  else
+	    return chunksize (p) - 2 * SIZE_SZ;
+	}
       else if (inuse (p))
         return chunksize (p) - SIZE_SZ;
     }

@@ -115,7 +115,7 @@ libpthread-routines = nptl-init vars events version pt-interp \
 		      ptw-pread ptw-pread64 ptw-pwrite ptw-pwrite64 \
 		      ptw-tcdrain ptw-wait ptw-waitpid ptw-msgrcv ptw-msgsnd \
 		      ptw-sigwait ptw-sigsuspend \
-		      ptw-oldrecvmsg ptw-oldsendmsg \
+		      ptw-recvmsg ptw-sendmsg \
 		      pt-raise pt-system \
 		      flockfile ftrylockfile funlockfile \
 		      sigaction \
@@ -207,8 +207,8 @@ CFLAGS-accept.c = -fexceptions -fasynchronous-unwind-tables
 CFLAGS-sendto.c = -fexceptions -fasynchronous-unwind-tables
 CFLAGS-connect.c = -fexceptions -fasynchronous-unwind-tables
 CFLAGS-recvfrom.c = -fexceptions -fasynchronous-unwind-tables
-CFLAGS-oldrecvmsg.c = -fexceptions -fasynchronous-unwind-tables
-CFLAGS-oldsendmsg.c = -fexceptions -fasynchronous-unwind-tables
+CFLAGS-recvmsg.c = -fexceptions -fasynchronous-unwind-tables
+CFLAGS-sendmsg.c = -fexceptions -fasynchronous-unwind-tables
 
 CFLAGS-pt-system.c = -fexceptions
 
@@ -255,7 +255,8 @@ tests = tst-typesizes \
 	tst-tls1 tst-tls2 \
 	tst-fork1 tst-fork2 tst-fork3 tst-fork4 \
 	tst-atfork1 \
-	tst-cancel1 tst-cancel2 tst-cancel3 tst-cancel4 tst-cancel5 \
+	tst-cancel1 tst-cancel2 tst-cancel3 tst-cancel4 tst-cancel4_1 \
+	tst-cancel4_2 tst-cancel5 \
 	tst-cancel6 tst-cancel7 tst-cancel8 tst-cancel9 tst-cancel10 \
 	tst-cancel11 tst-cancel12 tst-cancel13 tst-cancel14 tst-cancel15 \
 	tst-cancel16 tst-cancel17 tst-cancel18 tst-cancel19 tst-cancel20 \

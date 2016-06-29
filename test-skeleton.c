@@ -78,8 +78,8 @@ oom_error (const char *fn, size_t size)
 }
 
 /* Allocate N bytes of memory dynamically, with error checking.  */
+__attribute__ ((unused))
 static void *
-__attribute__ ((used))
 xmalloc (size_t n)
 {
   void *p;
@@ -91,8 +91,8 @@ xmalloc (size_t n)
 }
 
 /* Allocate memory for N elements of S bytes, with error checking.  */
+__attribute__ ((unused))
 static void *
-__attribute__ ((used))
 xcalloc (size_t n, size_t s)
 {
   void *p;
@@ -105,14 +105,24 @@ xcalloc (size_t n, size_t s)
 
 /* Change the size of an allocated block of memory P to N bytes,
    with error checking.  */
+__attribute__ ((unused))
 static void *
-__attribute__ ((used))
 xrealloc (void *p, size_t n)
 {
-  p = realloc (p, n);
-  if (p == NULL)
+  void *result = realloc (p, n);
+  if (result == NULL && (n > 0 || p == NULL))
     oom_error ("realloc", n);
-  return p;
+  return result;
+}
+
+/* Write a message to standard output.  Can be used in signal
+   handlers.  */
+static void
+__attribute__ ((unused))
+write_message (const char *message)
+{
+  ssize_t unused __attribute__ ((unused));
+  unused = write (STDOUT_FILENO, message, strlen (message));
 }
 
 /* List of temporary files.  */
