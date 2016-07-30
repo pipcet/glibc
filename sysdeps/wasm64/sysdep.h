@@ -95,3 +95,7 @@
 #endif
 
 #include "dwarf2.h"
+
+#  define PTR_MANGLE(var)                       \
+  (var) = (void *) ((uintptr_t) (var))
+#  define PTR_DEMANGLE(var)	PTR_MANGLE (var)

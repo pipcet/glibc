@@ -29,6 +29,10 @@
 #include <stdlib.h>
 #include <shlib-compat.h>
 
+#  define PTR_MANGLE(var)                       \
+  (var) = (void *) ((uintptr_t) (var))
+#  define PTR_DEMANGLE(var)	PTR_MANGLE (var)
+
 /* Prototyped for local functions.  */
 static _IO_ssize_t _IO_cookie_read (_IO_FILE* fp, void* buf,
 				    _IO_ssize_t size);
