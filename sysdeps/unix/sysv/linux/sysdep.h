@@ -48,11 +48,17 @@
   __LONG_LONG_PAIR ((long) ((val) >> 32), (long) ((val) & 0xffffffff))
 #endif
 
-/* Provide a macro to pass the off{64}_t argument on p{readv,writev}{64}.  */
-#if __WORDSIZE == 64 || defined __ASSUME_WORDSIZE64_ILP32
-# define LO_HI_LONG(val) (val)
+/* Provide a common macro to pass 64-bit value on pread and pwrite
+   syscalls.  */
+#ifdef __ASSUME_PRW_DUMMY_ARG
+# define SYSCALL_LL_PRW(val)   0, SYSCALL_LL (val)
+# define SYSCALL_LL64_PRW(val) 0, SYSCALL_LL64 (val)
 #else
-# define LO_HI_LONG(val) \
-  (long) (val), \
-  (long) (((uint64_t) (val)) >> 32)
+# define SYSCALL_LL_PRW(val)   __ALIGNMENT_ARG SYSCALL_LL (val)
+# define SYSCALL_LL64_PRW(val) __ALIGNMENT_ARG SYSCALL_LL64 (val)
 #endif
+
+/* Provide a macro to pass the off{64}_t argument on p{readv,writev}{64}.  */
+#define LO_HI_LONG(val) \
+ (long) (val), \
+ (long) (((uint64_t) (val)) >> 32)

@@ -19,7 +19,7 @@
 #include <unistd.h>
 #include <sysdep-cancel.h>
 
-#if __WORDSIZE != 64 || defined (__ASSUME_OFF_DIFF_OFF64)
+#ifndef __OFF_T_MATCHES_OFF64_T
 
 # ifndef __NR_pread
 #  define __NR_pread __NR_pread64
@@ -28,8 +28,7 @@
 ssize_t
 __libc_pread (int fd, void *buf, size_t count, off_t offset)
 {
-  return SYSCALL_CANCEL (pread, fd, buf, count,
-			 __ALIGNMENT_ARG SYSCALL_LL (offset));
+  return SYSCALL_CANCEL (pread, fd, buf, count, SYSCALL_LL_PRW (offset));
 }
 
 strong_alias (__libc_pread, __pread)

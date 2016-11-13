@@ -29,7 +29,9 @@
 ENTRY(__new_memcpy)
 	.type	__new_memcpy, @gnu_indirect_function
 	LOAD_RTLD_GLOBAL_RO_RDX
-# ifdef HAVE_AVX512_ASM_SUPPORT
+	lea	__memcpy_erms(%rip), %RAX_LP
+	HAS_ARCH_FEATURE (Prefer_ERMS)
+	jnz	2f
 	HAS_ARCH_FEATURE (AVX512F_Usable)
 	jz	1f
 	lea	__memcpy_avx512_no_vzeroupper(%rip), %RAX_LP
@@ -40,7 +42,6 @@ ENTRY(__new_memcpy)
 	jnz	2f
 	lea	__memcpy_avx512_unaligned(%rip), %RAX_LP
 	ret
-# endif
 1:	lea	__memcpy_avx_unaligned(%rip), %RAX_LP
 	HAS_ARCH_FEATURE (AVX_Fast_Unaligned_Load)
 	jz	L(Fast_Unaligned_Load)

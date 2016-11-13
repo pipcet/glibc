@@ -619,6 +619,7 @@ LIBGD
 libc_cv_cc_loop_to_function
 libc_cv_cc_submachine
 libc_cv_cc_nofma
+libc_cv_mtls_dialect_gnu2
 stack_protector
 fno_unit_at_a_time
 libc_cv_output_format
@@ -634,6 +635,8 @@ BISON
 INSTALL_INFO
 PERL
 BASH_SHELL
+CXX_CMATH_HEADER
+CXX_CSTDLIB_HEADER
 CXX_SYSINCLUDES
 SYSINCLUDES
 AUTOCONF
@@ -3912,12 +3915,49 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $libc_cv_ld_gnu_indirect_function" >&5
 $as_echo "$libc_cv_ld_gnu_indirect_function" >&6; }
 
+# Check if gcc supports attribute ifunc as it is used in libc_ifunc macro.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for gcc attribute ifunc support" >&5
+$as_echo_n "checking for gcc attribute ifunc support... " >&6; }
+if ${libc_cv_gcc_indirect_function+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat > conftest.c <<EOF
+extern int func (int);
+int used_func (int a)
+{
+  return a;
+}
+static void *resolver ()
+{
+  return &used_func;
+}
+extern __typeof (func) func __attribute__ ((ifunc ("resolver")));
+EOF
+libc_cv_gcc_indirect_function=no
+if ${CC-cc} -c conftest.c -o conftest.o 1>&5 \
+   2>&5 ; then
+  if $READELF -s conftest.o | grep IFUNC >/dev/null 2>&5; then
+    libc_cv_gcc_indirect_function=yes
+  fi
+fi
+rm -f conftest*
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $libc_cv_gcc_indirect_function" >&5
+$as_echo "$libc_cv_gcc_indirect_function" >&6; }
+
 if test x"$libc_cv_ld_gnu_indirect_function" != xyes; then
   if test x"$multi_arch" = xyes; then
     as_fn_error $? "--enable-multi-arch support requires assembler and linker support" "$LINENO" 5
   else
     multi_arch=no
   fi
+fi
+if test x"$libc_cv_gcc_indirect_function" != xyes &&
+   test x"$multi_arch" = xyes; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: --enable-multi-arch support recommends a gcc with gnu-indirect-function support.
+Please use a gcc which supports it by default or configure gcc with --enable-gnu-indirect-function" >&5
+$as_echo "$as_me: WARNING: --enable-multi-arch support recommends a gcc with gnu-indirect-function support.
+Please use a gcc which supports it by default or configure gcc with --enable-gnu-indirect-function" >&2;}
 fi
 multi_arch_d=
 if test x"$multi_arch" != xno; then
@@ -5053,6 +5093,18 @@ fi
 
 
 
+# Obtain some C++ header file paths.  This is used to make a local
+# copy of those headers in Makerules.
+if test -n "$CXX"; then
+  find_cxx_header () {
+    echo "#include <$1>" | $CXX -M -MP -x c++ - | sed -n "/$1:/{s/:\$//;p}"
+  }
+  CXX_CSTDLIB_HEADER="$(find_cxx_header cstdlib)"
+  CXX_CMATH_HEADER="$(find_cxx_header cmath)"
+fi
+
+
+
 # Test if LD_LIBRARY_PATH contains the notation for the current directory
 # since this would lead to problems installing/building glibc.
 # LD_LIBRARY_PATH contains the current directory if one of the following
@@ -5823,6 +5875,38 @@ elif test "$libc_cv_ssp" = "yes"; then
 fi
 
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for -mtls-dialect=gnu2" >&5
+$as_echo_n "checking for -mtls-dialect=gnu2... " >&6; }
+if ${libc_cv_mtls_dialect_gnu2+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat > conftest.c <<EOF
+__thread int i;
+void foo (void)
+{
+  i = 10;
+}
+EOF
+if { ac_try='${CC-cc} $CFLAGS $CPPFLAGS -S -fPIC -mtls-dialect=gnu2
+		   conftest.c 1>&5'
+  { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; }
+then
+  libc_cv_mtls_dialect_gnu2=yes
+else
+  libc_cv_mtls_dialect_gnu2=no
+fi
+rm -f conftest*
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $libc_cv_mtls_dialect_gnu2" >&5
+$as_echo "$libc_cv_mtls_dialect_gnu2" >&6; }
+
+config_vars="$config_vars
+have-mtls-dialect-gnu2 = $libc_cv_mtls_dialect_gnu2"
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether cc puts quotes around section names" >&5
 $as_echo_n "checking whether cc puts quotes around section names... " >&6; }
 if ${libc_cv_have_section_quotes+:} false; then :
@@ -6467,6 +6551,11 @@ fi
 # usable even though the assembler knows how to generate the symbol type.
 if test x"$libc_cv_ld_gnu_indirect_function" = xyes; then
   $as_echo "#define HAVE_IFUNC 1" >>confdefs.h
+
+fi
+
+if test x"$libc_cv_gcc_indirect_function" = xyes; then
+  $as_echo "#define HAVE_GCC_IFUNC 1" >>confdefs.h
 
 fi
 

@@ -41,6 +41,14 @@
 # define SNAN_TESTS_TYPE_CAST	1
 #endif
 
+/* Indicate whether operations on signaling NaNs preserve the payload
+   (if possible; it is not possible with a zero payload if the high
+   bit is set for signaling NaNs) when generating a quiet NaN, and
+   this should be tested.  */
+#ifndef SNAN_TESTS_PRESERVE_PAYLOAD
+# define SNAN_TESTS_PRESERVE_PAYLOAD	1
+#endif
+
 /* Indicate whether to run tests involving a given rounding mode for a
    given floating-point type, given that fesetround succeeds for that
    mode.  All are run if fesetround succeeds unless overridden.  */
@@ -86,4 +94,13 @@
 #ifndef EXCEPTION_ENABLE_SUPPORTED
 # define EXCEPTION_ENABLE_SUPPORTED(EXCEPT)			\
    (EXCEPTION_TESTS_float || EXCEPTION_TESTS_double)
+#endif
+
+/* Indicate whether exception traps, if enabled, occur whenever an
+   exception flag is set explicitly, so it is not possible to set flag
+   bits with traps enabled without causing traps to be taken.  If
+   traps cannot be enabled, the value of this macro does not
+   matter.  */
+#ifndef EXCEPTION_SET_FORCES_TRAP
+# define EXCEPTION_SET_FORCES_TRAP 0
 #endif

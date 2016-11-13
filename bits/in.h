@@ -21,6 +21,9 @@
 # error "Never use <bits/in.h> directly; include <netinet/in.h> instead."
 #endif
 
+/* This is the generic version, do not assume a linux-based kernel.  */
+#define __USE_KERNEL_IPV6_DEFS 0
+
 /* To select the IP level.  */
 #define SOL_IP		0
 
@@ -36,8 +39,8 @@
 #define	IP_RECVDSTADDR	7	/* bool; Receive IP dst addr w/datagram.  */
 #define	IP_RETOPTS	8	/* ip_opts; Set/get IP per-packet options.  */
 #define IP_MULTICAST_IF 9	/* in_addr; set/get IP multicast i/f */
-#define IP_MULTICAST_TTL 10	/* u_char; set/get IP multicast ttl */
-#define IP_MULTICAST_LOOP 11	/* i_char; set/get IP multicast loopback */
+#define IP_MULTICAST_TTL 10	/* unsigned char; set/get IP multicast ttl */
+#define IP_MULTICAST_LOOP 11	/* bool; set/get IP multicast loopback */
 #define IP_ADD_MEMBERSHIP 12	/* ip_mreq; add an IP group membership */
 #define IP_DROP_MEMBERSHIP 13	/* ip_mreq; drop an IP group membership */
 

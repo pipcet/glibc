@@ -33,6 +33,18 @@ routines = alloca_cutoff forward libc-lowlevellock libc-cancellation \
 	   register-atfork unregister-atfork
 shared-only-routines = forward
 
+# We need to provide certain routines for compatibility with existing
+# binaries.
+pthread-compat-wrappers = \
+		      write read close fcntl accept \
+		      connect recv recvfrom send \
+		      sendto fsync lseek lseek64 \
+		      msync nanosleep open open64 pause \
+		      pread pread64 pwrite pwrite64 \
+		      tcdrain wait waitpid msgrcv msgsnd \
+		      sigwait sigsuspend \
+		      recvmsg sendmsg
+
 libpthread-routines = nptl-init vars events version pt-interp \
 		      pthread_create pthread_exit pthread_detach \
 		      pthread_join pthread_tryjoin pthread_timedjoin \
@@ -108,14 +120,7 @@ libpthread-routines = nptl-init vars events version pt-interp \
 		      lowlevellock lowlevelrobustlock \
 		      lll_timedlock_wait lll_timedwait_tid \
 		      pt-fork pt-vfork \
-		      ptw-write ptw-read ptw-close ptw-fcntl ptw-accept \
-		      ptw-connect ptw-recv ptw-recvfrom ptw-send \
-		      ptw-sendto ptw-fsync ptw-lseek ptw-llseek \
-		      ptw-msync ptw-nanosleep ptw-open ptw-open64 ptw-pause \
-		      ptw-pread ptw-pread64 ptw-pwrite ptw-pwrite64 \
-		      ptw-tcdrain ptw-wait ptw-waitpid ptw-msgrcv ptw-msgsnd \
-		      ptw-sigwait ptw-sigsuspend \
-		      ptw-recvmsg ptw-sendmsg \
+		      $(pthread-compat-wrappers) \
 		      pt-raise pt-system \
 		      flockfile ftrylockfile funlockfile \
 		      sigaction \
@@ -241,7 +246,7 @@ tests = tst-typesizes \
 	tst-key1 tst-key2 tst-key3 tst-key4 \
 	tst-sem1 tst-sem2 tst-sem3 tst-sem4 tst-sem5 tst-sem6 tst-sem7 \
 	tst-sem8 tst-sem9 tst-sem10 tst-sem11 tst-sem12 tst-sem13 tst-sem14 \
-	tst-sem15 \
+	tst-sem15 tst-sem16 \
 	tst-barrier1 tst-barrier2 tst-barrier3 tst-barrier4 tst-barrier5 \
 	tst-align tst-align3 \
 	tst-basic1 tst-basic2 tst-basic3 tst-basic4 tst-basic5 tst-basic6 \
@@ -268,7 +273,7 @@ tests = tst-typesizes \
 	tst-flock1 tst-flock2 \
 	tst-signal1 tst-signal2 tst-signal3 tst-signal4 tst-signal5 \
 	tst-signal6 tst-signal7 \
-	tst-exec1 tst-exec2 tst-exec3 tst-exec4 \
+	tst-exec1 tst-exec2 tst-exec3 tst-exec4 tst-exec5 \
 	tst-exit1 tst-exit2 tst-exit3 \
 	tst-stdio1 tst-stdio2 \
 	tst-stack1 tst-stack2 tst-stack3 tst-stack4 tst-pthread-getattr \
@@ -290,7 +295,7 @@ tests = tst-typesizes \
 	tst-initializers1 $(addprefix tst-initializers1-,\
 			    c89 gnu89 c99 gnu99 c11 gnu11) \
 	tst-bad-schedattr \
-	tst-thread_local1 tst-mutex-errorcheck
+	tst-thread_local1 tst-mutex-errorcheck tst-robust10
 xtests = tst-setuid1 tst-setuid1-static tst-setuid2 \
 	tst-mutexpp1 tst-mutexpp6 tst-mutexpp10
 test-srcs = tst-oddstacklimit
@@ -321,8 +326,8 @@ tests += tst-cancelx2 tst-cancelx3 tst-cancelx4 tst-cancelx5 \
 	 tst-cleanupx0 tst-cleanupx1 tst-cleanupx2 tst-cleanupx3 tst-cleanupx4 \
 	 tst-oncex3 tst-oncex4
 ifeq ($(build-shared),yes)
-tests += tst-atfork2 tst-tls3 tst-tls4 tst-tls5 tst-_res1 tst-fini1 \
-	 tst-stackguard1
+tests += tst-atfork2 tst-tls3 tst-tls3-malloc tst-tls4 tst-tls5 tst-_res1 \
+	 tst-fini1 tst-stackguard1
 tests-nolibpthread += tst-fini1
 ifeq ($(have-z-execstack),yes)
 tests += tst-execstack
@@ -334,8 +339,9 @@ modules-names = tst-atfork2mod tst-tls3mod tst-tls4moda tst-tls4modb \
 		tst-tls5modd tst-tls5mode tst-tls5modf tst-stack4mod \
 		tst-_res1mod1 tst-_res1mod2 tst-execstack-mod tst-fini1mod \
 		tst-join7mod
-extra-test-objs += $(addsuffix .os,$(strip $(modules-names))) tst-cleanup4aux.o
-test-extras += $(modules-names) tst-cleanup4aux
+extra-test-objs += $(addsuffix .os,$(strip $(modules-names))) \
+		   tst-cleanup4aux.o tst-cleanupx4aux.o
+test-extras += $(modules-names) tst-cleanup4aux tst-cleanupx4aux
 test-modules = $(addprefix $(objpfx),$(addsuffix .so,$(modules-names)))
 
 tst-atfork2mod.so-no-z-defs = yes
@@ -477,6 +483,7 @@ CFLAGS-tst-cleanupx1.c += -fexceptions -fasynchronous-unwind-tables
 CFLAGS-tst-cleanupx2.c += -fexceptions
 CFLAGS-tst-cleanupx3.c += -fexceptions
 CFLAGS-tst-cleanupx4.c += -fexceptions
+CFLAGS-tst-cleanupx4aux.c += -fexceptions
 CFLAGS-tst-oncex3.c += -fexceptions
 CFLAGS-tst-oncex4.c += -fexceptions
 CFLAGS-tst-align.c += $(stack-align-test-flags)
@@ -520,12 +527,16 @@ clean:
 	rm -f $(tst-stack4mod.sos)
 
 $(objpfx)tst-cleanup4: $(objpfx)tst-cleanup4aux.o $(shared-thread-library)
-$(objpfx)tst-cleanupx4: $(objpfx)tst-cleanup4aux.o $(shared-thread-library)
+$(objpfx)tst-cleanupx4: $(objpfx)tst-cleanupx4aux.o $(shared-thread-library)
 
 $(objpfx)tst-tls3: $(libdl) $(shared-thread-library)
 LDFLAGS-tst-tls3 = -rdynamic
 $(objpfx)tst-tls3.out: $(objpfx)tst-tls3mod.so
 $(objpfx)tst-tls3mod.so: $(shared-thread-library)
+
+$(objpfx)tst-tls3-malloc: $(libdl) $(shared-thread-library)
+LDFLAGS-tst-tls3-malloc = -rdynamic
+$(objpfx)tst-tls3-malloc.out: $(objpfx)tst-tls3mod.so
 
 $(objpfx)tst-tls4: $(libdl) $(shared-thread-library)
 $(objpfx)tst-tls4.out: $(objpfx)tst-tls4moda.so $(objpfx)tst-tls4modb.so

@@ -88,6 +88,7 @@ determine_info (const ElfW(Addr) addr, struct link_map *match, Dl_info *info,
       for (; (void *) symtab < (void *) symtabend; ++symtab)
 	if ((ELFW(ST_BIND) (symtab->st_info) == STB_GLOBAL
 	     || ELFW(ST_BIND) (symtab->st_info) == STB_WEAK)
+	    && __glibc_likely (!dl_symbol_visibility_binds_local_p (symtab))
 	    && ELFW(ST_TYPE) (symtab->st_info) != STT_TLS
 	    && (symtab->st_shndx != SHN_UNDEF
 		|| symtab->st_value != 0)
@@ -143,19 +144,3 @@ _dl_addr (const void *address, Dl_info *info,
   return result;
 }
 libc_hidden_def (_dl_addr)
-
-/* Return non-zero if ADDR lies within one of L's segments.  */
-int
-internal_function
-_dl_addr_inside_object (struct link_map *l, const ElfW(Addr) addr)
-{
-  int n = l->l_phnum;
-  const ElfW(Addr) reladdr = addr - l->l_addr;
-
-  while (--n >= 0)
-    if (l->l_phdr[n].p_type == PT_LOAD
-	&& reladdr - l->l_phdr[n].p_vaddr >= 0
-	&& reladdr - l->l_phdr[n].p_vaddr < l->l_phdr[n].p_memsz)
-      return 1;
-  return 0;
-}

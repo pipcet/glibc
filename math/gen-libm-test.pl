@@ -163,7 +163,7 @@ sub show_exceptions {
 
 # Apply the LIT(x) macro to a literal floating point constant
 # and strip any existing suffix.
-sub apply_lit {
+sub _apply_lit {
   my ($lit) = @_;
   my $exp_re = "([+-])?[[:digit:]]+";
   # Don't wrap something that does not look like a:
@@ -178,6 +178,21 @@ sub apply_lit {
   $lit =~ s/[lLfF]$//;
 
   return "LIT (${lit})";
+}
+
+# Apply LIT macro to individual tokens within an expression.
+#
+# This function assumes the C expression follows GNU coding
+# standards.  Specifically, a space separates each lexical
+# token.  Otherwise, this post-processing may apply LIT
+# incorrectly, or around an entire expression.
+sub apply_lit {
+  my ($lit) = @_;
+  my @toks = split (/ /, $lit);
+  foreach (@toks) {
+    $_ = _apply_lit ($_);
+  }
+  return join (' ', @toks);
 }
 
 # Parse the arguments to TEST_x_y
@@ -212,6 +227,10 @@ sub parse_args {
     if ($descr[$i] =~ /f|j|i|l|L/) {
       $call_args .= $comma . &beautify ($args[$current_arg]);
       ++$current_arg;
+      next;
+    }
+    # Argument passed via pointer.
+    if ($descr[$i] =~ /p/) {
       next;
     }
     # &FLOAT, &int - simplify call by not showing argument.
@@ -265,6 +284,7 @@ sub parse_args {
   # Put the C program line together
   # Reset some variables to start again
   $current_arg = 1;
+  $call_args =~ s/\"/\\\"/g;
   $cline = "{ \"$call_args\"";
   @descr = split //,$descr_args;
   for ($i=0; $i <= $#descr; $i++) {
@@ -278,8 +298,8 @@ sub parse_args {
       $current_arg++;
       next;
     }
-    # &FLOAT, &int
-    if ($descr[$i] =~ /F|I/) {
+    # &FLOAT, &int, argument passed via pointer
+    if ($descr[$i] =~ /F|I|p/) {
       next;
     }
     # complex

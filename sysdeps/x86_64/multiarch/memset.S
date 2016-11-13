@@ -26,6 +26,9 @@
 ENTRY(memset)
 	.type	memset, @gnu_indirect_function
 	LOAD_RTLD_GLOBAL_RO_RDX
+	lea	__memset_erms(%rip), %RAX_LP
+	HAS_ARCH_FEATURE (Prefer_ERMS)
+	jnz	2f
 	lea	__memset_sse2_unaligned_erms(%rip), %RAX_LP
 	HAS_CPU_FEATURE (ERMS)
 	jnz	1f
@@ -38,7 +41,6 @@ ENTRY(memset)
 	jnz	L(AVX512F)
 	lea	__memset_avx2_unaligned(%rip), %RAX_LP
 L(AVX512F):
-# ifdef HAVE_AVX512_ASM_SUPPORT
 	HAS_ARCH_FEATURE (AVX512F_Usable)
 	jz	2f
 	lea	__memset_avx512_no_vzeroupper(%rip), %RAX_LP
@@ -48,7 +50,6 @@ L(AVX512F):
 	HAS_CPU_FEATURE (ERMS)
 	jnz	2f
 	lea	__memset_avx512_unaligned(%rip), %RAX_LP
-# endif
 2:	ret
 END(memset)
 #endif

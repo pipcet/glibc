@@ -1,5 +1,4 @@
 libc.so: realloc
-libc.so: __eqsf2
 libc.so: __floatsisf
 libc.so: __gtdf2
 libc.so: __ltdf2
@@ -26,6 +25,7 @@ libc.so: __floatsidf
 libc.so: __divsf3
 libc.so: __nedf2
 libc.so: __eqdf2
+libc.so: __extendsfdf2
 libm.so: matherr
 # The dynamic loader uses __libc_memalign internally to allocate aligned
 # TLS storage. The other malloc family of functions are expected to allow
