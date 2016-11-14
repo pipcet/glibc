@@ -5461,7 +5461,7 @@ __attribute__ ((destructor))  void dtor (void) { asm (""); }
 
 EOF
 if { ac_try='${CC-cc} $CFLAGS $CPPFLAGS $LDFLAGS -o conftest
-		       conftest.c -static
+		       conftest.c -static -nostdlib
 		       1>&5'
   { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
   (eval $ac_try) 2>&5

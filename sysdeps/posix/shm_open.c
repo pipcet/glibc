@@ -44,8 +44,10 @@ shm_open (const char *name, int oflag, mode_t mode)
 # endif
 
   /* Disable asynchronous cancellation.  */
+#if 0
   int state;
   pthread_setcancelstate (PTHREAD_CANCEL_DISABLE, &state);
+#endif
 
   int fd = open (shm_name, oflag, mode);
   if (fd == -1 && __glibc_unlikely (errno == EISDIR))
@@ -77,7 +79,9 @@ shm_open (const char *name, int oflag, mode_t mode)
     }
 # endif
 
+#if 0
   pthread_setcancelstate (state, NULL);
+#endif
 
   return fd;
 }

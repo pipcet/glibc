@@ -95,7 +95,8 @@
 typedef struct {
   long counter;
   struct {
-    char *val;
+    void *val;
+    char *to_free;
     int is_static;
   } pointer;
 } dtv_t;

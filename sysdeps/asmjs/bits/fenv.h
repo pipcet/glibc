@@ -154,6 +154,15 @@ extern const fenv_t __fe_enabled_env;
 extern const fenv_t __fe_nonieee_env;
 # define FE_NONIEEE_ENV	(&__fe_nonieee_env)
 
+
+#if __GLIBC_USE (IEC_60559_BFP_EXT)
+/* Type representing floating-point control modes.  */
+typedef unsigned int femode_t;
+
+/* Default floating-point control modes.  */
+# define FE_DFL_MODE	((const femode_t *) -1L)
+#endif
+
 /* Floating-point environment with all exceptions enabled.  Note that
    just evaluating this value does not change the processor exception mode.
    Passing this mask to fesetenv will result in a prctl syscall to change

@@ -1721,7 +1721,9 @@ struct malloc_par
 
 static struct malloc_state main_arena =
 {
+#if 0
   .mutex = _LIBC_LOCK_INITIALIZER,
+#endif
   .next = &main_arena,
   .attached_threads = 1
 };
