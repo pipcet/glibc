@@ -31,6 +31,7 @@
 #include <wchar.h>
 #include <stdio_ext.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 void
 _IO_wstr_init_static (_IO_FILE *fp, wchar_t *ptr, _IO_size_t size,
