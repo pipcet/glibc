@@ -1,3 +1,54 @@
+2016-11-15  Denis Kaganovich  <mahatma@eu.by>
+	    Magnus Granberg  <zorry@gentoo.org>
+	    Mike Frysinger  <vapier@gentoo.org>
+
+	[BZ #20662]
+	* configure.ac (libc_cv_predef_stack_protector): Also check for
+	__stack_chk_fail_local symbols.
+	* configure: Regenerated.
+
+2016-11-15  Florian Weimer  <fweimer@redhat.com>
+
+	* sysdeps/s390/s390-64/setjmp.S (NEED_COMPAT_SYMBOLS): New macro.
+	(libc_hidden_def): Remove redefinition.
+	(__sigsetjmp): Add hidden definition.
+	* sysdeps/s390/s390-32/setjmp.S (NEED_COMPAT_SYMBOLS): New macro.
+	(libc_hidden_def): Remove redefinition.
+	(__sigsetjmp): Add hidden definition.
+
+2016-11-14  Joseph Myers  <joseph@codesourcery.com>
+
+	* scripts/build-many-glibcs.py (os.path): Do not import.
+	(Context): Inherit explicitly from object.  Remove blank line
+	between class and docstring.
+	(Config): Likewise.
+	(Glibc): Likewise.
+	(Command): Likewise.
+	(CommandList): Likewise.
+	(Context.write_files): Store chmod mode in a variable.
+
+	* sysdeps/unix/sysv/linux/tile/tilegx/configure.ac: Use
+	LIBC_SLIBDIR_RTLDDIR for tilegx32.
+	* sysdeps/unix/sysv/linux/tile/tilegx/configure: Regenerated.
+
+2016-11-14  Zack Weinberg  <zackw@panix.com>
+
+	* sunrpc/Makefile (rpcgen-tests): Delete the .out file before
+	creating or re-creating it.
+
+	* string/bits/string2.h: Fix typo in comment.
+
+2016-11-14  Zack Weinberg  <zackw@panix.com>
+
+	* misc/sys/sysmacros.h (__SYSMACROS_DM, __SYSMACROS_DM1): New macros.
+	(__SYSMACROS_DEPRECATION_MSG, __SYSMACROS_FST_DECL_TEMPL)
+	(__SYSMACROS_FST_IMPL_TEMPL): Delete.
+	(major, minor, makedev): Use __SYSMACROS_DM in definition, instead
+	of redirected function names.
+
+	* misc/sys/cdefs.h (__glibc_macro_warning): Activate for clang >= 3.5
+	as well.  Document that MESSAGE must be a single string literal.
+
 2016-11-11  Joseph Myers  <joseph@codesourcery.com>
 
 	* scripts/build-many-glibcs.py: New file.
