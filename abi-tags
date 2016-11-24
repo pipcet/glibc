@@ -32,6 +32,7 @@
 
 asmjs-virtual-.*        7       0.0.0
 wasm-virtual-.*         8       0.0.0
+wasm32-virtual-.*      10       0.0.0
 wasm64-virtual-.*       9       0.0.0
 
 # There is no catch-all default here because every supported OS that uses
