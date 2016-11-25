@@ -5456,12 +5456,14 @@ else
 int _start (void) { return 0; }
 int __start (void) { return 0; }
 
+void \$trace(void) { }
+
 __attribute__ ((constructor)) void ctor (void) { asm (""); }
 __attribute__ ((destructor))  void dtor (void) { asm (""); }
 
 EOF
 if { ac_try='${CC-cc} $CFLAGS $CPPFLAGS $LDFLAGS -o conftest
-		       conftest.c -static -nostdlib
+		       conftest.c -static -nostdlib -fdollars-in-identifiers
 		       1>&5'
   { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
   (eval $ac_try) 2>&5
