@@ -57,14 +57,11 @@
 #endif
 
 	.section	.init,"ax",@progbits
-	.p2align 5
 	.global	_init
 	.type	_init, @function
-        .ascii "dum"
 _init:
 
 	.section	.fini,"ax",@progbits
-	.p2align 5
 	.global	_fini
 	.type	_fini, @function
 _fini:

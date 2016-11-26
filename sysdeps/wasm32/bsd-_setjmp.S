@@ -3,6 +3,7 @@
         .set __gcc_bogotics_backwards, 0
 	.include "wasm32-macros.s"
 	.text
+        .pushsection .wasm.payload.code
 	.global _setjmp
         defun _setjmp, FiiiiiiiE
         return[1]

@@ -27,10 +27,5 @@ longjmp_msg:
 	.size	longjmp_msg, .-longjmp_msg
 
 	.text
-        .p2align 12 
 __longjmp_chk:
 ____longjmp_chk:
-        .long 0
-        .long 0
-        .long 0
-        .long 0

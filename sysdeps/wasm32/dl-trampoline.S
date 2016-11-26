@@ -19,9 +19,4 @@
 	.text
 	.globl _dl_runtime_resolve
 	.type _dl_runtime_resolve, @function
-	.align 16
 _dl_runtime_resolve:
-        .long   0
-        .long   0
-        .long   0
-        .long   0
