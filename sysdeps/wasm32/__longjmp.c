@@ -16,19 +16,9 @@ struct __stackframe {
 
 void __longjmp(__jmp_buf env, int retval)
 {
-  fprintf(stderr, "longjmp %lx %lx %lx %lx\n", (long)env->__pc0,
-          (long)env->__rpc,
-          (long)env->__fp, (long)env->__sp);
-
   long *stack = (long *)&stack;
-  int i;
 
   asm volatile(".flush\n\t");
-
-  for (i=0; i < 127; i++) {
-    fprintf(stderr, "%03d %p %lx\n", i, stack, *stack);
-    stack++;
-  }
 
   struct __stackframe *sf = (struct __stackframe *)env->__fp;
 
@@ -37,11 +27,6 @@ void __longjmp(__jmp_buf env, int retval)
   sf->sp = (long)env->__sp;
 
   stack = (long *)&stack;
-
-  for (i=0; i < 127; i++) {
-    fprintf(stderr, "%03d %p %lx\n", i, stack, *stack);
-    stack++;
-  }
 
   asm volatile("i32.const 8288\n\t"
                "%1\n\t"

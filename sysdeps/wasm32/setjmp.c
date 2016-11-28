@@ -9,14 +9,8 @@ int __sigsetjmp_fp (struct __jmp_buf_tag env[1], int __savemask,
   void *sp = NULL;
 
   long *stack = (long *)&stack;
-  int i;
 
   asm volatile(".flush");
-  fprintf(stderr, "%p\n", __fp);
-  for (i = 0; i < 100; i++) {
-    fprintf(stderr, "%03d %p %lx\n", i, stack, *stack);
-    stack++;
-  }
 
   asm volatile("%S0\n\t.flush\n\t%1\n\ti32.const 8\n\ti32.add\n\ti32.load a=2 0\n\t%R0" : "=r" (pc0) : "r" (__fp));
   asm volatile("%S0\n\tget_local $rpc\n\t%R0" : "=r" (rpc));
@@ -33,10 +27,9 @@ int __sigsetjmp_fp (struct __jmp_buf_tag env[1], int __savemask,
 
 int __sigsetjmp (jmp_buf env, int savemask)
 {
-  /* TODO get rid of this .flush. */
+  /* TODO get rid of this .flush. Except it's needed in the special
+   * case where a SIGFPE/SIGSEGV handler calls longjmp... */
   asm volatile(".flush");
-
-  fprintf(stderr, "env %p\n", env);
 
   void *x;
 
@@ -48,15 +41,8 @@ int __sigsetjmp (jmp_buf env, int savemask)
                : "=r" (x));
 
 
-  fprintf(stderr, "x0 %p\n", x);
-
   x = (void *)*(void **)x;
   x = (void *)*(void **)x;
-
-  fprintf(stderr, "x1 %p\n", x);
-
-  fprintf(stderr, "pc0 %p\n", *(void **)(x+8));
-  fprintf(stderr, "dpc %p\n", *(void **)(x+12));
 
   asm volatile(
                //"get_local $sp1\n\t"

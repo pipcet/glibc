@@ -4,8 +4,6 @@ int _setjmp(void *env)
 {
   asm volatile(".flush");
 
-  fprintf(stderr, "env %p\n", env);
-
   void *x;
 
   asm volatile("%S0\n\t"
@@ -16,15 +14,8 @@ int _setjmp(void *env)
                : "=r" (x));
 
 
-  fprintf(stderr, "x0 %p\n", x);
-
   x = (void *)*(void **)x;
   x = (void *)*(void **)x;
-
-  fprintf(stderr, "x1 %p\n", x);
-
-  fprintf(stderr, "pc0 %p\n", *(void **)(x+8));
-  fprintf(stderr, "dpc %p\n", *(void **)(x+12));
 
   asm volatile(
                //"get_local $sp1\n\t"
