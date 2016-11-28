@@ -21,4 +21,8 @@ struct __threadpage {
   unsigned long long a2;
   unsigned long long a3;
   unsigned long long tp;
+  unsigned long long sigfpe;
+  unsigned long long sigsegv;
 };
+
+#define __threadpage ((struct __threadpage *)(3 * 4096))

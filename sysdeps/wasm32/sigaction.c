@@ -17,7 +17,29 @@
 
 #include <errno.h>
 #include <signal.h>
+#include <zeropage.h>
 
+static struct sigaction __sigactions[NSIG];
+
+static int
+__sigaction_sigfpe (int sig, const struct sigaction *act,
+                    struct sigaction *oact)
+{
+  if (act)
+    __threadpage->sigfpe = (long long)(long)act->sa_handler;
+
+  return 0;
+}
+
+static int
+__sigaction_sigsegv (int sig, const struct sigaction *act,
+                     struct sigaction *oact)
+{
+  if (act)
+    __threadpage->sigsegv = (long long)(long)act->sa_handler;
+
+  return 0;
+}
 
 /* If ACT is not NULL, change the action for SIG to *ACT.
    If OACT is not NULL, put the old action for SIG in *OACT.  */
@@ -29,6 +51,18 @@ __sigaction (int sig, const struct sigaction *act, struct sigaction *oact)
       __set_errno (EINVAL);
       return -1;
     }
+
+  if (oact)
+    *oact = __sigactions[sig];
+
+  if (act) {
+    __sigactions[sig] = *act;
+
+    if (sig == SIGFPE)
+      __sigaction_sigfpe (sig, act, oact);
+    if (sig == SIGSEGV)
+      __sigaction_sigsegv (sig, act, oact);
+  }
 
   return 0;
 }
