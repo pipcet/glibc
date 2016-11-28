@@ -25,7 +25,8 @@
 
 typedef struct __jmp_buf_internal_tag
   {
-    void * __pc;
+    void * __pc0;
+    void * __rpc;
     void * __fp;
     void * __sp;
   } __jmp_buf[1];

@@ -118,7 +118,7 @@ extern int __sigsetjmp_fp (struct __jmp_buf_tag __env[1], int __savemask,
                            void *fp) __THROWNL;
 
 #define __sigsetjmp(env, savemask) __sigsetjmp_fp((env), (savemask), __builtin_frame_address(0))
-#define setjmp(env) sigsetjmp((env), 0)
-#define _setjmp(env) setjmp(env)
+//#define setjmp(env) sigsetjmp((env), 0)
+//#define _setjmp(env) setjmp(env)
 
 #endif /* setjmp.h  */
