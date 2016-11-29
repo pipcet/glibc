@@ -90,7 +90,7 @@ int __sigsetjmp (jmp_buf env, int savemask)
                "set_local $r1\n\t"
                ".dpc .LI7\n\t"
                "set_local $dpc\n\t"
-               "i32.const 0\n\t"
+               "i32.const -1\n\t"
                "get_local $sp\n\t"
                "%1\n\t"
                "get_local $r1\n\t"
