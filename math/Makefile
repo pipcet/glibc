@@ -27,7 +27,8 @@ headers		:= math.h bits/mathcalls.h bits/mathinline.h bits/huge_val.h \
 		   fpu_control.h complex.h bits/cmathcalls.h fenv.h \
 		   bits/fenv.h bits/fenvinline.h bits/mathdef.h tgmath.h \
 		   bits/math-finite.h bits/math-vector.h \
-		   bits/libm-simd-decl-stubs.h bits/iscanonical.h
+		   bits/libm-simd-decl-stubs.h bits/iscanonical.h \
+		   bits/flt-eval-method.h bits/fp-fast.h
 
 # FPU support code.
 aux		:= setfpucw fpu_control
@@ -51,7 +52,7 @@ gen-libm-calls = cargF conjF cimagF crealF cabsF s_cacosF		  \
 		 k_casinhF s_csinhF k_casinhF s_csinhF s_catanhF s_catanF \
 		 s_ctanF s_ctanhF s_cexpF s_clogF s_cprojF s_csqrtF	  \
 		 s_cpowF s_clog10F s_fdimF s_nextdownF s_fmaxF s_fminF	  \
-		 s_nanF s_iseqsigF s_canonicalizeF
+		 s_nanF s_iseqsigF s_canonicalizeF w_ilogbF
 
 libm-calls =								  \
 	e_acosF e_acoshF e_asinF e_atan2F e_atanhF e_coshF e_expF e_fmodF \
@@ -66,14 +67,13 @@ libm-calls =								  \
 	w_atan2F w_atanhF w_coshF w_expF w_exp2F w_exp10F w_fmodF	  \
 	w_tgammaF w_hypotF w_j0F w_j1F w_jnF w_lgammaF w_lgammaF_r	  \
 	w_logF w_log10F w_powF w_remainderF w_scalbF w_sinhF w_sqrtF	  \
-	w_ilogbF							  \
 	s_fpclassifyF s_truncF						  \
 	s_remquoF e_log2F e_exp2F s_roundF s_nearbyintF s_sincosF	  \
 	s_fmaF s_lrintF s_llrintF s_lroundF s_llroundF e_exp10F w_log2F	  \
 	s_issignalingF $(calls:s_%=m_%) x2y2m1F				  \
 	gamma_productF lgamma_negF lgamma_productF			  \
 	s_nextupF s_totalorderF s_totalordermagF s_getpayloadF		  \
-	$(gen-libm-calls)
+	s_setpayloadF s_setpayloadsigF $(gen-libm-calls)
 
 libm-compat-calls-ldouble-yes = w_lgamma_compatl k_standardl
 libm-compat-calls = w_lgamma_compatf w_lgamma_compat k_standard k_standardf \
@@ -158,7 +158,8 @@ tests = test-matherr test-fenv atest-exp atest-sincos atest-exp2 basic-test \
 	test-fexcept test-fexcept-traps test-fesetexcept \
 	test-fesetexcept-traps test-fetestexceptflag test-femode \
 	test-femode-traps test-iszero-excess-precision \
-	test-iseqsig-excess-precision $(tests-static)
+	test-iseqsig-excess-precision test-flt-eval-method \
+	test-fp-ilogb-constants $(tests-static)
 tests-static = test-fpucw-static test-fpucw-ieee-static \
 	       test-signgam-uchar-static test-signgam-uchar-init-static \
 	       test-signgam-uint-static test-signgam-uint-init-static \
@@ -271,6 +272,7 @@ CFLAGS-test-math-iszero.cc = -std=gnu++11
 
 CFLAGS-test-iszero-excess-precision.c = -fexcess-precision=standard
 CFLAGS-test-iseqsig-excess-precision.c = -fexcess-precision=standard
+CFLAGS-test-flt-eval-method.c = -fexcess-precision=standard
 
 # The -lieee module sets the _LIB_VERSION_ switch to IEEE mode
 # for error handling in the -lm functions.

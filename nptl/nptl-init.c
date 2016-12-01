@@ -184,18 +184,12 @@ __nptl_set_robust (struct pthread *self)
 static void
 sigcancel_handler (int sig, siginfo_t *si, void *ctx)
 {
-  /* Determine the process ID.  It might be negative if the thread is
-     in the middle of a fork() call.  */
-  pid_t pid = THREAD_GETMEM (THREAD_SELF, pid);
-  if (__glibc_unlikely (pid < 0))
-    pid = -pid;
-
   /* Safety check.  It would be possible to call this function for
      other signals and send a signal from another process.  This is not
      correct and might even be a security problem.  Try to catch as
      many incorrect invocations as possible.  */
   if (sig != SIGCANCEL
-      || si->si_pid != pid
+      || si->si_pid != __getpid()
       || si->si_code != SI_TKILL)
     return;
 
@@ -243,19 +237,14 @@ struct xid_command *__xidcmd attribute_hidden;
 static void
 sighandler_setxid (int sig, siginfo_t *si, void *ctx)
 {
-  /* Determine the process ID.  It might be negative if the thread is
-     in the middle of a fork() call.  */
-  pid_t pid = THREAD_GETMEM (THREAD_SELF, pid);
   int result;
-  if (__glibc_unlikely (pid < 0))
-    pid = -pid;
 
   /* Safety check.  It would be possible to call this function for
      other signals and send a signal from another process.  This is not
      correct and might even be a security problem.  Try to catch as
      many incorrect invocations as possible.  */
   if (sig != SIGSETXID
-      || si->si_pid != pid
+      || si->si_pid != __getpid ()
       || si->si_code != SI_TKILL)
     return;
 
@@ -467,10 +456,6 @@ __pthread_initialize_minimal_internal (void)
   lll_unlock (__default_pthread_attr_lock, LLL_PRIVATE);
 
 #ifdef SHARED
-  /* Transfer the old value from the dynamic linker's internal location.  */
-  *__libc_dl_error_tsd () = *(*GL(dl_error_catch_tsd)) ();
-  GL(dl_error_catch_tsd) = &__libc_dl_error_tsd;
-
   /* Make __rtld_lock_{,un}lock_recursive use pthread_mutex_{,un}lock,
      keep the lock count from the ld.so implementation.  */
   GL(dl_rtld_lock_recursive) = (void *) __pthread_mutex_lock;

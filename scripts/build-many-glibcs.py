@@ -22,42 +22,57 @@
 This script takes as arguments a directory name (containing a src
 subdirectory with sources of the relevant toolchain components) and a
 description of what to do: 'checkout', to check out sources into that
-directory, 'host-libraries', to build libraries required by the
-toolchain, 'compilers', to build cross-compilers for various
-configurations, or 'glibcs', to build glibc for various configurations
-and run the compilation parts of the testsuite.  Subsequent arguments
-name the versions of components to check out (<component>-<version),
-for 'checkout', or, for actions other than 'checkout', name
-configurations for which compilers or glibc are to be built.
+directory, 'bot-cycle', to run a series of checkout and build steps,
+'bot', to run 'bot-cycle' repeatedly, 'host-libraries', to build
+libraries required by the toolchain, 'compilers', to build
+cross-compilers for various configurations, or 'glibcs', to build
+glibc for various configurations and run the compilation parts of the
+testsuite.  Subsequent arguments name the versions of components to
+check out (<component>-<version), for 'checkout', or, for actions
+other than 'checkout' and 'bot-cycle', name configurations for which
+compilers or glibc are to be built.
+
 """
 
 import argparse
+import datetime
+import email.mime.text
+import email.utils
+import json
 import os
 import re
 import shutil
+import smtplib
 import stat
 import subprocess
 import sys
+import time
 import urllib.request
 
 
 class Context(object):
     """The global state associated with builds in a given directory."""
 
-    def __init__(self, topdir, parallelism, keep, action):
+    def __init__(self, topdir, parallelism, keep, replace_sources, action):
         """Initialize the context."""
         self.topdir = topdir
         self.parallelism = parallelism
         self.keep = keep
+        self.replace_sources = replace_sources
         self.srcdir = os.path.join(topdir, 'src')
+        self.versions_json = os.path.join(self.srcdir, 'versions.json')
+        self.build_state_json = os.path.join(topdir, 'build-state.json')
+        self.bot_config_json = os.path.join(topdir, 'bot-config.json')
         self.installdir = os.path.join(topdir, 'install')
         self.host_libraries_installdir = os.path.join(self.installdir,
                                                       'host-libraries')
         self.builddir = os.path.join(topdir, 'build')
         self.logsdir = os.path.join(topdir, 'logs')
+        self.logsdir_old = os.path.join(topdir, 'logs-old')
         self.makefile = os.path.join(self.builddir, 'Makefile')
         self.wrapper = os.path.join(self.builddir, 'wrapper')
         self.save_logs = os.path.join(self.builddir, 'save-logs')
+        self.script_text = self.get_script_text()
         if action != 'checkout':
             self.build_triplet = self.get_build_triplet()
             self.glibc_version = self.get_glibc_version()
@@ -65,6 +80,18 @@ class Context(object):
         self.glibc_configs = {}
         self.makefile_pieces = ['.PHONY: all\n']
         self.add_all_configs()
+        self.load_versions_json()
+        self.load_build_state_json()
+        self.status_log_list = []
+
+    def get_script_text(self):
+        """Return the text of this script."""
+        with open(sys.argv[0], 'r') as f:
+            return f.read()
+
+    def exec_self(self):
+        """Re-execute this script with the same arguments."""
+        os.execv(sys.executable, [sys.executable] + sys.argv)
 
     def get_build_triplet(self):
         """Determine the build triplet with config.guess."""
@@ -91,6 +118,11 @@ class Context(object):
 
     def add_all_configs(self):
         """Add all known glibc build configurations."""
+        # On architectures missing __builtin_trap support, these
+        # options may be needed as a workaround; see
+        # <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=70216> for SH.
+        no_isolate = ('-fno-isolate-erroneous-paths-dereference'
+                      ' -fno-isolate-erroneous-paths-attribute')
         self.add_config(arch='aarch64',
                         os_name='linux-gnu')
         self.add_config(arch='aarch64_be',
@@ -260,10 +292,6 @@ class Context(object):
                         os_name='linux-gnu',
                         glibcs=[{},
                                 {'arch': 's390', 'ccopts': '-m31'}])
-        # SH is missing __builtin_trap support, so work around this;
-        # see <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=70216>.
-        no_isolate = ('-fno-isolate-erroneous-paths-dereference'
-                      ' -fno-isolate-erroneous-paths-attribute')
         self.add_config(arch='sh3',
                         os_name='linux-gnu',
                         glibcs=[{'ccopts': no_isolate}])
@@ -373,17 +401,53 @@ class Context(object):
         if action == 'checkout':
             self.checkout(configs)
             return
-        elif action == 'host-libraries':
+        if action == 'bot-cycle':
             if configs:
-                print('error: configurations specified for host-libraries')
+                print('error: configurations specified for bot-cycle')
                 exit(1)
+            self.bot_cycle()
+            return
+        if action == 'bot':
+            if configs:
+                print('error: configurations specified for bot')
+                exit(1)
+            self.bot()
+            return
+        if action == 'host-libraries' and configs:
+            print('error: configurations specified for host-libraries')
+            exit(1)
+        self.clear_last_build_state(action)
+        build_time = datetime.datetime.utcnow()
+        if action == 'host-libraries':
+            build_components = ('gmp', 'mpfr', 'mpc')
+            old_components = ()
+            old_versions = {}
             self.build_host_libraries()
         elif action == 'compilers':
+            build_components = ('binutils', 'gcc', 'glibc', 'linux')
+            old_components = ('gmp', 'mpfr', 'mpc')
+            old_versions = self.build_state['host-libraries']['build-versions']
             self.build_compilers(configs)
         else:
+            build_components = ('glibc',)
+            old_components = ('gmp', 'mpfr', 'mpc', 'binutils', 'gcc', 'linux')
+            old_versions = self.build_state['compilers']['build-versions']
             self.build_glibcs(configs)
         self.write_files()
         self.do_build()
+        if configs:
+            # Partial build, do not update stored state.
+            return
+        build_versions = {}
+        for k in build_components:
+            if k in self.versions:
+                build_versions[k] = {'version': self.versions[k]['version'],
+                                     'revision': self.versions[k]['revision']}
+        for k in old_components:
+            if k in old_versions:
+                build_versions[k] = {'version': old_versions[k]['version'],
+                                     'revision': old_versions[k]['revision']}
+        self.update_build_state(action, build_time, build_versions)
 
     @staticmethod
     def remove_dirs(*args):
@@ -403,6 +467,7 @@ class Context(object):
         commands = cmdlist.makefile_commands(self.wrapper, logsdir)
         self.makefile_pieces.append('all: %s\n.PHONY: %s\n%s:\n%s\n' %
                                     (target, target, target, commands))
+        self.status_log_list.extend(cmdlist.status_logs(logsdir))
 
     def write_files(self):
         """Write out the Makefile and wrapper script."""
@@ -423,7 +488,17 @@ class Context(object):
             'date > "$this_log"\n'
             'echo >> "$this_log"\n'
             'echo "Description: $desc" >> "$this_log"\n'
-            'echo "Command: $*" >> "$this_log"\n'
+            'printf "%s" "Command:" >> "$this_log"\n'
+            'for word in "$@"; do\n'
+            '  if expr "$word" : "[]+,./0-9@A-Z_a-z-]\\\\{1,\\\\}\\$" > /dev/null; then\n'
+            '    printf " %s" "$word"\n'
+            '  else\n'
+            '    printf " \'"\n'
+            '    printf "%s" "$word" | sed -e "s/\'/\'\\\\\\\\\'\'/"\n'
+            '    printf "\'"\n'
+            '  fi\n'
+            'done >> "$this_log"\n'
+            'echo >> "$this_log"\n'
             'echo "Directory: $dir" >> "$this_log"\n'
             'echo "Path addition: $path" >> "$this_log"\n'
             'echo >> "$this_log"\n'
@@ -548,6 +623,32 @@ class Context(object):
         for c in configs:
             self.glibc_configs[c].build()
 
+    def load_versions_json(self):
+        """Load information about source directory versions."""
+        if not os.access(self.versions_json, os.F_OK):
+            self.versions = {}
+            return
+        with open(self.versions_json, 'r') as f:
+            self.versions = json.load(f)
+
+    def store_json(self, data, filename):
+        """Store information in a JSON file."""
+        filename_tmp = filename + '.tmp'
+        with open(filename_tmp, 'w') as f:
+            json.dump(data, f, indent=2, sort_keys=True)
+        os.rename(filename_tmp, filename)
+
+    def store_versions_json(self):
+        """Store information about source directory versions."""
+        self.store_json(self.versions, self.versions_json)
+
+    def set_component_version(self, component, version, explicit, revision):
+        """Set the version information for a component."""
+        self.versions[component] = {'version': version,
+                                    'explicit': explicit,
+                                    'revision': revision}
+        self.store_versions_json()
+
     def checkout(self, versions):
         """Check out the desired component versions."""
         default_versions = {'binutils': 'vcs-2.27',
@@ -558,6 +659,7 @@ class Context(object):
                             'mpc': '1.0.3',
                             'mpfr': '3.1.5'}
         use_versions = {}
+        explicit_versions = {}
         for v in versions:
             found_v = False
             for k in default_versions.keys():
@@ -568,6 +670,7 @@ class Context(object):
                         print('error: multiple versions for %s' % k)
                         exit(1)
                     use_versions[k] = vx
+                    explicit_versions[k] = True
                     found_v = True
                     break
             if not found_v:
@@ -575,19 +678,40 @@ class Context(object):
                 exit(1)
         for k in default_versions.keys():
             if k not in use_versions:
-                use_versions[k] = default_versions[k]
+                if k in self.versions and self.versions[k]['explicit']:
+                    use_versions[k] = self.versions[k]['version']
+                    explicit_versions[k] = True
+                else:
+                    use_versions[k] = default_versions[k]
+                    explicit_versions[k] = False
         os.makedirs(self.srcdir, exist_ok=True)
         for k in sorted(default_versions.keys()):
             update = os.access(self.component_srcdir(k), os.F_OK)
             v = use_versions[k]
+            if (update and
+                k in self.versions and
+                v != self.versions[k]['version']):
+                if not self.replace_sources:
+                    print('error: version of %s has changed from %s to %s, '
+                          'use --replace-sources to check out again' %
+                          (k, self.versions[k]['version'], v))
+                    exit(1)
+                shutil.rmtree(self.component_srcdir(k))
+                update = False
             if v.startswith('vcs-'):
-                self.checkout_vcs(k, v[4:], update)
+                revision = self.checkout_vcs(k, v[4:], update)
             else:
                 self.checkout_tar(k, v, update)
+                revision = v
+            self.set_component_version(k, v, explicit_versions[k], revision)
+        if self.get_script_text() != self.script_text:
+            # Rerun the checkout process in case the updated script
+            # uses different default versions or new components.
+            self.exec_self()
 
     def checkout_vcs(self, component, version, update):
         """Check out the given version of the given component from version
-        control."""
+        control.  Return a revision identifier."""
         if component == 'binutils':
             git_url = 'git://sourceware.org/git/binutils-gdb.git'
             if version == 'mainline':
@@ -595,7 +719,7 @@ class Context(object):
             else:
                 trans = str.maketrans({'.': '_'})
                 git_branch = 'binutils-%s-branch' % version.translate(trans)
-            self.git_checkout(component, git_url, git_branch, update)
+            return self.git_checkout(component, git_url, git_branch, update)
         elif component == 'gcc':
             if version == 'mainline':
                 branch = 'trunk'
@@ -603,21 +727,22 @@ class Context(object):
                 trans = str.maketrans({'.': '_'})
                 branch = 'branches/gcc-%s-branch' % version.translate(trans)
             svn_url = 'svn://gcc.gnu.org/svn/gcc/%s' % branch
-            self.gcc_checkout(svn_url, update)
+            return self.gcc_checkout(svn_url, update)
         elif component == 'glibc':
             git_url = 'git://sourceware.org/git/glibc.git'
             if version == 'mainline':
                 git_branch = 'master'
             else:
                 git_branch = 'release/%s/master' % version
-            self.git_checkout(component, git_url, git_branch, update)
+            r = self.git_checkout(component, git_url, git_branch, update)
             self.fix_glibc_timestamps()
+            return r
         else:
             print('error: component %s coming from VCS' % component)
             exit(1)
 
     def git_checkout(self, component, git_url, git_branch, update):
-        """Check out a component from git."""
+        """Check out a component from git.  Return a commit identifier."""
         if update:
             subprocess.run(['git', 'remote', 'prune', 'origin'],
                            cwd=self.component_srcdir(component), check=True)
@@ -626,6 +751,11 @@ class Context(object):
         else:
             subprocess.run(['git', 'clone', '-q', '-b', git_branch, git_url,
                             self.component_srcdir(component)], check=True)
+        r = subprocess.run(['git', 'rev-parse', 'HEAD'],
+                           cwd=self.component_srcdir(component),
+                           stdout=subprocess.PIPE,
+                           check=True, universal_newlines=True).stdout
+        return r.rstrip()
 
     def fix_glibc_timestamps(self):
         """Fix timestamps in a glibc checkout."""
@@ -641,12 +771,16 @@ class Context(object):
                     subprocess.run(['touch', to_touch], check=True)
 
     def gcc_checkout(self, svn_url, update):
-        """Check out GCC from SVN."""
+        """Check out GCC from SVN.  Return the revision number."""
         if not update:
             subprocess.run(['svn', 'co', '-q', svn_url,
                             self.component_srcdir('gcc')], check=True)
         subprocess.run(['contrib/gcc_update', '--silent'],
                        cwd=self.component_srcdir('gcc'), check=True)
+        r = subprocess.run(['svnversion', self.component_srcdir('gcc')],
+                           stdout=subprocess.PIPE,
+                           check=True, universal_newlines=True).stdout
+        return r.rstrip()
 
     def checkout_tar(self, component, version, update):
         """Check out the given version of the given component from a
@@ -673,6 +807,240 @@ class Context(object):
         os.rename(os.path.join(self.srcdir, '%s-%s' % (component, version)),
                   self.component_srcdir(component))
         os.remove(filename)
+
+    def load_build_state_json(self):
+        """Load information about the state of previous builds."""
+        if os.access(self.build_state_json, os.F_OK):
+            with open(self.build_state_json, 'r') as f:
+                self.build_state = json.load(f)
+        else:
+            self.build_state = {}
+        for k in ('host-libraries', 'compilers', 'glibcs'):
+            if k not in self.build_state:
+                self.build_state[k] = {}
+            if 'build-time' not in self.build_state[k]:
+                self.build_state[k]['build-time'] = ''
+            if 'build-versions' not in self.build_state[k]:
+                self.build_state[k]['build-versions'] = {}
+            if 'build-results' not in self.build_state[k]:
+                self.build_state[k]['build-results'] = {}
+            if 'result-changes' not in self.build_state[k]:
+                self.build_state[k]['result-changes'] = {}
+            if 'ever-passed' not in self.build_state[k]:
+                self.build_state[k]['ever-passed'] = []
+
+    def store_build_state_json(self):
+        """Store information about the state of previous builds."""
+        self.store_json(self.build_state, self.build_state_json)
+
+    def clear_last_build_state(self, action):
+        """Clear information about the state of part of the build."""
+        # We clear the last build time and versions when starting a
+        # new build.  The results of the last build are kept around,
+        # as comparison is still meaningful if this build is aborted
+        # and a new one started.
+        self.build_state[action]['build-time'] = ''
+        self.build_state[action]['build-versions'] = {}
+        self.store_build_state_json()
+
+    def update_build_state(self, action, build_time, build_versions):
+        """Update the build state after a build."""
+        build_time = build_time.replace(microsecond=0)
+        self.build_state[action]['build-time'] = str(build_time)
+        self.build_state[action]['build-versions'] = build_versions
+        build_results = {}
+        for log in self.status_log_list:
+            with open(log, 'r') as f:
+                log_text = f.read()
+            log_text = log_text.rstrip()
+            m = re.fullmatch('([A-Z]+): (.*)', log_text)
+            result = m.group(1)
+            test_name = m.group(2)
+            assert test_name not in build_results
+            build_results[test_name] = result
+        old_build_results = self.build_state[action]['build-results']
+        self.build_state[action]['build-results'] = build_results
+        result_changes = {}
+        all_tests = set(old_build_results.keys()) | set(build_results.keys())
+        for t in all_tests:
+            if t in old_build_results:
+                old_res = old_build_results[t]
+            else:
+                old_res = '(New test)'
+            if t in build_results:
+                new_res = build_results[t]
+            else:
+                new_res = '(Test removed)'
+            if old_res != new_res:
+                result_changes[t] = '%s -> %s' % (old_res, new_res)
+        self.build_state[action]['result-changes'] = result_changes
+        old_ever_passed = {t for t in self.build_state[action]['ever-passed']
+                           if t in build_results}
+        new_passes = {t for t in build_results if build_results[t] == 'PASS'}
+        self.build_state[action]['ever-passed'] = sorted(old_ever_passed |
+                                                         new_passes)
+        self.store_build_state_json()
+
+    def load_bot_config_json(self):
+        """Load bot configuration."""
+        with open(self.bot_config_json, 'r') as f:
+            self.bot_config = json.load(f)
+
+    def part_build_old(self, action, delay):
+        """Return whether the last build for a given action was at least a
+        given number of seconds ago, or does not have a time recorded."""
+        old_time_str = self.build_state[action]['build-time']
+        if not old_time_str:
+            return True
+        old_time = datetime.datetime.strptime(old_time_str,
+                                              '%Y-%m-%d %H:%M:%S')
+        new_time = datetime.datetime.utcnow()
+        delta = new_time - old_time
+        return delta.total_seconds() >= delay
+
+    def bot_cycle(self):
+        """Run a single round of checkout and builds."""
+        print('Bot cycle starting %s.' % str(datetime.datetime.utcnow()))
+        self.load_bot_config_json()
+        actions = ('host-libraries', 'compilers', 'glibcs')
+        self.bot_run_self(['--replace-sources'], 'checkout')
+        self.load_versions_json()
+        if self.get_script_text() != self.script_text:
+            print('Script changed, re-execing.')
+            # On script change, all parts of the build should be rerun.
+            for a in actions:
+                self.clear_last_build_state(a)
+            self.exec_self()
+        check_components = {'host-libraries': ('gmp', 'mpfr', 'mpc'),
+                            'compilers': ('binutils', 'gcc', 'glibc', 'linux'),
+                            'glibcs': ('glibc',)}
+        must_build = {}
+        for a in actions:
+            build_vers = self.build_state[a]['build-versions']
+            must_build[a] = False
+            if not self.build_state[a]['build-time']:
+                must_build[a] = True
+            old_vers = {}
+            new_vers = {}
+            for c in check_components[a]:
+                if c in build_vers:
+                    old_vers[c] = build_vers[c]
+                new_vers[c] = {'version': self.versions[c]['version'],
+                               'revision': self.versions[c]['revision']}
+            if new_vers == old_vers:
+                print('Versions for %s unchanged.' % a)
+            else:
+                print('Versions changed or rebuild forced for %s.' % a)
+                if a == 'compilers' and not self.part_build_old(
+                        a, self.bot_config['compilers-rebuild-delay']):
+                    print('Not requiring rebuild of compilers this soon.')
+                else:
+                    must_build[a] = True
+        if must_build['host-libraries']:
+            must_build['compilers'] = True
+        if must_build['compilers']:
+            must_build['glibcs'] = True
+        for a in actions:
+            if must_build[a]:
+                print('Must rebuild %s.' % a)
+                self.clear_last_build_state(a)
+            else:
+                print('No need to rebuild %s.' % a)
+        if os.access(self.logsdir, os.F_OK):
+            shutil.rmtree(self.logsdir_old, ignore_errors=True)
+            shutil.copytree(self.logsdir, self.logsdir_old)
+        for a in actions:
+            if must_build[a]:
+                build_time = datetime.datetime.utcnow()
+                print('Rebuilding %s at %s.' % (a, str(build_time)))
+                self.bot_run_self([], a)
+                self.load_build_state_json()
+                self.bot_build_mail(a, build_time)
+        print('Bot cycle done at %s.' % str(datetime.datetime.utcnow()))
+
+    def bot_build_mail(self, action, build_time):
+        """Send email with the results of a build."""
+        build_time = build_time.replace(microsecond=0)
+        subject = (self.bot_config['email-subject'] %
+                   {'action': action,
+                    'build-time': str(build_time)})
+        results = self.build_state[action]['build-results']
+        changes = self.build_state[action]['result-changes']
+        ever_passed = set(self.build_state[action]['ever-passed'])
+        versions = self.build_state[action]['build-versions']
+        new_regressions = {k for k in changes if changes[k] == 'PASS -> FAIL'}
+        all_regressions = {k for k in ever_passed if results[k] == 'FAIL'}
+        all_fails = {k for k in results if results[k] == 'FAIL'}
+        if new_regressions:
+            new_reg_list = sorted(['FAIL: %s' % k for k in new_regressions])
+            new_reg_text = ('New regressions:\n\n%s\n\n' %
+                            '\n'.join(new_reg_list))
+        else:
+            new_reg_text = ''
+        if all_regressions:
+            all_reg_list = sorted(['FAIL: %s' % k for k in all_regressions])
+            all_reg_text = ('All regressions:\n\n%s\n\n' %
+                            '\n'.join(all_reg_list))
+        else:
+            all_reg_text = ''
+        if all_fails:
+            all_fail_list = sorted(['FAIL: %s' % k for k in all_fails])
+            all_fail_text = ('All failures:\n\n%s\n\n' %
+                             '\n'.join(all_fail_list))
+        else:
+            all_fail_text = ''
+        if changes:
+            changes_list = sorted(changes.keys())
+            changes_list = ['%s: %s' % (changes[k], k) for k in changes_list]
+            changes_text = ('All changed results:\n\n%s\n\n' %
+                            '\n'.join(changes_list))
+        else:
+            changes_text = ''
+        results_text = (new_reg_text + all_reg_text + all_fail_text +
+                        changes_text)
+        if not results_text:
+            results_text = 'Clean build with unchanged results.\n\n'
+        versions_list = sorted(versions.keys())
+        versions_list = ['%s: %s (%s)' % (k, versions[k]['version'],
+                                          versions[k]['revision'])
+                         for k in versions_list]
+        versions_text = ('Component versions for this build:\n\n%s\n' %
+                         '\n'.join(versions_list))
+        body_text = results_text + versions_text
+        msg = email.mime.text.MIMEText(body_text)
+        msg['Subject'] = subject
+        msg['From'] = self.bot_config['email-from']
+        msg['To'] = self.bot_config['email-to']
+        msg['Message-ID'] = email.utils.make_msgid()
+        msg['Date'] = email.utils.format_datetime(datetime.datetime.utcnow())
+        with smtplib.SMTP(self.bot_config['email-server']) as s:
+            s.send_message(msg)
+
+    def bot_run_self(self, opts, action, check=True):
+        """Run a copy of this script with given options."""
+        cmd = [sys.executable, sys.argv[0], '--keep=none',
+               '-j%d' % self.parallelism]
+        cmd.extend(opts)
+        cmd.extend([self.topdir, action])
+        sys.stdout.flush()
+        subprocess.run(cmd, check=check)
+
+    def bot(self):
+        """Run repeated rounds of checkout and builds."""
+        while True:
+            self.load_bot_config_json()
+            if not self.bot_config['run']:
+                print('Bot exiting by request.')
+                exit(0)
+            self.bot_run_self([], 'bot-cycle', check=False)
+            self.load_bot_config_json()
+            if not self.bot_config['run']:
+                print('Bot exiting by request.')
+                exit(0)
+            time.sleep(self.bot_config['delay'])
+            if self.get_script_text() != self.script_text:
+                print('Script changed, bot re-execing.')
+                self.exec_self()
 
 
 class Config(object):
@@ -813,6 +1181,10 @@ class Config(object):
         # relevance with glibc's own stack checking support.
         cfg_opts = list(self.gcc_cfg)
         cfg_opts += ['--disable-libsanitizer', '--disable-libssp']
+        host_libs = self.ctx.host_libraries_installdir
+        cfg_opts += ['--with-gmp=%s' % host_libs,
+                     '--with-mpfr=%s' % host_libs,
+                     '--with-mpc=%s' % host_libs]
         if bootstrap:
             tool_build = 'gcc-first'
             # Building a static-only, C-only compiler that is
@@ -1099,6 +1471,11 @@ class CommandList(object):
             cmds.append('\t@%s %s' % (prelim_txt, ctxt))
         return '\n'.join(cmds)
 
+    def status_logs(self, logsdir):
+        """Return the list of log files with command status."""
+        return [os.path.join(logsdir, '%s-status.txt' % c.logbase)
+                for c in self.cmdlist]
+
 
 def get_parser():
     """Return an argument parser for this module."""
@@ -1110,12 +1487,15 @@ def get_parser():
                         help='Whether to keep all build directories, '
                         'none or only those from failed builds',
                         default='none', choices=('none', 'all', 'failed'))
+    parser.add_argument('--replace-sources', action='store_true',
+                        help='Remove and replace source directories '
+                        'with the wrong version of a component')
     parser.add_argument('topdir',
                         help='Toplevel working directory')
     parser.add_argument('action',
                         help='What to do',
-                        choices=('checkout', 'host-libraries', 'compilers',
-                                 'glibcs'))
+                        choices=('checkout', 'bot-cycle', 'bot',
+                                 'host-libraries', 'compilers', 'glibcs'))
     parser.add_argument('configs',
                         help='Versions to check out or configurations to build',
                         nargs='*')
@@ -1127,7 +1507,8 @@ def main(argv):
     parser = get_parser()
     opts = parser.parse_args(argv)
     topdir = os.path.abspath(opts.topdir)
-    ctx = Context(topdir, opts.parallelism, opts.keep, opts.action)
+    ctx = Context(topdir, opts.parallelism, opts.keep, opts.replace_sources,
+                  opts.action)
     ctx.run_builds(opts.action, opts.configs)
 
 
