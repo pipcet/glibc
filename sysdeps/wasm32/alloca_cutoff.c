@@ -19,8 +19,6 @@
 #include <alloca.h>
 #include <stdlib.h>
 #include <sys/param.h>
-#include <pthreadP.h>
-
 
 int
 __libc_alloca_cutoff (size_t size)

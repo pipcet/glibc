@@ -65,7 +65,6 @@ static struct catch *catch_hook;
    a pointer comparison.  See below and in dlfcn/dlerror.c.  */
 static const char _dl_out_of_memory[] = "out of memory";
 
-#if DL_ERROR_BOOTSTRAP
 /* This points to a function which is called when an continuable error is
    received.  Unlike the handling of `catch' this function may return.
    The arguments will be the `errstring' and `objname'.
@@ -74,7 +73,6 @@ static const char _dl_out_of_memory[] = "out of memory";
    we do not care about multi-threaded programs here.  We keep this as a
    global variable.  */
 static receiver_fct receiver;
-#endif /* DL_ERROR_BOOTSTRAP */
 
 void
 internal_function
@@ -144,7 +142,6 @@ _dl_signal_error (int errcode, const char *objname, const char *occation,
 libc_hidden_def (_dl_signal_error)
 
 
-#if DL_ERROR_BOOTSTRAP
 void
 internal_function
 _dl_signal_cerror (int errcode, const char *objname, const char *occation,
@@ -165,8 +162,6 @@ _dl_signal_cerror (int errcode, const char *objname, const char *occation,
   else
     _dl_signal_error (errcode, objname, occation, errstring);
 }
-#endif /* DL_ERROR_BOOTSTRAP */
-
 
 int
 internal_function
