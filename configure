@@ -5345,7 +5345,7 @@ if ${CC-cc} $CFLAGS $CPPFLAGS $LDFLAGS \
 	    -o conftest conftest.s conftest1.c 1>&5 2>&5; then
   libc_cv_asm_set_directive=yes
 else
-  libc_cv_asm_set_directive=no
+  libc_cv_asm_set_directive=yes
 fi
 rm -f conftest*
 fi

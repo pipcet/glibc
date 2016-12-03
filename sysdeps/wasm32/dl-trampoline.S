@@ -16,7 +16,10 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-	.text
+	.include "wasm32-macros.s"
 	.globl _dl_runtime_resolve
-	.type _dl_runtime_resolve, @function
-_dl_runtime_resolve:
+        defun _dl_runtime_resolve, FiiiiiiiE
+        i32.const 0
+        return
+        end
+        endefun _dl_runtime_resolve
