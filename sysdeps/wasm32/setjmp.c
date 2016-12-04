@@ -106,7 +106,7 @@ int __sigsetjmp (jmp_buf env, int savemask)
                "get_local $rp\n\t"
                "i32.and\n\t"
                "if[]\n\t"
-               "throw1\n\t"
+               "throw\n\t"
                "end\n\t"
                ".wasmtextlabeldpcdef .LI7\n\t"
                : : "r" (0), "r" (env));

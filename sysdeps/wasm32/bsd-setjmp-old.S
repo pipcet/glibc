@@ -42,7 +42,7 @@
         get_local $rp
         i32.and
         if[]
-        throw1
+        throw
         end
         end
         .wasmtextlabeldpcdef .LI7
