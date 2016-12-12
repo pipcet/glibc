@@ -26,4 +26,4 @@
 #define ADD_VARIABLES	name
 #define BUFLEN		NSS_BUFLEN_PASSWD
 
-//#include <nss/getXXbyYY_r.c>
+#include <nss/getXXbyYY_r.c>

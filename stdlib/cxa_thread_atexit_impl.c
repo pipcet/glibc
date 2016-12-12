@@ -131,7 +131,7 @@ __cxa_thread_atexit_impl (dtor_func func, void *obj, void *dso_symbol)
      _dl_close_worker is protected by the dl_load_lock.  The execution in
      __call_tls_dtors does not really depend on this value beyond the fact that
      it should be atomic, so Relaxed MO should be sufficient.  */
-  atomic_fetch_add_relaxed (&lm_cache->l_tls_dtor_count, 1);
+  //atomic_fetch_add_relaxed (&lm_cache->l_tls_dtor_count, 1);
   __rtld_lock_unlock_recursive (GL(dl_load_lock));
 
   new->map = lm_cache;
@@ -159,7 +159,7 @@ __call_tls_dtors (void)
 	 l_tls_dtor_count decrement.  That way, we protect this access from a
 	 potential DSO unload in _dl_close_worker, which happens when
 	 l_tls_dtor_count is 0.  See CONCURRENCY NOTES for more detail.  */
-      atomic_fetch_add_release (&cur->map->l_tls_dtor_count, -1);
+      //atomic_fetch_add_release (&cur->map->l_tls_dtor_count, -1);
       free (cur);
     }
 }
