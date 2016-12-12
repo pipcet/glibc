@@ -235,7 +235,7 @@ static const uint8_t jump_table[] =
 #define NOT_IN_JUMP_RANGE(Ch) ((Ch) < L_(' ') || (Ch) > L_('z'))
 #define CHAR_CLASS(Ch) (jump_table[(INT_T) (Ch) - L_(' ')])
 #define LABEL(Name) do_##Name
-#ifdef SHARED
+#if 1
   /* 'int' is enough and it saves some space on 64 bit systems.  */
 # define JUMP_TABLE_TYPE const int
 # define JUMP_TABLE_BASE_LABEL do_form_unknown
