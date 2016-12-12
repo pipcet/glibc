@@ -19,6 +19,9 @@
 	.include "wasm32-macros.s"
 	.globl _dl_runtime_resolve
         defun _dl_runtime_resolve, FiiiiiiiE
+        nextcase
+        nextcase
+        end
         i32.const 0
         return
         end
