@@ -31,7 +31,6 @@
 .*-.*-nacl.*		6	42.0.0	# earliest compatible Chromium version
 
 asmjs-virtual-.*        7       0.0.0
-wasm-virtual-.*         8       0.0.0
 wasm32-virtual-.*      10       0.0.0
 wasm64-virtual-.*       9       0.0.0
 
