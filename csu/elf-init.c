@@ -49,7 +49,9 @@ extern void (*__init_array_end []) (int, char **, char **)
 extern void (*__fini_array_start []) (void) attribute_hidden;
 extern void (*__fini_array_end []) (void) attribute_hidden;
 
+#ifdef __ASMJS__
 #define MULTIFILE
+#endif
 #ifdef MULTIFILE
 struct multifile_header {
   unsigned long long data_start;
@@ -93,8 +95,8 @@ __libc_csu_fini_multifile (void)
 {
   struct multifile_header *mfh = (struct multifile_header *)16384;
   while (mfh->terminator) {
-    void (**array_start)(void) = (void (**)(void))(long)mfh->preinit_array_start;
-    void (**array_end)(void) = (void (**)(void))(long)mfh->preinit_array_end;
+    void (**array_start)(void) = (void (**)(void))(long)mfh->fini_array_start;
+    void (**array_end)(void) = (void (**)(void))(long)mfh->fini_array_end;
     while (array_start < array_end) {
       array_end--;
       (**array_end)();
@@ -142,7 +144,9 @@ __libc_csu_init (int argc, char **argv, char **envp)
   for (size_t i = 0; i < size; i++)
       (*__init_array_start [i]) (argc, argv, envp);
 
+#ifdef MULTIFILE
   __libc_csu_init_multifile (argc, argv, envp);
+#endif
 }
 
 /* This function should not be used anymore.  We run the executable's
@@ -152,7 +156,9 @@ void
 __libc_csu_fini (void)
 {
 #ifndef LIBC_NONSHARED
+#ifdef MULTIFILE
   __libc_csu_fini_multifile ();
+#endif
 
   size_t i = __fini_array_end - __fini_array_start;
   while (i-- > 0)
