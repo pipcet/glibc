@@ -22,6 +22,7 @@ struct __threadpage {
   unsigned long long a3;
   unsigned long long tp;
   unsigned long long lp;
+  unsigned long long lazyload;
   unsigned long long sigfpe;
   unsigned long long sigsegv;
 };
