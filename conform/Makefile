@@ -1,4 +1,4 @@
-# Copyright (C) 1999-2016 Free Software Foundation, Inc.
+# Copyright (C) 1999-2017 Free Software Foundation, Inc.
 # This file is part of the GNU C Library.
 
 # The GNU C Library is free software; you can redistribute it and/or
@@ -226,6 +226,8 @@ linknamespace-libs-UNIX98 = $(linknamespace-libs-xsi)
 linknamespace-libs-XOPEN2K = $(linknamespace-libs-xsi)
 linknamespace-libs-POSIX2008 = $(linknamespace-libs-posix)
 linknamespace-libs-XOPEN2K8 = $(linknamespace-libs-xsi)
+linknamespace-libs = $(foreach std,$(conformtest-standards),\
+				   $(linknamespace-libs-$(std)))
 
 $(linknamespace-symlist-stdlibs-tests): $(objpfx)symlist-stdlibs-%: \
 					$(linknamespace-libs)

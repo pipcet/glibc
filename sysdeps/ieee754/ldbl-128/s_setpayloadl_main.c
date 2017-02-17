@@ -1,5 +1,5 @@
 /* Set NaN payload.  ldbl-128 version.
-   Copyright (C) 2016 Free Software Foundation, Inc.
+   Copyright (C) 2016-2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -27,7 +27,7 @@
 #define EXPLICIT_MANT_DIG 112
 
 int
-FUNC (long double *x, long double payload)
+FUNC (_Float128 *x, _Float128 payload)
 {
   uint64_t hx, lx;
   GET_LDOUBLE_WORDS64 (hx, lx, payload);

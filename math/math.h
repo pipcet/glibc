@@ -1,5 +1,5 @@
 /* Declarations for math functions.
-   Copyright (C) 1991-2016 Free Software Foundation, Inc.
+   Copyright (C) 1991-2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -27,6 +27,9 @@
 #include <bits/libc-header-start.h>
 
 __BEGIN_DECLS
+
+/* Get definitions of __intmax_t and __uintmax_t.  */
+#include <bits/types.h>
 
 /* Get machine-dependent vector math functions declarations.  */
 #include <bits/math-vector.h>
@@ -97,14 +100,46 @@ typedef _Float128x double_t;
 # endif
 #endif
 
-/* Define macros for the return value of ilogb.
+/* Define macros for the return values of ilogb and llogb, based on
+   __FP_LOGB0_IS_MIN and __FP_LOGBNAN_IS_MIN.
 
     FP_ILOGB0	Expands to a value returned by `ilogb (0.0)'.
     FP_ILOGBNAN	Expands to a value returned by `ilogb (NAN)'.
+    FP_LLOGB0	Expands to a value returned by `llogb (0.0)'.
+    FP_LLOGBNAN	Expands to a value returned by `llogb (NAN)'.
 
 */
 
-#include <bits/mathdef.h>
+#include <bits/fp-logb.h>
+#ifdef __USE_ISOC99
+# if __FP_LOGB0_IS_MIN
+#  define FP_ILOGB0	(-2147483647 - 1)
+# else
+#  define FP_ILOGB0	(-2147483647)
+# endif
+# if __FP_LOGBNAN_IS_MIN
+#  define FP_ILOGBNAN	(-2147483647 - 1)
+# else
+#  define FP_ILOGBNAN	2147483647
+# endif
+#endif
+#if __GLIBC_USE (IEC_60559_BFP_EXT)
+# if __WORDSIZE == 32
+#  define __FP_LONG_MAX 0x7fffffffL
+# else
+#  define __FP_LONG_MAX 0x7fffffffffffffffL
+# endif
+# if __FP_LOGB0_IS_MIN
+#  define FP_LLOGB0	(-__FP_LONG_MAX - 1)
+# else
+#  define FP_LLOGB0	(-__FP_LONG_MAX)
+# endif
+# if __FP_LOGBNAN_IS_MIN
+#  define FP_LLOGBNAN	(-__FP_LONG_MAX - 1)
+# else
+#  define FP_LLOGBNAN	__FP_LONG_MAX
+# endif
+#endif
 
 /* Get the architecture specific values describing the floating-point
    evaluation.  The following symbols will get defined:
@@ -119,6 +154,28 @@ typedef _Float128x double_t;
 */
 
 #include <bits/fp-fast.h>
+
+#if __GLIBC_USE (IEC_60559_BFP_EXT)
+/* Rounding direction macros for fromfp functions.  */
+enum
+  {
+    FP_INT_UPWARD =
+# define FP_INT_UPWARD 0
+      FP_INT_UPWARD,
+    FP_INT_DOWNWARD =
+# define FP_INT_DOWNWARD 1
+      FP_INT_DOWNWARD,
+    FP_INT_TOWARDZERO =
+# define FP_INT_TOWARDZERO 2
+      FP_INT_TOWARDZERO,
+    FP_INT_TONEARESTFROMZERO =
+# define FP_INT_TONEARESTFROMZERO 3
+      FP_INT_TONEARESTFROMZERO,
+    FP_INT_TONEAREST =
+# define FP_INT_TONEAREST 4
+      FP_INT_TONEAREST,
+  };
+#endif
 
 /* The file <bits/mathcalls.h> contains the prototypes for all the
    actual math functions.  These macros are used for those prototypes,

@@ -1,4 +1,4 @@
-/* Copyright (C) 1991-2016 Free Software Foundation, Inc.
+/* Copyright (C) 1991-2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -33,8 +33,9 @@
 DIAG_IGNORE_NEEDS_COMMENT (4.9, "-Wformat");
 
 #if __GNUC_PREREQ (7, 0)
-/* Compiler warnings about format lengths should also be ignored.  */
-DIAG_IGNORE_NEEDS_COMMENT (7.0, "-Wformat-length");
+/* Compiler warnings about snprintf output truncation should also be
+   ignored.  */
+DIAG_IGNORE_NEEDS_COMMENT (7.0, "-Wformat-truncation");
 #endif
 
 static void rfg1 (void);

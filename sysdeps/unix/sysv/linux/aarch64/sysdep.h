@@ -1,4 +1,4 @@
-/* Copyright (C) 2005-2016 Free Software Foundation, Inc.
+/* Copyright (C) 2005-2017 Free Software Foundation, Inc.
 
    This file is part of the GNU C Library.
 
@@ -108,7 +108,7 @@
 .Lsyscall_error:						\
 	adrp	x1, :gottprel:errno;				\
 	neg	w2, w0;						\
-	ldr	x1, [x1, :gottprel_lo12:errno];			\
+	ldr	PTR_REG(1), [x1, :gottprel_lo12:errno];		\
 	mrs	x3, tpidr_el0;					\
 	mov	x0, -1;						\
 	str	w2, [x1, x3];					\

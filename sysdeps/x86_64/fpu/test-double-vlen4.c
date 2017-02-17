@@ -1,5 +1,5 @@
 /* Tests for AVX ISA versions of vector math functions.
-   Copyright (C) 2014-2016 Free Software Foundation, Inc.
+   Copyright (C) 2014-2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -16,15 +16,6 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include "test-double-vlen4.h"
-
-#define TEST_VECTOR_cos 1
-#define TEST_VECTOR_sin 1
-#define TEST_VECTOR_sincos 1
-#define TEST_VECTOR_log 1
-#define TEST_VECTOR_exp 1
-#define TEST_VECTOR_pow 1
-
-#define REQUIRE_AVX
+#include <test-double-vlen4.h>
 
 #include "libm-test.c"

@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # Build many configurations of glibc.
-# Copyright (C) 2016 Free Software Foundation, Inc.
+# Copyright (C) 2016-2017 Free Software Foundation, Inc.
 # This file is part of the GNU C Library.
 #
 # The GNU C Library is free software; you can redistribute it and/or
@@ -49,16 +49,55 @@ import sys
 import time
 import urllib.request
 
+try:
+    os.cpu_count
+except:
+    import multiprocessing
+    os.cpu_count = lambda: multiprocessing.cpu_count()
+
+try:
+    re.fullmatch
+except:
+    re.fullmatch = lambda p,s,f=0: re.match(p+"\\Z",s,f)
+
+try:
+    subprocess.run
+except:
+    class _CompletedProcess:
+        def __init__(self, args, returncode, stdout=None, stderr=None):
+            self.args = args
+            self.returncode = returncode
+            self.stdout = stdout
+            self.stderr = stderr
+
+    def _run(*popenargs, input=None, timeout=None, check=False, **kwargs):
+        assert(timeout is None)
+        with subprocess.Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input)
+            except:
+                process.kill()
+                process.wait()
+                raise
+            returncode = process.poll()
+            if check and returncode:
+                raise subprocess.CalledProcessError(returncode, popenargs)
+        return _CompletedProcess(popenargs, returncode, stdout, stderr)
+
+    subprocess.run = _run
+
 
 class Context(object):
     """The global state associated with builds in a given directory."""
 
-    def __init__(self, topdir, parallelism, keep, replace_sources, action):
+    def __init__(self, topdir, parallelism, keep, replace_sources, strip,
+                 action):
         """Initialize the context."""
         self.topdir = topdir
         self.parallelism = parallelism
         self.keep = keep
         self.replace_sources = replace_sources
+        self.strip = strip
         self.srcdir = os.path.join(topdir, 'src')
         self.versions_json = os.path.join(self.srcdir, 'versions.json')
         self.build_state_json = os.path.join(topdir, 'build-state.json')
@@ -83,6 +122,7 @@ class Context(object):
         self.load_versions_json()
         self.load_build_state_json()
         self.status_log_list = []
+        self.email_warning = False
 
     def get_script_text(self):
         """Return the text of this script."""
@@ -91,6 +131,7 @@ class Context(object):
 
     def exec_self(self):
         """Re-execute this script with the same arguments."""
+        sys.stdout.flush()
         os.execv(sys.executable, [sys.executable] + sys.argv)
 
     def get_build_triplet(self):
@@ -265,7 +306,10 @@ class Context(object):
                         os_name='linux-gnu')
         self.add_config(arch='powerpc',
                         os_name='linux-gnu',
-                        gcc_cfg=['--disable-multilib', '--enable-secureplt'])
+                        gcc_cfg=['--disable-multilib', '--enable-secureplt'],
+                        extra_glibcs=[{'variant': 'power4',
+                                       'ccopts': '-mcpu=power4',
+                                       'cfg': ['--with-cpu=power4']}])
         self.add_config(arch='powerpc',
                         os_name='linux-gnu',
                         variant='soft',
@@ -651,11 +695,11 @@ class Context(object):
 
     def checkout(self, versions):
         """Check out the desired component versions."""
-        default_versions = {'binutils': 'vcs-2.27',
+        default_versions = {'binutils': 'vcs-2.28',
                             'gcc': 'vcs-6',
                             'glibc': 'vcs-mainline',
                             'gmp': '6.1.1',
-                            'linux': '4.8.6',
+                            'linux': '4.9',
                             'mpc': '1.0.3',
                             'mpfr': '3.1.5'}
         use_versions = {}
@@ -960,6 +1004,15 @@ class Context(object):
 
     def bot_build_mail(self, action, build_time):
         """Send email with the results of a build."""
+        if not ('email-from' in self.bot_config and
+                'email-server' in self.bot_config and
+                'email-subject' in self.bot_config and
+                'email-to' in self.bot_config):
+            if not self.email_warning:
+                print("Email not configured, not sending.")
+                self.email_warning = True
+            return
+
         build_time = build_time.replace(microsecond=0)
         subject = (self.bot_config['email-subject'] %
                    {'action': action,
@@ -1130,7 +1183,17 @@ class Config(object):
             cfg_cmd.extend(extra_opts)
         cmdlist.add_command('configure', cfg_cmd)
         cmdlist.add_command('build', ['make'])
-        cmdlist.add_command('install', ['make', 'install'])
+        # Parallel "make install" for GCC has race conditions that can
+        # cause it to fail; see
+        # <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=42980>.  Such
+        # problems are not known for binutils, but doing the
+        # installation in parallel within a particular toolchain build
+        # (as opposed to installation of one toolchain from
+        # build-many-glibcs.py running in parallel to the installation
+        # of other toolchains being built) is not known to be
+        # significantly beneficial, so it is simplest just to disable
+        # parallel install for cross tools here.
+        cmdlist.add_command('install', ['make', '-j1', 'install'])
         cmdlist.cleanup_dir()
         cmdlist.pop_subdesc()
 
@@ -1318,6 +1381,11 @@ class Glibc(object):
                                           os.path.join(installdir,
                                                        'usr', 'lib')])
         if not for_compiler:
+            if self.ctx.strip:
+                cmdlist.add_command('strip',
+                                    ['sh', '-c',
+                                     ('%s %s/lib*/*.so' %
+                                      (self.tool_name('strip'), installdir))])
             cmdlist.add_command('check', ['make', 'check'])
             cmdlist.add_command('save-logs', [self.ctx.save_logs],
                                 always_run=True)
@@ -1490,6 +1558,8 @@ def get_parser():
     parser.add_argument('--replace-sources', action='store_true',
                         help='Remove and replace source directories '
                         'with the wrong version of a component')
+    parser.add_argument('--strip', action='store_true',
+                        help='Strip installed glibc libraries')
     parser.add_argument('topdir',
                         help='Toplevel working directory')
     parser.add_argument('action',
@@ -1508,7 +1578,7 @@ def main(argv):
     opts = parser.parse_args(argv)
     topdir = os.path.abspath(opts.topdir)
     ctx = Context(topdir, opts.parallelism, opts.keep, opts.replace_sources,
-                  opts.action)
+                  opts.strip, opts.action)
     ctx.run_builds(opts.action, opts.configs)
 
 

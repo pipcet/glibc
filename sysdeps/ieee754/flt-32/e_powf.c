@@ -43,8 +43,8 @@ lg2_h  =  6.93145752e-01, /* 0x3f317200 */
 lg2_l  =  1.42860654e-06, /* 0x35bfbe8c */
 ovt =  4.2995665694e-08, /* -(128-log2(ovfl+.5ulp)) */
 cp    =  9.6179670095e-01, /* 0x3f76384f =2/(3ln2) */
-cp_h  =  9.6179199219e-01, /* 0x3f763800 =head of cp */
-cp_l  =  4.7017383622e-06, /* 0x369dc3a0 =tail of cp_h */
+cp_h  =  0xf.64p-4, /* cp high 12 bits.  */
+cp_l  =  -0x7.b11e3p-16, /* 2/(3ln2) - cp_h.  */
 ivln2    =  1.4426950216e+00, /* 0x3fb8aa3b =1/ln2 */
 ivln2_h  =  1.4426879883e+00, /* 0x3fb8aa00 =16b 1/ln2*/
 ivln2_l  =  7.0526075433e-06; /* 0x36eca570 =1/ln2 tail*/
@@ -62,10 +62,10 @@ __ieee754_powf(float x, float y)
 	ix = hx&0x7fffffff;  iy = hy&0x7fffffff;
 
     /* y==zero: x**0 = 1 */
-	if(iy==0) return one;
+	if(iy==0 && !issignaling (x)) return one;
 
     /* x==+-1 */
-	if(x == 1.0) return one;
+	if(x == 1.0 && !issignaling (y)) return one;
 	if(x == -1.0 && isinf(y)) return one;
 
     /* +-NaN return x+y */

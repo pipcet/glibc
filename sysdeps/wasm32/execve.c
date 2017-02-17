@@ -32,6 +32,6 @@ __execve (const char *path, char *const argv[], char *const envp[])
       return -1;
     }
 
-  return __THINTHIN_SYSCALL(execve, path, argv, envp);
+  return __THINTHIN_SYSCALL(execveat, AT_FDCWD, path, argv, envp, 0);
 }
 weak_alias (__execve, execve)

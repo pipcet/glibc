@@ -1,5 +1,5 @@
 /* Tests for AVX ISA versions of vector math functions.
-   Copyright (C) 2014-2016 Free Software Foundation, Inc.
+   Copyright (C) 2014-2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -16,15 +16,6 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include "test-float-vlen8.h"
-
-#define TEST_VECTOR_cosf 1
-#define TEST_VECTOR_sinf 1
-#define TEST_VECTOR_sincosf 1
-#define TEST_VECTOR_logf 1
-#define TEST_VECTOR_expf 1
-#define TEST_VECTOR_powf 1
-
-#define REQUIRE_AVX
+#include <test-float-vlen8.h>
 
 #include "libm-test.c"

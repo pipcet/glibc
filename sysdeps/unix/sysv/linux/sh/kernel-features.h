@@ -1,6 +1,6 @@
 /* Set flags signalling availability of kernel features based on given
    kernel version number.  SH version.
-   Copyright (C) 1999-2016 Free Software Foundation, Inc.
+   Copyright (C) 1999-2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -53,5 +53,8 @@
    the kernel interface for p{read,write}64 adds a dummy long argument
    before the offset.  */
 #define __ASSUME_PRW_DUMMY_ARG	1
+
+/* sh only supports ipc syscall.  */
+#undef __ASSUME_DIRECT_SYSVIPC_SYSCALLS
 
 #endif

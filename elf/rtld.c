@@ -1,5 +1,5 @@
 /* Run time dynamic linker.
-   Copyright (C) 1995-2016 Free Software Foundation, Inc.
+   Copyright (C) 1995-2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -2510,7 +2510,9 @@ process_envvars (enum mode *modep)
 
       if (__access ("/etc/suid-debug", F_OK) != 0)
 	{
+#if !HAVE_TUNABLES
 	  unsetenv ("MALLOC_CHECK_");
+#endif
 	  GLRO(dl_debug_mask) = 0;
 	}
 

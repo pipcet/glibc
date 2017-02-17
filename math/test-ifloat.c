@@ -1,4 +1,4 @@
-/* Copyright (C) 1997-2016 Free Software Foundation, Inc.
+/* Copyright (C) 1997-2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
    Contributed by Andreas Jaeger <aj@suse.de>, 1997.
 
@@ -19,7 +19,5 @@
 #include "test-float.h"
 #include "test-math-inline.h"
 #include "test-math-scalar.h"
-
-#define TEST_MSG "testing float (inline functions)\n"
 
 #include "libm-test.c"
