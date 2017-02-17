@@ -111,7 +111,7 @@ __libc_setup_tls (void)
   size_t filesz = 0;
   void *initimage = NULL;
   size_t align = 0;
-  size_t max_align = TCB_ALIGNMENT;
+  size_t max_align = 128;
   size_t tcb_offset;
   const ElfW(Phdr) *phdr;
 
@@ -144,7 +144,7 @@ __libc_setup_tls (void)
      _dl_allocate_tls_storage (in elf/dl-tls.c) does using __libc_memalign
      and dl_tls_static_align.  */
   tcb_offset = roundup (memsz + GL(dl_tls_static_size), max_align);
-  tlsblock = /*__sbrk*/ malloc (tcb_offset + tcbsize + max_align);
+  tlsblock = /*__sbrk*/ malloc (tcb_offset + TLS_INIT_TCB_SIZE + max_align);
   tlsblock = (void *)storage;
 #elif TLS_DTV_AT_TP
   tcb_offset = roundup (TLS_INIT_TCB_SIZE, align ?: 1);

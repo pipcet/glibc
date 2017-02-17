@@ -30,10 +30,8 @@ libsupport-routines = \
   check_dns_packet \
   check_hostent \
   check_netent \
-  delayed_exit \
   ignore_stderr \
   oom_error \
-  resolv_test \
   set_fortify_handler \
   support_become_root \
   support_enter_network_namespace \
@@ -64,34 +62,6 @@ libsupport-routines = \
   xmmap \
   xmunmap \
   xpoll \
-  xpthread_attr_destroy \
-  xpthread_attr_init \
-  xpthread_attr_setdetachstate \
-  xpthread_attr_setstacksize \
-  xpthread_barrier_destroy \
-  xpthread_barrier_init \
-  xpthread_barrier_wait \
-  xpthread_cancel \
-  xpthread_check_return \
-  xpthread_cond_wait \
-  xpthread_create \
-  xpthread_detach \
-  xpthread_join \
-  xpthread_mutex_consistent \
-  xpthread_mutex_destroy \
-  xpthread_mutex_init \
-  xpthread_mutex_lock \
-  xpthread_mutex_unlock \
-  xpthread_mutexattr_destroy \
-  xpthread_mutexattr_init \
-  xpthread_mutexattr_setprotocol \
-  xpthread_mutexattr_setpshared \
-  xpthread_mutexattr_setrobust \
-  xpthread_mutexattr_settype \
-  xpthread_once \
-  xpthread_sigmask \
-  xpthread_spin_lock \
-  xpthread_spin_unlock \
   xrealloc \
   xrecvfrom \
   xsendto \
