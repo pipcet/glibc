@@ -1,3 +1,793 @@
+2017-03-03  Florian Weimer  <fweimer@redhat.com>
+
+	* time/tzfile.c (NOID): Do not define.
+	* time/tzset.c (NOID): Likewise.
+
+2017-03-03  Florian Weimer  <fweimer@redhat.com>
+
+	* time/tzset.c (compute_offset): Remove __attribute_noinline__.
+
+2017-03-02  Florian Weimer  <fweimer@redhat.com>
+
+	* elf/get-dynamic-info.h: Remove header file inclusion guard.
+
+2017-03-02  Florian Weimer  <fweimer@redhat.com>
+
+	[BZ #21015]
+	* manual/install.texi (Configuring and compiling): Document
+	--enable-bind-now.
+	* Makeconfig [bind-now] (LDFLAGS-lib.so): Set.
+	(build-shlib-helper): Use $(LDFLAGS-lib.so).
+	(format.lds): Likewise.
+	[bind-now] (LDFLAGS-c.so): Remove.
+	* sysdeps/x86_64/localplt.data (libm.so): matherr relocation can
+	be R_X86_64_GLOB_DAT.
+	* sysdeps/unix/sysv/linux/i386/localplt.data (libm.so): matherr
+	relocation can be R_386_GLOB_DAT.
+	* sysdeps/unix/sysv/linux/alpha/localplt.data (libm.so): matherr
+	relocaiton can be R_ALPHA_GLOB_DAT.
+	* iconvdata/Makefile [bind-now] (LDFLAGS.so): Add -Wl,-z,now.
+
+2017-03-01  Zack Weinberg  <zackw@panix.com>
+
+	* include/libc-pointer-arith.h: New file.  Define
+	cast_to_integer, ALIGN_UP, ALIGN_DOWN, PTR_ALIGN_UP, and
+	PTR_ALIGN_DOWN here.
+	* include/libc-internal.h: Definitions of above macros
+	moved from here.  Don't include libc-diag.h anymore either.
+	* posix/wordexp-test.c: Include stdint.h and libc-pointer-arith.h.
+	Don't include libc-internal.h.
+
+	* debug/pcprofile.c, elf/dl-tunables.c, elf/soinit.c, io/openat.c
+	* io/openat64.c, misc/ptrace.c, nptl/pthread_clock_gettime.c
+	* nptl/pthread_clock_settime.c, nptl/pthread_cond_common.c
+	* string/strcoll_l.c, sysdeps/nacl/brk.c
+	* sysdeps/unix/clock_settime.c
+	* sysdeps/unix/sysv/linux/i386/get_clockfreq.c
+	* sysdeps/unix/sysv/linux/ia64/get_clockfreq.c
+	* sysdeps/unix/sysv/linux/powerpc/get_clockfreq.c
+	* sysdeps/unix/sysv/linux/sparc/sparc64/get_clockfreq.c:
+	Don't include libc-internal.h.
+
+	* elf/get-dynamic-info.h, iconv/loop.c
+	* iconvdata/iso-2022-cn-ext.c, locale/weight.h, locale/weightwc.h
+	* misc/reboot.c, nis/nis_table.c, nptl_db/thread_dbP.h
+	* nscd/connections.c, resolv/res_send.c, soft-fp/fmadf4.c
+	* soft-fp/fmasf4.c, soft-fp/fmatf4.c, stdio-common/vfscanf.c
+	* sysdeps/ieee754/dbl-64/e_lgamma_r.c
+	* sysdeps/ieee754/dbl-64/k_rem_pio2.c
+	* sysdeps/ieee754/flt-32/e_lgammaf_r.c
+	* sysdeps/ieee754/flt-32/k_rem_pio2f.c
+	* sysdeps/ieee754/ldbl-128/k_tanl.c
+	* sysdeps/ieee754/ldbl-128ibm/k_tanl.c
+	* sysdeps/ieee754/ldbl-96/e_lgammal_r.c
+	* sysdeps/ieee754/ldbl-96/k_tanl.c, sysdeps/nptl/futex-internal.h:
+	Include libc-diag.h instead of libc-internal.h.
+
+	* elf/dl-load.c, elf/dl-reloc.c, locale/programs/locarchive.c
+	* nptl/nptl-init.c, string/strcspn.c, string/strspn.c
+	* malloc/malloc.c, sysdeps/i386/nptl/tls.h
+	* sysdeps/nacl/dl-map-segments.h, sysdeps/x86_64/atomic-machine.h
+	* sysdeps/unix/sysv/linux/spawni.c
+	* sysdeps/x86_64/nptl/tls.h:
+	Include libc-pointer-arith.h instead of libc-internal.h.
+
+	* elf/get-dynamic-info.h, sysdeps/nacl/dl-map-segments.h
+	* sysdeps/x86_64/atomic-machine.h:
+	Add multiple include guard.
+
+	* nss/tst-cancel-getpwuid_r.c: Include nss.h.
+	* string/strcasestr.c: No need to include config.h.
+	* sysdeps/powerpc/fpu/tst-setcontext-fpscr.c: Include
+	sys/auxv.h. Don't include sysdep.h.
+	* sysdeps/powerpc/tst-set_ppr.c: Don't include dl-procinfo.h.
+
+	* dlfcn/tst-dladdr.c: Don't include ldsodefs.h.	 Don't use
+	DL_LOOKUP_ADDRESS.
+	* math/test-misc.c: Instead of testing NO_LONG_DOUBLE, test whether
+	LDBL_MANT_DIG is greater than DBL_MANT_DIG.
+	* sysdeps/unix/sysv/linux/Makefile (CFLAGS-tst-writev.c): Use
+	sysconf (_SC_PAGESIZE) instead of __getpagesize in definition
+	of ARTIFICIAL_LIMIT.
+	* sysdeps/unix/sysv/linux/tst-clone.c [__ia64__]: Add extern
+	declaration of __clone2.
+
+2017-02-28  Florian Weimer  <fweimer@redhat.com>
+
+	* scripts/backport-support.sh (latest_commit): New file.
+
+2017-02-28  Florian Weimer  <fweimer@redhat.com>
+
+	[BZ #20257]
+	* inet/Makefile (routines): Add deadline.
+	(tests-static): Add tst-deadline.
+	* inet/net-internal.h (struct deadline_current_time)
+	(__deadline_current_time, struct deadline, __deadline_is_infinite)
+	(__deadline_elapsed, __deadline_first, __deadline_from_timeval)
+	(__deadline_to_ms, __is_timeval_valid_timeout): Declare.
+	* inet/deadline.c: New file.
+	* inet/tst-deadline.c: Likewise.
+	* sunrpc/Makefile (tests): Add tst-udp-nonblocking,
+	tst-udp-timeout, tst-udp-garbage.
+	(tst-udp-nonblocking, tst-udp-timeout): Link against libc.so
+	explicitly.
+	(tst-udp-garbage): Likewise.  Also link against thread library.
+	* sunrpc/clnt_udp.c (struct cu_data): Mention in comment that the
+	struct layout is part of the ABI.
+	(clntudp_call): Rework timeout handling.
+	* sunrpc/tst-udp-garbage.c: New file.
+	* sunrpc/tst-udp-nonblocking.c: Likewise.
+	* sunrpc/tst-udp-timeout.c: Likewise.
+
+2017-02-28  Florian Weimer  <fweimer@redhat.com>
+
+	[BZ #5010]
+	* sunrpc/svc.c (svc_is_mapped): Remove.
+	(svc_unregister): Obtain mapped status while the service is still
+	registered.
+	* sunrpc/Makefile [have-thread-library] (tests): Add
+	tst-svc_register.
+	(tst-svc_register): Link against libc.so explicitly and the thread
+	library.
+	* sunrpc/tst-svc_register.c: New file.
+
+2017-02-28  Andreas Schwab  <schwab@linux-m68k.org>
+
+	* bits/sigthread.h: Refer to <signal.h>, not <pthread.h>.
+	* sysdeps/pthread/bits/sigthread.h: Likewise.
+
+2017-02-27  Florian Weimer  <fweimer@redhat.com>
+
+	[BZ #21115]
+	* sunrpc/clnt_udp.c (clntudp_call): Free ancillary data later.
+	* sunrpc/Makefile (tests): Add tst-udp-error.
+	(tst-udp-error): Link against libc.so explicitly.
+	* sunrpc/tst-udp-error: New file.
+
+2017-02-25  Zack Weinberg  <zackw@panix.com>
+
+	* sysdeps/generic/math_private.h: Use __BIG_ENDIAN and
+	__LITTLE_ENDIAN, not BIG_ENDIAN and LITTLE_ENDIAN.
+
+	* sysdeps/generic/math_ldbl.h
+	* sysdeps/ia64/fpu/math_ldbl.h
+	* sysdeps/ieee754/ldbl-128/math_ldbl.h
+	* sysdeps/ieee754/ldbl-128ibm/math_ldbl.h
+	* sysdeps/ieee754/ldbl-96/math_ldbl.h
+	* sysdeps/powerpc/fpu/math_ldbl.h
+	* sysdeps/x86_64/fpu/math_ldbl.h:
+	Allow direct inclusion.  Use uintNN_t instead of u_intNN_t.
+	Use __BIG_ENDIAN and __LITTLE_ENDIAN, not BIG_ENDIAN and
+	LITTLE_ENDIAN.  Include endian.h and/or stdint.h if necessary.
+	Add copyright notices.
+
+	* sysdeps/ieee754/ldbl-128ibm/math_ldbl.h (ldbl_canonicalize_int):
+	Don't use EXTRACT_WORDS64.
+
+	* sysdeps/ieee754/ldbl-96/test-canonical-ldbl-96.c
+	* sysdeps/ieee754/ldbl-96/test-totalorderl-ldbl-96.c
+	* sysdeps/ieee754/ldbl-128ibm/test-canonical-ldbl-128ibm.c
+	* sysdeps/ieee754/ldbl-128ibm/test-totalorderl-ldbl-128ibm.c:
+	Include math_ldbl.h, not math_private.h.
+
+2017-02-25  Zack Weinberg  <zackw@panix.com>
+
+	* include/libc-diag.h: New file.  Define ignore_value,
+	DIAG_PUSH_NEEDS_COMMENT, DIAG_POP_NEEDS_COMMENT,
+	DIAG_IGNORE_NEEDS_COMMENT, and DIAG_IGNORE_Os_NEEDS_COMMENT here.
+
+	* include/libc-internal.h: Definitions of above macros moved from
+	here.  Include libc-diag.h.  Add copyright notice.
+
+	* malloc/tst-malloc.c, malloc/tst-memcheck.c, malloc/tst-realloc.c
+	* misc/tst-error1.c, posix/tst-dir.c, stdio-common/bug21.c
+	* stdio-common/scanf14.c, stdio-common/scanf4.c, stdio-common/scanf7.c
+	* stdio-common/test-vfprintf.c, stdio-common/tst-printf.c
+	* stdio-common/tst-printfsz.c, stdio-common/tst-sprintf.c
+	* stdio-common/tst-unlockedio.c, stdio-common/tstdiomisc.c
+	* stdlib/bug-getcontext.c, string/tester.c, string/tst-endian.c
+	* time/tst-strptime2.c, wcsmbs/tst-wcstof.c:
+	Include libc-diag.h instead of libc-internal.h.
+
+	* stdlib/tst-environ.c: Include libc-diag.h.  Suppress -Wnonnull for
+	call to unsetenv (NULL).
+	* nptl/tst-mutex1.c: Include libc-diag.h.  Suppress -Wnonnull for
+	call to pthread_mutexattr_destroy (NULL).
+
+2017-02-25  Zack Weinberg  <zackw@panix.com>
+
+	* include/features.h (__GLIBC_USE_DEPRECATED_GETS): New macro.
+	* libio/stdio.h, libio/bits/stdio2.h: Condition gets on
+	__GLIBC_USE (DEPRECATED_GETS).  Update comments to indicate
+	gets was removed from C++ in C++14.
+	* include/stdio.h: Remove redundant declaration of gets.
+	* debug/tst-chk1.c, stdio-common/tst-gets.c: Force gets to
+	be declared, since we are testing it.
+	* stdio-common/Makefile (tst-gets.c): Compile with
+	-Wno-deprecated-declarations.
+	* debug/Makefile (tst-chk1.c, tst-chk2.c, tst-chk3.c, tst-chk4.cc)
+	(tst-chk5.cc, tst-chk6.cc, tst-lfschk1.c, tst-lfschk2.c)
+	(tst-lfschk3.c, tst-lfschk4.cc, tst-lfschk5.cc, tst-lfschk6.cc):
+	Compile with -Wno-deprecated-declarations.
+
+2017-02-24  Tulio Magno Quites Machado Filho  <tuliom@linux.vnet.ibm.com>
+
+	* math/libm-test-support.c (check_ulp): Use LIT() around literal
+	numbers.
+
+2017-02-24  Stefan Liebler  <stli@linux.vnet.ibm.com>
+
+	* resolv/tst-resolv-qtypes.c (domain):
+	Change type to const pointer to const char.
+
+2017-02-24  Joseph Myers  <joseph@codesourcery.com>
+
+	* math/Makefile (libm-tests-generated): Remove variable.
+	(libm-tests-base-normal): New variable.
+	(libm-tests-base-finite): Likewise.
+	(libm-tests-base-inline): Likewise.
+	(libm-tests-base): Likewise.
+	(libm-tests-normal): Likewise.
+	(libm-tests-finite): Likewise.
+	(libm-tests-inline): Likewise.
+	(libm-tests-vector): Likewise.
+	(libm-tests): Define in terms of these new variables.
+	(libm-tests-for-type): New variable.
+	(libm-tests.o): Move definition.
+	(tests): Move addition of $(libm-tests).
+	(generated): Update for new and removed libm test files.
+	($(objpfx)libm-test.c): Remove target.
+	($(objpfx)libm-have-vector-test.h): Likewise.
+	(CFLAGS-test-double-vlen2.c): Remove variable.
+	(CFLAGS-test-double-vlen4.c): Likewise.
+	(CFLAGS-test-double-vlen8.c): Likewise.
+	(CFLAGS-test-float-vlen4.c): Likewise.
+	(CFLAGS-test-float-vlen8.c): Likewise.
+	(CFLAGS-test-float-vlen16.c): Likewise.
+	(CFLAGS-test-float.c): Likewise.
+	(CFLAGS-test-float-finite.c): Likewise.
+	(CFLAGS-libm-test-support-float.c): Likewise.
+	(CFLAGS-test-double.c): Likewise.
+	(CFLAGS-test-double-finite.c): Likewise.
+	(CFLAGS-libm-test-support-double.c): Likewise.
+	(CFLAGS-test-ldouble.c): Likewise.
+	(CFLAGS-test-ldouble-finite.c): Likewise.
+	(CFLAGS-libm-test-support-ldouble.c): Likewise.
+	(libm-test-inline-cflags): New variable.
+	(CFLAGS-test-ifloat.c): Remove variable.
+	(CFLAGS-test-idouble.c): Likewise.
+	(CFLAGS-test-ildouble.c): Likewise.
+	($(addprefix $(objpfx), $(libm-tests.o))): Move target and update
+	dependencies.
+	($(foreach t,$(libm-tests-normal),$(objpfx)$(t).c)): New rule.
+	($(foreach t,$(libm-tests-finite),$(objpfx)$(t).c)): Likewise.
+	($(foreach t,$(libm-tests-inline),$(objpfx)$(t).c)): Likewise.
+	($(foreach t,$(libm-tests-vector),$(objpfx)$(t).c)): Likewise.
+	($(foreach t,$(types),$(objpfx)libm-test-support-$(t).c)):
+	Likewise.
+	(dependencies on libm-test-support-*.o): Remove.
+	($(foreach f,$(libm-test-funcs-all),$(objpfx)$(o)-$(f).o)): New
+	rules using iterators.
+	($(addprefix $(objpfx),$(call libm-tests-for-type,$(o)))):
+	Likewise.
+	($(objpfx)libm-test-support-$(o).o): Likewise.
+	($(addprefix $(objpfx),$(filter-out $(tests-static)
+	$(libm-vec-tests),$(tests)))): Filter out $(libm-tests-vector)
+	instead.
+	($(addprefix $(objpfx), $(libm-vec-tests))): Use iterator to
+	define rule instead.
+	* math/README.libm-test: Update.
+	* math/libm-test-acos.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-acosh.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-asin.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-asinh.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-atan.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-atan2.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-atanh.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-cabs.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-cacos.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-cacosh.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-canonicalize.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-carg.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-casin.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-casinh.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-catan.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-catanh.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-cbrt.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-ccos.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-ccosh.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-ceil.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-cexp.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-cimag.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-clog.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-clog10.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-conj.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-copysign.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-cos.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-cosh.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-cpow.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-cproj.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-creal.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-csin.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-csinh.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-csqrt.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-ctan.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-ctanh.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-erf.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-erfc.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-exp.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-exp10.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-exp2.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-expm1.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-fabs.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-fdim.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-floor.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-fma.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-fmax.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-fmaxmag.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-fmin.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-fminmag.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-fmod.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-fpclassify.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-frexp.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-fromfp.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-fromfpx.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-getpayload.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-hypot.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-ilogb.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-iscanonical.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-iseqsig.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-isfinite.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-isgreater.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-isgreaterequal.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-isinf.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-isless.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-islessequal.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-islessgreater.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-isnan.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-isnormal.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-issignaling.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-issubnormal.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-isunordered.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-iszero.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-j0.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-j1.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-jn.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-lgamma.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-llogb.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-llrint.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-llround.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-log.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-log10.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-log1p.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-log2.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-logb.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-lrint.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-lround.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-modf.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-nearbyint.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-nextafter.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-nextdown.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-nexttoward.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-nextup.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-pow.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-remainder.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-remquo.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-rint.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-round.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-roundeven.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-scalb.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-scalbln.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-scalbn.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-setpayload.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-setpayloadsig.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-signbit.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-significand.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-sin.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-sincos.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-sinh.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-sqrt.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-tan.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-tanh.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-tgamma.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-totalorder.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-totalordermag.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-trunc.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-ufromfp.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-ufromfpx.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-y0.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-y1.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-yn.inc: Include libm-test-driver.c.
+	(do_test): New function.
+	* math/libm-test-driver.c: Do not include libm-have-vector-test.h.
+	(HAVE_VECTOR): Remove macro.
+	(START): Do not call HAVE_VECTOR.
+	* math/test-double-vlen2.h (FUNC_TEST): Remove macro.
+	* math/test-double-vlen4.h (FUNC_TEST): Remove macro.
+	* math/test-double-vlen8.h (FUNC_TEST): Remove macro.
+	* math/test-float-vlen16.h (FUNC_TEST): Remove macro.
+	* math/test-float-vlen4.h (FUNC_TEST): Remove macro.
+	* math/test-float-vlen8.h (FUNC_TEST): Remove macro.
+	* math/test-math-vector.h (FUNC_TEST): New macro.
+	(WRAPPER_DECL): Rename to WRAPPER_DECL_f.
+	* sysdeps/x86_64/fpu/Makefile (double-vlen2-funcs): New variable.
+	(double-vlen4-funcs): Likewise.
+	(double-vlen4-avx2-funcs): Likewise.
+	(double-vlen8-funcs): Likewise.
+	(float-vlen4-funcs): Likewise.
+	(float-vlen8-funcs): Likewise.
+	(float-vlen8-avx2-funcs): Likewise.
+	(float-vlen16-funcs): Likewise.
+	(CFLAGS-test-double-vlen4-avx2.c): Remove variable.
+	(CFLAGS-test-float-vlen8-avx2.c): Likewise.
+	* sysdeps/x86_64/fpu/test-double-vlen4.h (TEST_VECTOR_cos): Remove
+	macro.
+	(TEST_VECTOR_sin): Likewise.
+	(TEST_VECTOR_sincos): Likewise.
+	(TEST_VECTOR_log): Likewise.
+	(TEST_VECTOR_exp): Likewise.
+	(TEST_VECTOR_pow): Likewise.
+	* sysdeps/x86_64/fpu/test-double-vlen8.h (TEST_VECTOR_cos):
+	Likewise.
+	(TEST_VECTOR_sin): Likewise.
+	(TEST_VECTOR_sincos): Likewise.
+	(TEST_VECTOR_log): Likewise.
+	(TEST_VECTOR_exp): Likewise.
+	(TEST_VECTOR_pow): Likewise.
+	* sysdeps/x86_64/fpu/test-float-vlen16.h (TEST_VECTOR_cosf):
+	Likewise.
+	(TEST_VECTOR_sinf): Likewise.
+	(TEST_VECTOR_sincosf): Likewise.
+	(TEST_VECTOR_logf): Likewise.
+	(TEST_VECTOR_expf): Likewise.
+	(TEST_VECTOR_powf): Likewise.
+	* sysdeps/x86_64/fpu/test-float-vlen8.h (TEST_VECTOR_cosf):
+	Likewise.
+	(TEST_VECTOR_sinf): Likewise.
+	(TEST_VECTOR_sincosf): Likewise.
+	(TEST_VECTOR_logf): Likewise.
+	(TEST_VECTOR_expf): Likewise.
+	(TEST_VECTOR_powf): Likewise.
+	* math/gen-libm-have-vector-test.sh: Remove file.
+	* math/libm-test.inc: Likewise.
+	* math/libm-test-support-double.c: Likewise.
+	* math/libm-test-support-float.c: Likewise.
+	* math/libm-test-support-ldouble.c: Likewise.
+	* math/test-double-finite.c: Likewise.: Likewise.
+	* math/test-double.c: Likewise.
+	* math/test-float-finite.c: Likewise.
+	* math/test-float.c: Likewise.
+	* math/test-idouble.c: Likewise.
+	* math/test-ifloat.c: Likewise.
+	* math/test-ildouble.c: Likewise.
+	* math/test-ldouble-finite.c: Likewise.
+	* math/test-ldouble.c: Likewise.
+	* sysdeps/x86_64/fpu/test-double-vlen2.c: Likewise.
+	* sysdeps/x86_64/fpu/test-double-vlen2.h: Likewise.
+	* sysdeps/x86_64/fpu/test-double-vlen4-avx2.c: Likewise.
+	* sysdeps/x86_64/fpu/test-double-vlen4.c: Likewise.
+	* sysdeps/x86_64/fpu/test-double-vlen8.c: Likewise.
+	* sysdeps/x86_64/fpu/test-float-vlen16.c: Likewise.
+	* sysdeps/x86_64/fpu/test-float-vlen4.c: Likewise.
+	* sysdeps/x86_64/fpu/test-float-vlen4.h: Likewise.
+	* sysdeps/x86_64/fpu/test-float-vlen8-avx2.c: Likewise.
+	* sysdeps/x86_64/fpu/test-float-vlen8.c: Likewise.
+
+2017-02-23 Gabriel F. T. Gomes  <gftg@linux.vnet.ibm.com>
+	   Paul E. Murphy  <murphyp@linux.vnet.ibm.com>
+
+	* math/Makefile: Add wrappers to gen-libm-calls.
+	* math/w_acos_template.c: New file.
+	* math/w_acosh_template.c: Likewise.
+	* math/w_asin_template.c: Likewise.
+	* math/w_atan2_template.c: Likewise.
+	* math/w_atanh_template.c: Likewise.
+	* math/w_cosh_template.c: Likewise.
+	* math/w_exp10_template.c: Likewise.
+	* math/w_exp2_template.c: Likewise.
+	* math/w_exp_template.c: Likewise.
+	* math/w_fmod_template.c: Likewise.
+	* math/w_hypot_template.c: Likewise.
+	* math/w_j0_template.c: Likewise.
+	* math/w_j1_template.c: Likewise.
+	* math/w_jn_template.c: Likewise.
+	* math/w_lgamma_r_template.c: Likewise.
+	* math/w_lgamma_template.c: Likewise.
+	* math/w_log10_template.c: Likewise.
+	* math/w_log2_template.c: Likewise.
+	* math/w_log_template.c: Likewise.
+	* math/w_pow_template.c: Likewise.
+	* math/w_remainder_template.c: Likewise.
+	* math/w_sinh_template.c: Likewise.
+	* math/w_sqrt_template.c: Likewise.
+	* math/w_tgamma_template.c: Likewise.: Likewise.
+	* sysdeps/generic/math-type-macros-double.h
+	(__USE_WRAPPER_TEMPLATE): New macro to control inclusion of
+	the new wrappers.
+	* sysdeps/generic/math-type-macros-float.h: Likewise.
+	* sysdeps/generic/math-type-macros-ldouble.h: Likewise.
+
+2017-02-22  Joseph Myers  <joseph@codesourcery.com>
+
+	* sysdeps/unix/sysv/linux/sys/timerfd.h (TFD_TIMER_CANCEL_ON_SET):
+	New enum constant and macro.
+
+	* scripts/build-many-glibcs.py (Context.checkout): Default Linux
+	kernel version to 4.10.
+
+2017-02-21  Joseph Myers  <joseph@codesourcery.com>
+
+	* sysdeps/unix/sysv/linux/bits/in.h (IP_RECVFRAGSIZE): New macro.
+
+2017-02-21  Tulio Magno Quites Machado Filho  <tuliom@linux.vnet.ibm.com>
+
+	* sysdeps/powerpc/fpu/libm-test-ulps: Update.
+
+2017-02-21  Wainer dos Santos Moschetta  <wainersm@linux.vnet.ibm.com>
+
+	* sysdeps/powerpc/tst-set_ppr.c: New file.
+	Implement test cases for __ppc_set_ppr_* functions.
+	* sysdeps/powerpc/Makefile ($(subdir),misc): Add tst-set_ppr
+	in the list of tests.
+
+2017-02-21  Wainer dos Santos Moschetta  <wainersm@linux.vnet.ibm.com>
+
+	* sysdeps/powerpc/test-get_hwcap.c: Use <support/test-driver.c>
+	instead of test-skeleton.c.
+	(do_test): Replaced pthread_create and pthread_join with
+	xpthread_create and xpthread_join.  Use TEST_VERIFY_EXIT macro.
+	Removed unneeded status variable.
+	* sysdeps/powerpc/test-gettimebase.c: Use <support/test-driver.c>
+	instead of test-skeleton.c.
+	* sysdeps/powerpc/tst-tlsopt-powerpc.c: Likewise.
+
+2017-02-20  Mike FABIAN  <mfabian@redhat.com>
+
+	[BZ #20313]
+	* include/stdc-predef.h (__STDC_ISO_10646__): Update to
+	201605L, for Unicode 9.
+
+2017-02-20  Joseph Myers  <joseph@codesourcery.com>
+
+	* math/libm-test-support.h (EXCEPTIONS_OK): Remove macro.
+	(UNDERFLOW_EXCEPTION_FLOAT): Likewise.
+	(UNDERFLOW_EXCEPTION_OK_FLOAT): Likewise.
+	(UNDERFLOW_EXCEPTION_DOUBLE): Likewise.
+	(UNDERFLOW_EXCEPTION_OK_DOUBLE): Likewise.
+	(UNDERFLOW_EXCEPTION_LDOUBLE_IBM): Likewise.
+
+2017-02-19  Zack Weinberg  <zackw@panix.com>
+
+	* rt/tst-mqueue4.c: Include stdint.h.
+
+2017-02-17  Joseph Myers  <joseph@codesourcery.com>
+
+	* sysdeps/arm/libm-test-ulps: Update.
+	* sysdeps/mips/mips32/libm-test-ulps: Likewise.
+	* sysdeps/mips/mips64/libm-test-ulps: Likewise.
+	* sysdeps/powerpc/nofpu/libm-test-ulps: Likewise.
+
+2017-01-17  Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+
+	[BZ #21029]
+	* config.h.in [CAN_USE_REGISTER_ASM_EBP]: New define.
+	* sysdeps/unix/sysv/linux/i386/Makefile
+	[$(subdir) = elf] (sysdep-dl-routines): Add libc-do-syscall.
+	(uses-6-syscall-arguments): Remove.
+	[$(subdir) = misc] (CFLAGS-epoll_pwait.o): Likewise.
+	[$(subdir) = misc] (CFLAGS-epoll_pwait.os): Likewise.
+	[$(subdir) = misc] (CFLAGS-mmap.o): Likewise.
+	[$(subdir) = misc] (CFLAGS-mmap.os): Likewise.
+	[$(subdir) = misc] (CFLAGS-mmap64.o): Likewise.
+	[$(subdir) = misc] (CFLAGS-mmap64.os): Likewise.
+	[$(subdir) = misc] (CFLAGS-pselect.o): Likewise.
+	[$(subdir) = misc] (cflags-pselect.o): Likewise.
+	[$(subdir) = misc] (cflags-pselect.os): Likewise.
+	[$(subdir) = misc] (cflags-rtld-mmap.os): Likewise.
+	[$(subdir) = sysvipc] (cflags-semtimedop.o): Likewise.
+	[$(subdir) = sysvipc] (cflags-semtimedop.os): Likewise.
+	[$(subdir) = io] (CFLAGS-posix_fadvise64.o): Likewise.
+	[$(subdir) = io] (CFLAGS-posix_fadvise64.os): Likewise.
+	[$(subdir) = io] (CFLAGS-posix_fallocate.o): Likewise.
+	[$(subdir) = io] (CFLAGS-posix_fallocate.os): Likewise.
+	[$(subdir) = io] (CFLAGS-posix_fallocate64.o): Likewise.
+	[$(subdir) = io] (CFLAGS-posix_fallocate64.os): Likewise.
+	[$(subdir) = io] (CFLAGS-sync_file_range.o): Likewise.
+	[$(subdir) = io] (CFLAGS-sync_file_range.os): Likewise.
+	[$(subdir) = io] (CFLAGS-fallocate.o): Likewise.
+	[$(subdir) = io] (CFLAGS-fallocate.os): Likewise.
+	[$(subdir) = io] (CFLAGS-fallocate64.o): Likewise.
+	[$(subdir) = io] (CFLAGS-fallocate64.os): Likewise.
+	[$(subdir) = nptl] (CFLAGS-pthread_rwlock_timedrdlock.o):
+	Likewise.
+	[$(subdir) = nptl] (CFLAGS-pthread_rwlock_timedrdlock.os):
+	Likewise.
+	[$(subdir) = nptl] (CFLAGS-pthread_rwlock_timedrwlock.o):
+	Likewise.
+	[$(subdir) = nptl] (CFLAGS-pthread_rwlock_timedrwlock.os):
+	Likewise.
+	[$(subdir) = nptl] (CFLAGS-sem_wait.o): Likewise.
+	[$(subdir) = nptl] (CFLAGS-sem_wait.os): Likewise.
+	[$(subdir) = nptl] (CFLAGS-sem_timedwait.o): Likewise.
+	[$(subdir) = nptl] (CFLAGS-sem_timedwait.os): Likewise.
+	* sysdeps/unix/sysv/linux/i386/configure.ac: Add check if compiler allows
+	ebp on inline assembly.
+	* sysdeps/unix/sysv/linux/i386/configure: Regenerate.
+	* sysdeps/unix/sysv/linux/i386/sysdep.h (OPTIMIZE_FOR_GCC_5):
+	Set if CAN_USE_REGISTER_ASM_EBP is set.
+
+2017-02-17  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* sysdeps/x86/cpu-features.c (init_cpu_features): Use
+	index_cpu_RTM and reg_RTM to clear the bit_cpu_RTM bit.
+
+2017-02-17  Joseph Myers  <joseph@codesourcery.com>
+
+	* math/auto-libm-test-in: Add tests of catan and catanh.
+	* math/auto-libm-test-out-catan: New generated file.
+	* math/auto-libm-test-out-catanh: Likewise.
+	* math/libm-test-catan.inc (catan_test_data): Use AUTO_TESTS_c_c.
+	Move tests with finite inputs, except divide-by-zero cases, to
+	auto-libm-test-in.
+	* math/libm-test-catanh.inc (catanh_test_data): Likewise.
+	* math/Makefile (libm-test-funcs-auto): Add catan and catanh.
+	(libm-test-funcs-noauto): Remove catan and catanh.
+	* sysdeps/i386/fpu/libm-test-ulps: Update.
+	* sysdeps/i386/i686/fpu/multiarch/libm-test-ulps: Likewise.
+	* sysdeps/x86_64/fpu/libm-test-ulps: Likewise.
+
+	* math/auto-libm-test-in: Add tests of casin and casinh.
+	* math/auto-libm-test-out-casin: New generated file.
+	* math/auto-libm-test-out-casinh: Likewise.
+	* math/libm-test-casin.inc (casin_test_data): Use AUTO_TESTS_c_c.
+	Move tests with finite inputs to auto-libm-test-in.
+	* math/libm-test-casinh.inc (casinh_test_data): Likewise.
+	* math/Makefile (libm-test-funcs-auto): Add casin and casinh.
+	(libm-test-funcs-noauto): Remove casin and casinh.
+	* sysdeps/i386/fpu/libm-test-ulps: Update.
+	* sysdeps/i386/i686/fpu/multiarch/libm-test-ulps: Likewise.
+	* sysdeps/x86_64/fpu/libm-test-ulps: Likewise.
+
+	* math/auto-libm-test-in: Add tests of cacos and cacosh.
+	* math/auto-libm-test-out-cacos: New generated file.
+	* math/auto-libm-test-out-cacosh: Likewise.
+	* math/libm-test-cacos.inc (cacos_test_data): Use AUTO_TESTS_c_c.
+	Move tests with finite inputs to auto-libm-test-in.
+	* math/libm-test-cacosh.inc (cacosh_test_data): Likewise.
+	* math/Makefile (libm-test-funcs-auto): Add cacos and cacosh.
+	(libm-test-funcs-noauto): Remove cacos and cacosh.
+	* sysdeps/i386/fpu/libm-test-ulps: Update.
+	* sysdeps/i386/i686/fpu/multiarch/libm-test-ulps: Likewise.
+	* sysdeps/x86_64/fpu/libm-test-ulps: Likewise.
+
+	Revert:
+	2017-02-16  Zack Weinberg  <zackw@panix.com>
+
+	* sysdeps/x86_64/fpu/math-tests-arch.h: Include cpu-features.h.
+	Don't include init-arch.h.
+	* sysdeps/x86_64/multiarch/test-multiarch.h: Include cpu-features.h.
+	Don't include init-arch.h.
+
 2017-02-17  Tulio Magno Quites Machado Filho  <tuliom@linux.vnet.ibm.com>
 
 	[BZ #21171]
