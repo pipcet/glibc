@@ -100,6 +100,8 @@ findidx (const int32_t *table,
 	      continue;
 	    }
 
+	  DIAG_PUSH_NEEDS_COMMENT;
+	  DIAG_IGNORE_NEEDS_COMMENT (5, "-Wmaybe-uninitialized");
 	  if (cp[nhere - 1] > usrc[nhere -1])
 	    {
 	      cp += 2 * nhere;
@@ -111,6 +113,7 @@ findidx (const int32_t *table,
 	      cp += 2 * nhere;
 	      continue;
 	    }
+	  DIAG_POP_NEEDS_COMMENT;
 
 	  /* This range matches the next characters.  Now find
 	     the offset in the indirect table.  */
