@@ -49,7 +49,7 @@ extern void (*__init_array_end []) (int, char **, char **)
 extern void (*__fini_array_start []) (void) attribute_hidden;
 extern void (*__fini_array_end []) (void) attribute_hidden;
 
-#ifdef __ASMJS__
+#if defined(__ASMJS__) || defined(__WASM32__)
 #define MULTIFILE
 #endif
 #ifdef MULTIFILE
@@ -68,7 +68,7 @@ void
 __libc_csu_init_multifile (int argc, char **argv, char **envp)
 {
   struct multifile_header *mfh = (struct multifile_header *)16384;
-  while (mfh->terminator) {
+  do {
     void (**array_start)(int, char **, char **) = (void (**)(int, char **, char **))(long)mfh->preinit_array_start;
     void (**array_end)(int, char **, char **) = (void (**)(int, char **, char **))(long)mfh->preinit_array_end;
     while (array_start < array_end) {
@@ -76,10 +76,10 @@ __libc_csu_init_multifile (int argc, char **argv, char **envp)
       array_start++;
     }
     mfh = (struct multifile_header *)(long)(mfh->terminator);
-  }
+  } while (mfh->terminator);
 
   mfh = (struct multifile_header *)16384;
-  while (mfh->terminator) {
+  do {
     void (**array_start)(int, char **, char **) = (void (**)(int, char **, char **))(long)mfh->init_array_start;
     void (**array_end)(int, char **, char **) = (void (**)(int, char **, char **))(long)mfh->init_array_end;
     while (array_start < array_end) {
@@ -87,7 +87,7 @@ __libc_csu_init_multifile (int argc, char **argv, char **envp)
       array_start++;
     }
     mfh = (struct multifile_header *)(long)(mfh->terminator);
-  }
+  } while (mfh->terminator);
 }
 
 void
