@@ -207,9 +207,11 @@ LIBC_START_MAIN (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
     }
 # endif
 
+#if 0
   /* Initialize libpthread if linked in.  */
   if (__pthread_initialize_minimal != NULL)
     __pthread_initialize_minimal ();
+#endif
 
   /* Set up the pointer guard value.  */
   uintptr_t pointer_chk_guard = _dl_setup_pointer_guard (_dl_random,
@@ -222,9 +224,11 @@ LIBC_START_MAIN (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
 
 #endif
 
+#if 0
   /* Register the destructor of the dynamic linker if there is any.  */
   if (__glibc_likely (rtld_fini != NULL))
     __cxa_atexit ((void (*) (void *)) rtld_fini, NULL, NULL);
+#endif
 
 #ifndef SHARED
   /* Call the initializer of the libc.  This is only needed here if we
