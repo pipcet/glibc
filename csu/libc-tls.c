@@ -103,6 +103,8 @@ init_static_tls (size_t memsz, size_t align)
 
 char storage[4096];
 
+#include <stdlib.h>
+
 void
 __libc_setup_tls (void)
 {

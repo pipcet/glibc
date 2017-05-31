@@ -39,8 +39,8 @@ __bsd_signal (int sig, __sighandler_t handler)
 
   act.sa_handler = handler;
   __sigemptyset (&act.sa_mask);
-  __sigaddset (&act.sa_mask, sig);
-  act.sa_flags = __sigismember (&_sigintr, sig) ? 0 : SA_RESTART;
+  __sigaddset (act.sa_mask, sig);
+  act.sa_flags = __sigismember (_sigintr, sig) ? 0 : SA_RESTART;
   if (__sigaction (sig, &act, &oact) < 0)
     return SIG_ERR;
 

@@ -22,6 +22,7 @@
 #include <sys/param.h>
 #include <errno.h>
 #include <malloc.h>
+#include <stdlib.h>
 
 #include <ldsodefs.h>
 

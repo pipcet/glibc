@@ -31,12 +31,12 @@ sigset_set_old_mask (sigset_t *set, int mask)
     {
       unsigned int __sig;
 
-      if (__sigemptyset (set) < 0)
+      if (sigemptyset (set) < 0)
 	return -1;
 
       for (__sig = 1; __sig < NSIG && __sig <= sizeof (mask) * 8; __sig++)
 	if (mask & sigmask (__sig))
-	  if (__sigaddset (set, __sig) < 0)
+	  if (sigaddset (set, __sig) < 0)
 	    return -1;
     }
   return 0;
@@ -55,7 +55,7 @@ sigset_get_old_mask (const sigset_t *set)
       unsigned int sig;
 
       for (sig = 1; sig < NSIG && sig <= sizeof (mask) * 8; sig++)
-	if (__sigismember (set, sig))
+	if (sigismember (set, sig))
 	  mask |= sigmask (sig);
 
       return mask;

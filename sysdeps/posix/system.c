@@ -63,7 +63,7 @@ do_system (const char *line)
 
   sa.sa_handler = SIG_IGN;
   sa.sa_flags = 0;
-  __sigemptyset (&sa.sa_mask);
+  sigemptyset (&sa.sa_mask);
 
   DO_LOCK ();
   if (ADD_REF () == 0)
@@ -83,7 +83,7 @@ do_system (const char *line)
   DO_UNLOCK ();
 
   /* We reuse the bitmap in the 'sa' structure.  */
-  __sigaddset (&sa.sa_mask, SIGCHLD);
+  sigaddset (&sa.sa_mask, SIGCHLD);
   save = errno;
   if (__sigprocmask (SIG_BLOCK, &sa.sa_mask, &omask) < 0)
     {

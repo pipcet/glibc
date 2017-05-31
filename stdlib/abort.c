@@ -63,7 +63,7 @@ abort (void)
     {
       ++stage;
       __sigemptyset (&sigs);
-      __sigaddset (&sigs, SIGABRT);
+      __sigaddset (sigs, SIGABRT);
       __sigprocmask (SIG_UNBLOCK, &sigs, 0);
     }
 

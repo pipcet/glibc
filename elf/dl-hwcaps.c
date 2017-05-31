@@ -22,6 +22,7 @@
 #include <libintl.h>
 #include <unistd.h>
 #include <ldsodefs.h>
+#include <stdlib.h>
 
 #include <dl-procinfo.h>
 

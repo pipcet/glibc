@@ -29,7 +29,7 @@ sigdelset (sigset_t *set, int signo)
       return -1;
     }
 
-  __sigdelset (set, signo);
+  __sigdelset (*set, signo);
   return 0;
 }
 libc_hidden_def (sigdelset)

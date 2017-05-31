@@ -29,6 +29,6 @@ sigismember (const sigset_t *set, int signo)
       return -1;
     }
 
-  return __sigismember (set, signo);
+  return __sigismember (*set, signo);
 }
 libc_hidden_def (sigismember)

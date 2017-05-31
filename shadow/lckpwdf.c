@@ -123,7 +123,7 @@ __lckpwdf (void)
 
   /* Now make sure the alarm signal is not blocked.  */
   __sigemptyset (&new_set);
-  __sigaddset (&new_set, SIGALRM);
+  __sigaddset (new_set, SIGALRM);
   if (__sigprocmask (SIG_UNBLOCK, &new_set, &saved_set) < 0)
     RETURN_RESTORE_HANDLER (-1);
 

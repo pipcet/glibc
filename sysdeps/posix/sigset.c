@@ -39,7 +39,7 @@ sigset (int sig, __sighandler_t disp)
     }
 
   __sigemptyset (&set);
-  __sigaddset (&set, sig);
+  __sigaddset (set, sig);
 
   if (disp == SIG_HOLD)
     {
@@ -48,7 +48,7 @@ sigset (int sig, __sighandler_t disp)
 	return SIG_ERR;
 
       /* If the signal was already blocked signal this to the caller.  */
-      if (__sigismember (&oset, sig))
+      if (__sigismember (oset, sig))
 	return SIG_HOLD;
 
       /* We need to determine whether a specific handler is installed.  */
@@ -70,6 +70,6 @@ sigset (int sig, __sighandler_t disp)
 	return SIG_ERR;
 
       /* If the signal was already blocked return SIG_HOLD.  */
-      return __sigismember (&oset, sig) ? SIG_HOLD : oact.sa_handler;
+      return __sigismember (oset, sig) ? SIG_HOLD : oact.sa_handler;
     }
 }

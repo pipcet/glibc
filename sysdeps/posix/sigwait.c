@@ -41,22 +41,22 @@ do_sigwait (const sigset_t *set, int *sig)
   int this;
 
   /* Prepare set.  */
-  __sigfillset (&tmp_mask);
+  sigfillset (&tmp_mask);
 
   /* Unblock all signals in the SET and register our nice handler.  */
   action.sa_handler = ignore_signal;
   action.sa_flags = 0;
-  __sigfillset (&action.sa_mask);	/* Block all signals for handler.  */
+  sigfillset (&action.sa_mask);	/* Block all signals for handler.  */
 
   /* Make sure we recognize error conditions by setting WAS_SIG to a
      value which does not describe a legal signal number.  */
   was_sig = -1;
 
   for (this = 1; this < NSIG; ++this)
-    if (__sigismember (set, this))
+    if (sigismember (set, this))
       {
 	/* Unblock this signal.  */
-	__sigdelset (&tmp_mask, this);
+	sigdelset (&tmp_mask, this);
 
 	/* Register temporary action handler.  */
 	if (__sigaction (this, &action, &saved[this]) != 0)
@@ -70,7 +70,7 @@ do_sigwait (const sigset_t *set, int *sig)
   save_errno = errno;
 
   while (--this >= 1)
-    if (__sigismember (set, this))
+    if (sigismember (set, this))
       /* We ignore errors here since we must restore all handlers.  */
       __sigaction (this, &saved[this], NULL);
 

@@ -163,7 +163,7 @@ rcmd_af (char **ahost, u_short rport, const char *locuser, const char *remuser,
 	ai = res;
 	refused = 0;
 	__sigemptyset(&mask);
-	__sigaddset(&mask, SIGURG);
+	__sigaddset(mask, SIGURG);
 	__sigprocmask (SIG_BLOCK, &mask, &omask);
 	for (timo = 1, lport = IPPORT_RESERVED - 1;;) {
 		char errbuf[200];

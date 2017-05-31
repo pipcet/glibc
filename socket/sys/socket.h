@@ -20,6 +20,8 @@
 #define	_SYS_SOCKET_H	1
 
 #include <features.h>
+#include <unistd.h>
+#include <time.h>
 
 __BEGIN_DECLS
 
