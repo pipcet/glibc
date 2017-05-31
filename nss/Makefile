@@ -49,9 +49,9 @@ makedb-modules = xmalloc hash-string
 extra-objs		+= $(makedb-modules:=.o)
 
 tests-static            = tst-field
+tests-internal		= tst-field
 tests			= test-netdb tst-nss-test1 test-digits-dots \
-			  tst-nss-getpwent bug17079 \
-			  $(tests-static)
+			  tst-nss-getpwent bug17079
 xtests			= bug-erange
 
 # If we have a thread library then we can test cancellation against
@@ -74,7 +74,7 @@ vpath %.c $(subdir-dirs) ../locale/programs ../intl
 
 
 libnss_files-routines	:= $(addprefix files-,$(databases)) \
-			   files-initgroups files-have_o_cloexec files-init
+			   files-initgroups files-init
 
 libnss_db-dbs		:= $(addprefix db-,\
 				       $(filter-out hosts network key alias,\

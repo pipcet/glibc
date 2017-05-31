@@ -291,14 +291,10 @@ constants are declared in the header file @file{unistd.h}.
 @safety{@prelim{}@mtsafe{@mtsenv{}}@asunsafe{@asulock{} @ascuheap{}}@acunsafe{@aculock{} @acsmem{} @acsfd{}}}
 @c Some parts of the implementation open /proc and /sys files and dirs
 @c to collect system details, using fd and stream I/O depending on the
-@c case.  _SC_TZNAME_MAX calls __tzname_max, that (while holding a lock)
-@c calls tzset_internal, that calls getenv if it's called the first
-@c time; there are free and strdup calls in there too.  The returned max
-@c value may change over time for TZNAME_MAX, depending on selected
-@c timezones; NPROCS, NPROCS_CONF, PHYS_PAGES, AVPHYS_PAGES,
-@c NGROUPS_MAX, SIGQUEUE_MAX, depending on variable values read from
-@c /proc at each call, and from rlimit-obtained values CHILD_MAX,
-@c OPEN_MAX, ARG_MAX, SIGQUEUE_MAX.
+@c case.  The returned max value may change over time for NPROCS,
+@c NPROCS_CONF, PHYS_PAGES, AVPHYS_PAGES, NGROUPS_MAX, SIGQUEUE_MAX,
+@c depending on variable values read from /proc at each call, and from
+@c rlimit-obtained values CHILD_MAX, OPEN_MAX, ARG_MAX, SIGQUEUE_MAX.
 This function is used to inquire about runtime system parameters.  The
 @var{parameter} argument should be one of the @samp{_SC_} symbols listed
 below.
@@ -1034,7 +1030,7 @@ limit parameters.  The significance of these values is that you can
 safely push to these limits without checking whether the particular
 system you are using can go that far.
 
-@table @code
+@vtable @code
 @comment limits.h
 @comment POSIX.1
 @item _POSIX_AIO_LISTIO_MAX
@@ -1107,7 +1103,7 @@ for the maximum length of a time zone name.  Its value is @code{3}.
 The value of this macro is the most restrictive limit permitted by POSIX
 for the numbers used in the @samp{\@{@var{min},@var{max}\@}} construct
 in a regular expression.  Its value is @code{255}.
-@end table
+@end vtable
 
 @node Limits for Files
 @section Limits on File System Capacity
@@ -1275,7 +1271,7 @@ system you are using can go that far.  In most cases @gnusystems{} do not
 have these strict limitations.  The actual limit should be requested if
 necessary.
 
-@table @code
+@vtable @code
 @comment limits.h
 @comment POSIX.1
 @item _POSIX_LINK_MAX
@@ -1344,7 +1340,7 @@ Minimum recommended file transfer size.
 @comment POSIX.1
 @item POSIX_REC_XFER_ALIGN
 Recommended file transfer buffer alignment.
-@end table
+@end vtable
 
 @node Pathconf
 @section Using @code{pathconf}
@@ -1413,7 +1409,7 @@ Here are the symbolic constants that you can use as the @var{parameter}
 argument to @code{pathconf} and @code{fpathconf}.  The values are all
 integer constants.
 
-@table @code
+@vtable @code
 @comment unistd.h
 @comment POSIX.1
 @item _PC_LINK_MAX
@@ -1498,7 +1494,7 @@ Inquire about the value of @code{POSIX_REC_MIN_XFER_SIZE}.
 @comment POSIX.1
 @item _PC_REC_XFER_ALIGN
 Inquire about the value of @code{POSIX_REC_XFER_ALIGN}.
-@end table
+@end vtable
 
 @strong{Portability Note:} On some systems, @theglibc{} does not
 enforce @code{_PC_NAME_MAX} or @code{_PC_PATH_MAX} limits.
@@ -1577,7 +1573,7 @@ The maximum number of weights that can be assigned to an entry of the
 @node Utility Minimums
 @section Minimum Values for Utility Limits
 
-@table @code
+@vtable @code
 @comment limits.h
 @comment POSIX.2
 @item _POSIX2_BC_BASE_MAX
@@ -1631,7 +1627,7 @@ of weights that can be assigned to an entry of the @code{LC_COLLATE}
 category @samp{order} keyword in a locale definition.  Its value is
 @code{2}.  @Theglibc{} does not presently support locale
 definitions.
-@end table
+@end vtable
 
 @node String Parameters
 @section String-Valued Parameters
@@ -1669,7 +1665,7 @@ The value of the @var{parameter} is invalid.
 
 Currently there is just one parameter you can read with @code{confstr}:
 
-@table @code
+@vtable @code
 @comment unistd.h
 @comment POSIX.2
 @item _CS_PATH
@@ -1732,7 +1728,7 @@ to the application if a source is compiled using the
 The returned string specifies which additional flags must be given to
 the lint tool if a source is compiled using the
 @code{_LARGEFILE64_SOURCE} feature select macro; @pxref{Feature Test Macros}.
-@end table
+@end vtable
 
 The way to use @code{confstr} without any arbitrary limit on string size
 is to call it twice: first call it to get the length, allocate the

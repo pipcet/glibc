@@ -36,12 +36,7 @@ shm_open (const char *name, int oflag, mode_t mode)
 {
   SHM_GET_NAME (EINVAL, -1, "");
 
-# ifdef O_NOFOLLOW
-  oflag |= O_NOFOLLOW;
-# endif
-# ifdef O_CLOEXEC
-  oflag |= O_CLOEXEC;
-# endif
+  oflag |= O_NOFOLLOW | O_CLOEXEC;
 
   /* Disable asynchronous cancellation.  */
 #if 0

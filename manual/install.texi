@@ -226,6 +226,13 @@ This frontend allows users to specify tunables as a colon-separated list in a
 single environment variable @env{GLIBC_TUNABLES}.
 @end table
 
+@item --enable-obsolete-nsl
+By default, libnsl is only built as shared library for backward
+compatibility and the NSS modules libnss_compat, libnss_nis and
+libnss_nisplus are not built at all.
+Use this option to enable libnsl with all depending NSS modules and
+header files.
+
 @item --build=@var{build-system}
 @itemx --host=@var{host-system}
 These options are for cross-compiling.  If you specify both options and
@@ -559,6 +566,8 @@ patches, although we try to avoid this.
 
 If you are installing @theglibc{} on @gnulinuxsystems{}, you need to have
 the header files from a 3.2 or newer kernel around for reference.
+(For the ia64 architecture, you need version 3.2.18 or newer because this
+is the first version with support for the @code{accept4} system call.)
 These headers must be installed using @samp{make headers_install}; the
 headers present in the kernel source directory are not suitable for
 direct use by @theglibc{}.  You do not need to use that kernel, just have

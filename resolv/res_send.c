@@ -101,7 +101,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <netdb.h>
-#include <resolv.h>
+#include <resolv/resolv-internal.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -424,7 +424,7 @@ __libc_res_nsend(res_state statp, const u_char *buf, int buflen,
 	 * Some resolvers want to even out the load on their nameservers.
 	 * Note that RES_BLAST overrides RES_ROTATE.
 	 */
-	if (__builtin_expect ((statp->options & RES_ROTATE) != 0, 0)) {
+	if (__glibc_unlikely ((statp->options & RES_ROTATE) != 0)) {
 		struct sockaddr_in ina;
 		struct sockaddr_in6 *inp;
 		int lastns = statp->nscount - 1;
@@ -692,7 +692,8 @@ send_vc(res_state statp,
 		if (statp->_vcsock >= 0)
 		  __res_iclose(statp, false);
 
-		statp->_vcsock = socket(nsap->sa_family, SOCK_STREAM, 0);
+		statp->_vcsock = socket
+		  (nsap->sa_family, SOCK_STREAM | SOCK_CLOEXEC, 0);
 		if (statp->_vcsock < 0) {
 			*terrno = errno;
 			Perror(statp, stderr, "socket(vc)", errno);
@@ -902,14 +903,16 @@ reopen (res_state statp, int *terrno, int ns)
 
 		/* only try IPv6 if IPv6 NS and if not failed before */
 		if (nsap->sa_family == AF_INET6 && !statp->ipv6_unavail) {
-			EXT(statp).nssocks[ns]
-				= socket(PF_INET6, SOCK_DGRAM|SOCK_NONBLOCK, 0);
+			EXT(statp).nssocks[ns] = socket
+			  (PF_INET6,
+			   SOCK_DGRAM | SOCK_NONBLOCK | SOCK_CLOEXEC, 0);
 			if (EXT(statp).nssocks[ns] < 0)
 			    statp->ipv6_unavail = errno == EAFNOSUPPORT;
 			slen = sizeof (struct sockaddr_in6);
 		} else if (nsap->sa_family == AF_INET) {
-			EXT(statp).nssocks[ns]
-				= socket(PF_INET, SOCK_DGRAM|SOCK_NONBLOCK, 0);
+			EXT(statp).nssocks[ns] = socket
+			  (PF_INET,
+			   SOCK_DGRAM | SOCK_NONBLOCK | SOCK_CLOEXEC, 0);
 			slen = sizeof (struct sockaddr_in);
 		}
 		if (EXT(statp).nssocks[ns] < 0) {
@@ -1321,26 +1324,6 @@ send_dg(res_state statp,
 				? *thisanssizp : *thisresplenp);
 			goto wait;
 		}
-#ifdef RES_USE_EDNS0
-		if (anhp->rcode == FORMERR
-		    && (statp->options & RES_USE_EDNS0) != 0U) {
-			/*
-			 * Do not retry if the server does not understand
-			 * EDNS0.  The case has to be captured here, as
-			 * FORMERR packet do not carry query section, hence
-			 * res_queriesmatch() returns 0.
-			 */
-			DprintQ(statp->options & RES_DEBUG,
-				(stdout,
-				 "server rejected query with EDNS0:\n"),
-				*thisansp,
-				(*thisresplenp > *thisanssizp)
-				? *thisanssizp : *thisresplenp);
-			/* record the error */
-			statp->_flags |= RES_F_EDNS0ERR;
-			return close_and_return_error (statp, resplen2);
-	}
-#endif
 		if (!(statp->options & RES_INSECURE2)
 		    && (recvresp1 || !res_queriesmatch(buf, buf + buflen,
 						       *thisansp,

@@ -19,12 +19,10 @@
 #define _SYS_UCONTEXT_H	1
 
 #include <features.h>
-#include <signal.h>
 
-/* We need the signal context definitions even if they are not exposed
-   by <signal.h>.  */
+#include <bits/types/sigset_t.h>
 #include <bits/sigcontext.h>
-#include <bits/sigstack.h>
+#include <bits/types/stack_t.h>
 
 
 #ifdef __x86_64__
@@ -95,7 +93,7 @@ struct _libc_fpxreg
 {
   unsigned short int significand[4];
   unsigned short int exponent;
-  unsigned short int padding[3];
+  unsigned short int __glibc_reserved1[3];
 };
 
 struct _libc_xmmreg
@@ -116,7 +114,7 @@ struct _libc_fpstate
   __uint32_t		mxcr_mask;
   struct _libc_fpxreg	_st[8];
   struct _libc_xmmreg	_xmm[16];
-  __uint32_t		padding[24];
+  __uint32_t		__glibc_reserved1[24];
 };
 
 /* Structure to describe FPU registers.  */
@@ -138,7 +136,7 @@ typedef struct ucontext
     struct ucontext *uc_link;
     stack_t uc_stack;
     mcontext_t uc_mcontext;
-    __sigset_t uc_sigmask;
+    sigset_t uc_sigmask;
     struct _libc_fpstate __fpregs_mem;
   } ucontext_t;
 
@@ -239,7 +237,7 @@ typedef struct ucontext
     struct ucontext *uc_link;
     stack_t uc_stack;
     mcontext_t uc_mcontext;
-    __sigset_t uc_sigmask;
+    sigset_t uc_sigmask;
     struct _libc_fpstate __fpregs_mem;
   } ucontext_t;
 

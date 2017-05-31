@@ -18,6 +18,7 @@
 
 #include <cpuid.h>
 #include <cpu-features.h>
+#include <dl-hwcap.h>
 
 static void
 get_common_indeces (struct cpu_features *cpu_features,
@@ -126,7 +127,6 @@ init_cpu_features (struct cpu_features *cpu_features)
 
       if (family == 0x06)
 	{
-	  ecx = cpu_features->cpuid[COMMON_CPUID_INDEX_1].ecx;
 	  model += extended_model;
 	  switch (model)
 	    {
@@ -139,8 +139,6 @@ init_cpu_features (struct cpu_features *cpu_features)
 
 	    case 0x57:
 	      /* Knights Landing.  Enable Silvermont optimizations.  */
-	      cpu_features->feature[index_arch_Prefer_No_VZEROUPPER]
-		|= bit_arch_Prefer_No_VZEROUPPER;
 
 	    case 0x5c:
 	    case 0x5f:
@@ -176,7 +174,7 @@ init_cpu_features (struct cpu_features *cpu_features)
 	    default:
 	      /* Unknown family 0x06 processors.  Assuming this is one
 		 of Core i3/i5/i7 processors if AVX is available.  */
-	      if ((ecx & bit_cpu_AVX) == 0)
+	      if (!CPU_FEATURES_CPU_P (cpu_features, AVX))
 		break;
 
 	    case 0x1a:
@@ -225,6 +223,16 @@ init_cpu_features (struct cpu_features *cpu_features)
       if (CPU_FEATURES_ARCH_P (cpu_features, AVX2_Usable))
 	cpu_features->feature[index_arch_AVX_Fast_Unaligned_Load]
 	  |= bit_arch_AVX_Fast_Unaligned_Load;
+
+      /* Since AVX512ER is unique to Xeon Phi, set Prefer_No_VZEROUPPER
+         if AVX512ER is available.  Don't use AVX512 to avoid lower CPU
+	 frequency if AVX512ER isn't available.  */
+      if (CPU_FEATURES_CPU_P (cpu_features, AVX512ER))
+	cpu_features->feature[index_arch_Prefer_No_VZEROUPPER]
+	  |= bit_arch_Prefer_No_VZEROUPPER;
+      else
+	cpu_features->feature[index_arch_Prefer_No_AVX512]
+	  |= bit_arch_Prefer_No_AVX512;
 
       /* To avoid SSE transition penalty, use _dl_runtime_resolve_slow.
          If XGETBV suports ECX == 1, use _dl_runtime_resolve_opt.  */
@@ -303,4 +311,51 @@ no_cpuid:
   cpu_features->family = family;
   cpu_features->model = model;
   cpu_features->kind = kind;
+
+#if IS_IN (rtld)
+  /* Reuse dl_platform, dl_hwcap and dl_hwcap_mask for x86.  */
+  GLRO(dl_platform) = NULL;
+  GLRO(dl_hwcap) = 0;
+  GLRO(dl_hwcap_mask) = HWCAP_IMPORTANT;
+
+# ifdef __x86_64__
+  if (cpu_features->kind == arch_kind_intel)
+    {
+      if (CPU_FEATURES_ARCH_P (cpu_features, AVX512F_Usable)
+	  && CPU_FEATURES_CPU_P (cpu_features, AVX512CD))
+	{
+	  if (CPU_FEATURES_CPU_P (cpu_features, AVX512ER))
+	    {
+	      if (CPU_FEATURES_CPU_P (cpu_features, AVX512PF))
+		GLRO(dl_platform) = "xeon_phi";
+	    }
+	  else
+	    {
+	      if (CPU_FEATURES_CPU_P (cpu_features, AVX512BW)
+		  && CPU_FEATURES_CPU_P (cpu_features, AVX512DQ)
+		  && CPU_FEATURES_CPU_P (cpu_features, AVX512VL))
+		GLRO(dl_hwcap) |= HWCAP_X86_AVX512_1;
+	    }
+	}
+
+      if (GLRO(dl_platform) == NULL
+	  && CPU_FEATURES_ARCH_P (cpu_features, AVX2_Usable)
+	  && CPU_FEATURES_ARCH_P (cpu_features, FMA_Usable)
+	  && CPU_FEATURES_CPU_P (cpu_features, BMI1)
+	  && CPU_FEATURES_CPU_P (cpu_features, BMI2)
+	  && CPU_FEATURES_CPU_P (cpu_features, LZCNT)
+	  && CPU_FEATURES_CPU_P (cpu_features, MOVBE)
+	  && CPU_FEATURES_CPU_P (cpu_features, POPCNT))
+	GLRO(dl_platform) = "haswell";
+    }
+# else
+  if (CPU_FEATURES_CPU_P (cpu_features, SSE2))
+    GLRO(dl_hwcap) |= HWCAP_X86_SSE2;
+
+  if (CPU_FEATURES_ARCH_P (cpu_features, I686))
+    GLRO(dl_platform) = "i686";
+  else if (CPU_FEATURES_ARCH_P (cpu_features, I586))
+    GLRO(dl_platform) = "i586";
+# endif
+#endif
 }

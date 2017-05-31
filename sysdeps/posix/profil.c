@@ -23,6 +23,7 @@
 #include <sys/time.h>
 #include <libc-internal.h>
 #include <sigcontextinfo.h>
+#include <sigsetops.h>
 
 #ifndef SIGPROF
 

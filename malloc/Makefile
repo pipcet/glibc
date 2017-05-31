@@ -25,9 +25,9 @@ include ../Makeconfig
 dist-headers := malloc.h
 headers := $(dist-headers) obstack.h mcheck.h
 tests := mallocbug tst-malloc tst-valloc tst-calloc tst-obstack \
-	 tst-mallocstate tst-mcheck tst-mallocfork tst-trim1 \
-	 tst-malloc-usable tst-realloc tst-posix_memalign \
-	 tst-pvalloc tst-memalign tst-mallopt tst-scratch_buffer \
+	 tst-mcheck tst-mallocfork tst-trim1 \
+	 tst-malloc-usable tst-realloc tst-reallocarray tst-posix_memalign \
+	 tst-pvalloc tst-memalign tst-mallopt \
 	 tst-malloc-backtrace tst-malloc-thread-exit \
 	 tst-malloc-thread-fail tst-malloc-fork-deadlock \
 	 tst-mallocfork2 \
@@ -39,6 +39,8 @@ tests-static := \
 	 tst-interpose-static-thread \
 	 tst-malloc-usable-static \
 
+tests-internal := tst-mallocstate tst-scratch_buffer
+
 ifneq (no,$(have-tunables))
 tests += tst-malloc-usable-tunables
 tests-static += tst-malloc-usable-static-tunables
@@ -47,7 +49,7 @@ endif
 tests += $(tests-static)
 test-srcs = tst-mtrace
 
-routines = malloc morecore mcheck mtrace obstack \
+routines = malloc morecore mcheck mtrace obstack reallocarray \
   scratch_buffer_grow scratch_buffer_grow_preserve \
   scratch_buffer_set_array_size
 
@@ -126,7 +128,7 @@ memusagestat-modules = memusagestat
 
 cpp-srcs-left := $(memusagestat-modules)
 lib := memusagestat
-include $(patsubst %,$(..)cppflags-iterator.mk,$(cpp-srcs-left))
+include $(patsubst %,$(..)libof-iterator.mk,$(cpp-srcs-left))
 
 $(objpfx)memusagestat: $(memusagestat-modules:%=$(objpfx)%.o)
 	$(LINK.o) -o $@ $^ $(libgd-LDFLAGS) -lgd -lpng -lz -lm

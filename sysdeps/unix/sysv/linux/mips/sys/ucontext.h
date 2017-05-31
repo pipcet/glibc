@@ -20,12 +20,10 @@
 #define _SYS_UCONTEXT_H	1
 
 #include <features.h>
-#include <signal.h>
 
-/* We need the signal context definitions even if they are not exposed
-   by <signal.h>.  */
+#include <bits/types/sigset_t.h>
 #include <bits/sigcontext.h>
-#include <bits/sigstack.h>
+#include <bits/types/stack_t.h>
 
 #include <sgidefs.h>
 
@@ -98,7 +96,7 @@ typedef struct
     unsigned int fpc_csr;
     unsigned int used_math;
     unsigned int dsp;
-    unsigned int reserved;
+    unsigned int __glibc_reserved1;
   } mcontext_t;
 #endif
 
@@ -109,7 +107,7 @@ typedef struct ucontext
     struct ucontext *uc_link;
     stack_t uc_stack;
     mcontext_t uc_mcontext;
-    __sigset_t uc_sigmask;
+    sigset_t uc_sigmask;
   } ucontext_t;
 
 #endif /* sys/ucontext.h */

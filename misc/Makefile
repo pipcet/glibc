@@ -35,7 +35,7 @@ headers	:= sys/uio.h bits/uio.h sys/ioctl.h bits/ioctls.h bits/ioctl-types.h \
 	   syslog.h sys/syslog.h \
 	   bits/syslog.h bits/syslog-ldbl.h bits/syslog-path.h bits/error.h \
 	   bits/select2.h bits/hwcap.h sys/auxv.h \
-	   sys/sysmacros.h bits/sysmacros.h
+	   sys/sysmacros.h bits/sysmacros.h bits/types/struct_iovec.h
 
 routines := brk sbrk sstk ioctl \
 	    readv writev preadv preadv64 pwritev pwritev64 \
@@ -79,8 +79,9 @@ gpl2lgpl := error.c error.h
 tests := tst-dirname tst-tsearch tst-fdset tst-efgcvt tst-mntent tst-hsearch \
 	 tst-error1 tst-pselect tst-insremque tst-mntent2 bug-hsearch1 \
 	 tst-mntent-blank-corrupt tst-mntent-blank-passno bug18240 \
-	 tst-preadvwritev tst-preadvwritev64 tst-makedev tst-empty \
-	 tst-atomic tst-atomic-long
+	 tst-preadvwritev tst-preadvwritev64 tst-makedev tst-empty
+
+tests-internal := tst-atomic tst-atomic-long
 tests-static := tst-empty
 
 ifeq ($(run-built-tests),yes)
@@ -107,6 +108,9 @@ CFLAGS-getsysstats.c = -fexceptions
 CFLAGS-getusershell.c = -fexceptions
 CFLAGS-err.c = -fexceptions
 CFLAGS-tst-tsearch.c = $(stack-align-test-flags)
+CFLAGS-msync.c = -fexceptions -fasynchronous-unwind-tables
+CFLAGS-fdatasync.c = -fexceptions -fasynchronous-unwind-tables
+CFLAGS-fsync.c = -fexceptions -fasynchronous-unwind-tables
 
 # Called during static library initialization, so turn stack-protection
 # off for non-shared builds.

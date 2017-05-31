@@ -179,6 +179,10 @@ test_main (void)
 
   for (i = 1; i < 8; ++i)
     {
+      /* Test n == 0.  */
+      do_test (i, i, 0, 0, 23);
+      do_test (i, i, 0, 0, 0);
+
       do_test (0, 16 << i, 2048, 2048, 23);
       do_test (i, 64, 256, 256, 23);
       do_test (0, 16 << i, 2048, 2048, 0);
@@ -210,8 +214,14 @@ test_main (void)
       do_test (0, i, i + 1, i + 1, 0);
     }
 
+  /* BZ#21182 - wrong overflow calculation for i686 implementation
+     with address near end of the page.  */
+  for (i = 2; i < 16; ++i)
+    /* page_size is in fact getpagesize() * 2.  */
+    do_test (page_size / 2 - i, i, i, 1, 0x9B);
+
   do_random_tests ();
   return ret;
 }
 
-#include "../test-skeleton.c"
+#include <support/test-driver.c>

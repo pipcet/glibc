@@ -159,11 +159,6 @@ class Context(object):
 
     def add_all_configs(self):
         """Add all known glibc build configurations."""
-        # On architectures missing __builtin_trap support, these
-        # options may be needed as a workaround; see
-        # <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=70216> for SH.
-        no_isolate = ('-fno-isolate-erroneous-paths-dereference'
-                      ' -fno-isolate-erroneous-paths-attribute')
         self.add_config(arch='aarch64',
                         os_name='linux-gnu')
         self.add_config(arch='aarch64_be',
@@ -337,31 +332,23 @@ class Context(object):
                         glibcs=[{},
                                 {'arch': 's390', 'ccopts': '-m31'}])
         self.add_config(arch='sh3',
-                        os_name='linux-gnu',
-                        glibcs=[{'ccopts': no_isolate}])
+                        os_name='linux-gnu')
         self.add_config(arch='sh3eb',
-                        os_name='linux-gnu',
-                        glibcs=[{'ccopts': no_isolate}])
+                        os_name='linux-gnu')
         self.add_config(arch='sh4',
-                        os_name='linux-gnu',
-                        glibcs=[{'ccopts': no_isolate}])
+                        os_name='linux-gnu')
         self.add_config(arch='sh4eb',
-                        os_name='linux-gnu',
-                        glibcs=[{'ccopts': no_isolate}])
+                        os_name='linux-gnu')
         self.add_config(arch='sh4',
                         os_name='linux-gnu',
                         variant='soft',
                         gcc_cfg=['--without-fp'],
-                        glibcs=[{'variant': 'soft',
-                                 'cfg': ['--without-fp'],
-                                 'ccopts': no_isolate}])
+                        glibcs=[{'variant': 'soft', 'cfg': ['--without-fp']}])
         self.add_config(arch='sh4eb',
                         os_name='linux-gnu',
                         variant='soft',
                         gcc_cfg=['--without-fp'],
-                        glibcs=[{'variant': 'soft',
-                                 'cfg': ['--without-fp'],
-                                 'ccopts': no_isolate}])
+                        glibcs=[{'variant': 'soft', 'cfg': ['--without-fp']}])
         self.add_config(arch='sparc64',
                         os_name='linux-gnu',
                         glibcs=[{},
@@ -696,10 +683,10 @@ class Context(object):
     def checkout(self, versions):
         """Check out the desired component versions."""
         default_versions = {'binutils': 'vcs-2.28',
-                            'gcc': 'vcs-6',
+                            'gcc': 'vcs-7',
                             'glibc': 'vcs-mainline',
                             'gmp': '6.1.1',
-                            'linux': '4.10',
+                            'linux': '4.11',
                             'mpc': '1.0.3',
                             'mpfr': '3.1.5'}
         use_versions = {}

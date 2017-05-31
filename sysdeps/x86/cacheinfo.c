@@ -16,16 +16,14 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
+#if IS_IN (libc)
+
 #include <assert.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <cpuid.h>
 #include <init-arch.h>
-
-#define is_intel GLRO(dl_x86_cpu_features).kind == arch_kind_intel
-#define is_amd GLRO(dl_x86_cpu_features).kind == arch_kind_amd
-#define max_cpuid GLRO(dl_x86_cpu_features).max_cpuid
 
 static const struct intel_02_cache_info
 {
@@ -436,10 +434,12 @@ long int
 attribute_hidden
 __cache_sysconf (int name)
 {
-  if (is_intel)
-    return handle_intel (name, max_cpuid);
+  const struct cpu_features *cpu_features = __get_cpu_features ();
 
-  if (is_amd)
+  if (cpu_features->kind == arch_kind_intel)
+    return handle_intel (name, cpu_features->max_cpuid);
+
+  if (cpu_features->kind == arch_kind_amd)
     return handle_amd (name);
 
   // XXX Fill in more vendors.
@@ -489,8 +489,10 @@ init_cacheinfo (void)
   long int shared = -1;
   unsigned int level;
   unsigned int threads = 0;
+  const struct cpu_features *cpu_features = __get_cpu_features ();
+  int max_cpuid = cpu_features->max_cpuid;
 
-  if (is_intel)
+  if (cpu_features->kind == arch_kind_intel)
     {
       data = handle_intel (_SC_LEVEL1_DCACHE_SIZE, max_cpuid);
 
@@ -691,8 +693,7 @@ intel_bug_no_cache_info:
 	  shared += core;
 	}
     }
-  /* This spells out "AuthenticAMD".  */
-  else if (is_amd)
+  else if (cpu_features->kind == arch_kind_amd)
     {
       data   = handle_amd (_SC_LEVEL1_DCACHE_SIZE);
       long int core = handle_amd (_SC_LEVEL2_CACHE_SIZE);
@@ -769,3 +770,5 @@ intel_bug_no_cache_info:
      store becomes faster.  */
   __x86_shared_non_temporal_threshold = __x86_shared_cache_size * 6;
 }
+
+#endif

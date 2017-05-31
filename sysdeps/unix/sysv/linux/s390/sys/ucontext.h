@@ -20,12 +20,10 @@
 #define _SYS_UCONTEXT_H	1
 
 #include <features.h>
-#include <signal.h>
 
-/* We need the signal context definitions even if they are not exposed
-   by in <signal.h>.  */
+#include <bits/types/sigset_t.h>
 #include <bits/sigcontext.h>
-#include <bits/sigstack.h>
+#include <bits/types/stack_t.h>
 
 
 /* Type for a program status word.  */
@@ -80,7 +78,7 @@ typedef struct ucontext
     struct ucontext *uc_link;
     stack_t uc_stack;
     mcontext_t uc_mcontext;
-    __sigset_t uc_sigmask;
+    sigset_t uc_sigmask;
   } ucontext_t;
 
 

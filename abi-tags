@@ -28,8 +28,6 @@
 
 .*-.*-syllable.*	5	2.0.0	# just an arbitrary value
 
-.*-.*-nacl.*		6	42.0.0	# earliest compatible Chromium version
-
 asmjs-.*        7       0.0.0
 wasm32-.*      10       0.0.0
 wasm64-.*       9       0.0.0

@@ -1,19 +1,13 @@
 #ifndef _STDLIB_H
 
-#ifdef __need_malloc_and_calloc
-#define __Need_M_And_C
-#endif
-
 #ifndef _ISOMAC
 # include <stddef.h>
 #endif
 #include <stdlib/stdlib.h>
 
 /* Now define the internal interfaces.  */
-#if !defined __Need_M_And_C && !defined _ISOMAC
+#if !defined _ISOMAC
 # include <sys/stat.h>
-
-__BEGIN_DECLS
 
 extern __typeof (strtol_l) __strtol_l;
 extern __typeof (strtoul_l) __strtoul_l;
@@ -115,6 +109,10 @@ extern int __posix_memalign (void **memptr, size_t alignment, size_t size);
 
 extern void *__libc_memalign (size_t alignment, size_t size)
      __attribute_malloc__;
+
+extern void *__libc_reallocarray (void *__ptr, size_t __nmemb, size_t __size)
+     __THROW __attribute_warn_unused_result__;
+libc_hidden_proto (__libc_reallocarray)
 
 extern int __libc_system (const char *line);
 
@@ -265,10 +263,6 @@ extern __typeof (unsetenv) unsetenv attribute_hidden;
 extern __typeof (__strtoul_internal) __strtoul_internal attribute_hidden;
 # endif
 
-__END_DECLS
-
 #endif
-
-#undef __Need_M_And_C
 
 #endif  /* include/stdlib.h */

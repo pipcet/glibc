@@ -909,7 +909,7 @@ libio-include = -I$(..)libio
 built-modules = iconvprogs iconvdata ldconfig lddlibc4 libmemusage \
 		libSegFault libpcprofile librpcsvc locale-programs \
 		memusagestat nonlib nscd extramodules libnldbl libsupport \
-                libc libm
+                libc libm testsuite
 
 in-module = $(subst -,_,$(firstword $(libof-$(basename $(@F))) \
 				    $(libof-$(<F)) \

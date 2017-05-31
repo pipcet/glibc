@@ -51,8 +51,8 @@ $1 == "}" {
     if (!env_alias[top_ns][ns][tunable]) {
       env_alias[top_ns][ns][tunable] = "NULL"
     }
-    if (!is_secure[top_ns][ns][tunable]) {
-      is_secure[top_ns][ns][tunable] = "SXID_ERASE"
+    if (!security_level[top_ns][ns][tunable]) {
+      security_level[top_ns][ns][tunable] = "SXID_ERASE"
     }
 
     tunable = ""
@@ -104,13 +104,21 @@ $1 == "}" {
   }
   else if (attr == "security_level") {
     if (val == "SXID_ERASE" || val == "SXID_IGNORE" || val == "NONE") {
-      is_secure[top_ns][ns][tunable] = val
+      security_level[top_ns][ns][tunable] = val
     }
     else {
-      printf("Line %d: Invalid value (%s) for is_secure: %s, ", NR, val,
+      printf("Line %d: Invalid value (%s) for security_level: %s, ", NR, val,
 	     $0)
-      print("Allowed values are 'true' or 'false'")
+      print("Allowed values are 'SXID_ERASE', 'SXID_IGNORE', or 'NONE'")
       exit 1
+    }
+  }
+  else if (attr == "default") {
+    if (types[top_ns][ns][tunable] == "STRING") {
+      default_val[top_ns][ns][tunable] = sprintf(".strval = \"%s\"", val);
+    }
+    else {
+      default_val[top_ns][ns][tunable] = sprintf(".numval = %s", val)
     }
   }
 }
@@ -141,14 +149,14 @@ END {
 
   # Finally, the tunable list.
   print "\n#ifdef TUNABLES_INTERNAL"
-  print "static tunable_t tunable_list[] = {"
+  print "static tunable_t tunable_list[] attribute_relro = {"
   for (t in types) {
     for (n in types[t]) {
       for (m in types[t][n]) {
         printf ("  {TUNABLE_NAME_S(%s, %s, %s)", t, n, m)
-        printf (", {TUNABLE_TYPE_%s, %s, %s}, {.numval = 0}, NULL, TUNABLE_SECLEVEL_%s, %s},\n",
+        printf (", {TUNABLE_TYPE_%s, %s, %s}, {%s}, NULL, TUNABLE_SECLEVEL_%s, %s},\n",
 		types[t][n][m], minvals[t][n][m], maxvals[t][n][m],
-		is_secure[t][n][m], env_alias[t][n][m]);
+		default_val[t][n][m], security_level[t][n][m], env_alias[t][n][m]);
       }
     }
   }

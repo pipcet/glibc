@@ -1,3 +1,20 @@
+2017-05-03  Carlos O'Donell  <carlos@redhat.com>
+
+	[BZ #20686]
+	* SUPPORTED: Add el_GR@euro/ISO-8859-7.
+
+2017-04-19  Christopher Chittleborough  <cchittleborough@cluemail.com>
+
+	[BZ #21399]
+	* charmaps/CP1254: Fix U+00EC comment.
+
+2017-03-28  Egmont Koblinger  <egmont@gmail.com>
+
+	[BZ #18934]
+	* locales/hu_HU: Fix multiple collate bugs.
+	* hu_HU.in: New file.
+	* Makefile (test-input): Add hu_HU.UTF-8.
+
 2017-02-20  Mike FABIAN  <mfabian@redhat.com>
 
 	[BZ #20313]
