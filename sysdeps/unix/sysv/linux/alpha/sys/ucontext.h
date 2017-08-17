@@ -29,33 +29,47 @@
 typedef long int greg_t;
 
 /* Number of general registers.  */
-#define NGREG	33
+#define __NGREG	33
+#ifdef __USE_MISC
+# define NGREG	__NGREG
+#endif
 
 /* Container for all general registers.  */
-typedef greg_t gregset_t[NGREG];
+typedef greg_t gregset_t[__NGREG];
 
 /* Type for floating-point register.  */
 typedef long int fpreg_t;
 
 /* Number of general registers.  */
-#define NFPREG	32
+#define __NFPREG	32
+#ifdef __USE_MISC
+# define NFPREG	__NFPREG
+#endif
 
 /* Container for all general registers.  */
-typedef fpreg_t fpregset_t[NFPREG];
+typedef fpreg_t fpregset_t[__NFPREG];
 
 
 /* A machine context is exactly a sigcontext.  */
 typedef struct sigcontext mcontext_t;
 
+#ifdef __USE_MISC
+# define __ctx(fld) fld
+#else
+# define __ctx(fld) __ ## fld
+#endif
+
 /* Userlevel context.  */
-typedef struct ucontext
+typedef struct ucontext_t
   {
-    unsigned long int uc_flags;
-    struct ucontext *uc_link;
+    unsigned long int __ctx(uc_flags);
+    struct ucontext_t *uc_link;
     unsigned long __uc_osf_sigmask;
     stack_t uc_stack;
     mcontext_t uc_mcontext;
     sigset_t uc_sigmask;
   } ucontext_t;
+
+#undef __ctx
 
 #endif /* sys/ucontext.h */

@@ -997,8 +997,8 @@ Mon Jan  6 03:31:46 1997  Ulrich Drepper  <drepper@cygnus.com>
 	* signal/sigfillset.c: Likewise.
 
 	* signal/signal.h: Change back handling of signal.  The BSD
- 	version is preferred and the new sysv_signal is used when
- 	__USE_XOPEN.
+	version is preferred and the new sysv_signal is used when
+	__USE_XOPEN.
 	* sysdeps/posix/sysv_signal.c: Renamed from signal.c.  Use SVID
 	semantic.
 	* sysdeps/posix/signal.c: Renamed from bsd_signal.c.  Use BSD
@@ -1579,8 +1579,8 @@ Thu Dec 19 14:24:50 1996  Andreas Schwab  <schwab@issan.informatik.uni-dortmund.
 	* nis/nss_nis/nis-spwd.c: Likewise.
 
 	* nis/nss_compat/compat-grp.c (getgrent_next_nis,
- 	getgrent_next_file): Pass the correct type for the buffer to the
- 	parser function.
+	getgrent_next_file): Pass the correct type for the buffer to the
+	parser function.
 	* nis/nss_compat/compat-pwd.c (getpwent_next_netgr,
 	getpwent_next_nis, getpwent_next_file): Likewise.
 	* nis/nss_compat/compat-spwd.c (getspent_next_netgr,
@@ -3267,7 +3267,7 @@ Fri Nov 15 12:27:25 1996  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 	funlockfile, not _IO_funlockfile.
 
 	* sysdeps/posix/readv.c (readv): Change return type to ssize_t.
-  	Deansideclized.
+	Deansideclized.
 	* sysdeps/posix/writev.c (writev): Likewise.
 
 	* sysdeps/mach/hurd/lchown.c: Include <fcntl.h> and fix typo.
@@ -3331,7 +3331,7 @@ Wed Nov 13 03:09:16 1996  Ulrich Drepper  <drepper@cygnus.com>
 Tue Nov 12 16:58:41 1996  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
 	* mach/mach.h (__mach_msg_destroy, mach_msg_destroy, __mach_msg):
- 	Provide prototypes.
+	Provide prototypes.
 
 	* mach/msg-destroy.c (mach_msg_destroy_port,
 	mach_msg_destroy_memory): Use prototype	syntax.
@@ -3344,9 +3344,9 @@ Tue Nov 12 16:58:41 1996  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 	we pass O_NOLINK on the open.
 
 	* manual/errno.texi (EBADMSG, EIDRM, EMULTIHOP, ENODATA, ENOLINK,
- 	ENOMSG, ENOSR, ENOSTR, EOVERFLOW, EPROTO, ETIME): Redesignate as
- 	an XOPEN error code, move to before the "Linux only" section, and
- 	give it a new number for the Hurd.
+	ENOMSG, ENOSR, ENOSTR, EOVERFLOW, EPROTO, ETIME): Redesignate as
+	an XOPEN error code, move to before the "Linux only" section, and
+	give it a new number for the Hurd.
 
 Tue Nov 12 03:35:01 1996  Christian von Roques  <roques@pond.sub.org>
 

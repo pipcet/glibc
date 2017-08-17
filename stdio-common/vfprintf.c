@@ -205,7 +205,7 @@ typedef wchar_t THOUSANDS_SEP_T;
 static const CHAR_T null[] = L_("(null)");
 
 /* Size of the work_buffer variable (in characters, not bytes.  */
-enum { WORK_BUFFER_SIZE = 1000 };
+enum { WORK_BUFFER_SIZE = 1000 / sizeof (CHAR_T) };
 
 /* This table maps a character into a number representing a class.  In
    each step there is a destination label for each class.  */
@@ -595,9 +595,8 @@ static const uint8_t jump_table[] =
 	      string = _itoa (number.longlong, workend, base,		      \
 			      spec == L_('X'));				      \
 	      if (group && grouping)					      \
-		string = group_number (string, workend, grouping,	      \
-				       thousands_sep);			      \
-									      \
+		string = group_number (work_buffer, string, workend,	      \
+				       grouping, thousands_sep);	      \
 	      if (use_outdigits && base == 10)				      \
 		string = _i18n_number_rewrite (string, workend, workend);     \
 	    }								      \
@@ -653,9 +652,8 @@ static const uint8_t jump_table[] =
 	      string = _itoa_word (number.word, workend, base,		      \
 				   spec == L_('X'));			      \
 	      if (group && grouping)					      \
-		string = group_number (string, workend, grouping,	      \
-				       thousands_sep);			      \
-									      \
+		string = group_number (work_buffer, string, workend,	      \
+				       grouping, thousands_sep);	      \
 	      if (use_outdigits && base == 10)				      \
 		string = _i18n_number_rewrite (string, workend, workend);     \
 	    }								      \
@@ -770,7 +768,8 @@ static const uint8_t jump_table[] =
 					.pad = pad,			      \
 					.extra = 0,			      \
 					.i18n = use_outdigits,		      \
-					.wide = sizeof (CHAR_T) != 1 };	      \
+					.wide = sizeof (CHAR_T) != 1,	      \
+					.is_binary128 = 0};		      \
 									      \
 	    if (is_long_double)						      \
 	      the_arg.pa_long_double = va_arg (ap, long double);	      \
@@ -788,6 +787,8 @@ static const uint8_t jump_table[] =
 		fspec->data_arg_type = PA_DOUBLE;			      \
 		fspec->info.is_long_double = 0;				      \
 	      }								      \
+	    /* Not supported by *printf functions.  */			      \
+	    fspec->info.is_binary128 = 0;				      \
 									      \
 	    function_done = __printf_fp (s, &fspec->info, &ptr);	      \
 	  }								      \
@@ -827,7 +828,8 @@ static const uint8_t jump_table[] =
 					.group = group,			      \
 					.pad = pad,			      \
 					.extra = 0,			      \
-					.wide = sizeof (CHAR_T) != 1 };	      \
+					.wide = sizeof (CHAR_T) != 1,	      \
+					.is_binary128 = 0};		      \
 									      \
 	    if (is_long_double)						      \
 	      the_arg.pa_long_double = va_arg (ap, long double);	      \
@@ -842,6 +844,8 @@ static const uint8_t jump_table[] =
 	    ptr = (const void *) &args_value[fspec->data_arg];		      \
 	    if (__ldbl_is_dbl)						      \
 	      fspec->info.is_long_double = 0;				      \
+	    /* Not supported by *printf functions.  */			      \
+	    fspec->info.is_binary128 = 0;				      \
 									      \
 	    function_done = __printf_fphex (s, &fspec->info, &ptr);	      \
 	  }								      \
@@ -1231,8 +1235,8 @@ static int printf_unknown (FILE *, const struct printf_info *,
 			   const void *const *) __THROW;
 
 /* Group digits of number string.  */
-static CHAR_T *group_number (CHAR_T *, CHAR_T *, const char *, THOUSANDS_SEP_T)
-     __THROW internal_function;
+static CHAR_T *group_number (CHAR_T *, CHAR_T *, CHAR_T *, const char *,
+			     THOUSANDS_SEP_T);
 
 /* The function itself.  */
 int
@@ -1702,14 +1706,16 @@ printf_positional (_IO_FILE *s, const CHAR_T *format, int readonly_format,
 		   CHAR_T *work_buffer, int save_errno,
 		   const char *grouping, THOUSANDS_SEP_T thousands_sep)
 {
-  /* For the argument descriptions, which may be allocated on the heap.  */
-  void *args_malloced = NULL;
-
   /* For positional argument handling.  */
   struct scratch_buffer specsbuf;
   scratch_buffer_init (&specsbuf);
   struct printf_spec *specs = specsbuf.data;
   size_t specs_limit = specsbuf.length / sizeof (specs[0]);
+
+  /* Used as a backing store for args_value, args_size, args_type
+     below.  */
+  struct scratch_buffer argsbuf;
+  scratch_buffer_init (&argsbuf);
 
   /* Array with information about the needed arguments.  This has to
      be dynamically extensible.  */
@@ -1719,10 +1725,6 @@ printf_positional (_IO_FILE *s, const CHAR_T *format, int readonly_format,
      determine the size of the array needed to store the argument
      attributes.  */
   size_t nargs = 0;
-  size_t bytes_per_arg;
-  union printf_arg *args_value;
-  int *args_size;
-  int *args_type;
 
   /* Positional parameters refer to arguments directly.  This could
      also determine the maximum number of arguments.  Track the
@@ -1772,38 +1774,29 @@ printf_positional (_IO_FILE *s, const CHAR_T *format, int readonly_format,
 
   /* Determine the number of arguments the format string consumes.  */
   nargs = MAX (nargs, max_ref_arg);
-  /* Calculate total size needed to represent a single argument across
-     all three argument-related arrays.  */
-  bytes_per_arg = (sizeof (*args_value) + sizeof (*args_size)
-		   + sizeof (*args_type));
 
-  /* Check for potential integer overflow.  */
-  if (__glibc_unlikely (nargs > INT_MAX / bytes_per_arg))
-    {
-      __set_errno (EOVERFLOW);
-      done = -1;
-      goto all_done;
-    }
-
-  /* Allocate memory for all three argument arrays.  */
-  if (__libc_use_alloca (nargs * bytes_per_arg))
-    args_value = alloca (nargs * bytes_per_arg);
-  else
-    {
-      args_value = args_malloced = malloc (nargs * bytes_per_arg);
-      if (args_value == NULL)
-	{
-	  done = -1;
-	  goto all_done;
-	}
-    }
-
-  /* Set up the remaining two arrays to each point past the end of the
-     prior array, since space for all three has been allocated now.  */
-  args_size = &args_value[nargs].pa_int;
-  args_type = &args_size[nargs];
-  memset (args_type, s->_flags2 & _IO_FLAGS2_FORTIFY ? '\xff' : '\0',
-	  nargs * sizeof (*args_type));
+  union printf_arg *args_value;
+  int *args_size;
+  int *args_type;
+  {
+    /* Calculate total size needed to represent a single argument
+       across all three argument-related arrays.  */
+    size_t bytes_per_arg
+      = sizeof (*args_value) + sizeof (*args_size) + sizeof (*args_type);
+    if (!scratch_buffer_set_array_size (&argsbuf, nargs, bytes_per_arg))
+      {
+	done = -1;
+	goto all_done;
+      }
+    args_value = argsbuf.data;
+    /* Set up the remaining two arrays to each point past the end of
+       the prior array, since space for all three has been allocated
+       now.  */
+    args_size = &args_value[nargs].pa_int;
+    args_type = &args_size[nargs];
+    memset (args_type, s->_flags2 & _IO_FLAGS2_FORTIFY ? '\xff' : '\0',
+	    nargs * sizeof (*args_type));
+  }
 
   /* XXX Could do sanity check here: If any element in ARGS_TYPE is
      still zero after this loop, format is invalid.  For now we
@@ -2069,10 +2062,9 @@ printf_positional (_IO_FILE *s, const CHAR_T *format, int readonly_format,
 		 - specs[nspecs_done].end_of_fmt);
     }
  all_done:
-  if (__glibc_unlikely (args_malloced != NULL))
-    free (args_malloced);
   if (__glibc_unlikely (workstart != NULL))
     free (workstart);
+  scratch_buffer_free (&argsbuf);
   scratch_buffer_free (&specsbuf);
   return done;
 }
@@ -2129,16 +2121,20 @@ printf_unknown (FILE *s, const struct printf_info *info,
   return done;
 }
 
-/* Group the digits according to the grouping rules of the current locale.
-   The interpretation of GROUPING is as in `struct lconv' from <locale.h>.  */
+/* Group the digits from W to REAR_PTR according to the grouping rules
+   of the current locale.  The interpretation of GROUPING is as in
+   `struct lconv' from <locale.h>.  The grouped number extends from
+   the returned pointer until REAR_PTR.  FRONT_PTR to W is used as a
+   scratch area.  */
 static CHAR_T *
-internal_function
-group_number (CHAR_T *w, CHAR_T *rear_ptr, const char *grouping,
-	      THOUSANDS_SEP_T thousands_sep)
+group_number (CHAR_T *front_ptr, CHAR_T *w, CHAR_T *rear_ptr,
+	      const char *grouping, THOUSANDS_SEP_T thousands_sep)
 {
+  /* Length of the current group.  */
   int len;
-  CHAR_T *src, *s;
 #ifndef COMPILE_WPRINTF
+  /* Length of the separator (in wide mode, the separator is always a
+     single wide character).  */
   int tlen = strlen (thousands_sep);
 #endif
 
@@ -2151,26 +2147,34 @@ group_number (CHAR_T *w, CHAR_T *rear_ptr, const char *grouping,
   len = *grouping++;
 
   /* Copy existing string so that nothing gets overwritten.  */
-  src = (CHAR_T *) alloca ((rear_ptr - w) * sizeof (CHAR_T));
-  s = (CHAR_T *) __mempcpy (src, w,
-			    (rear_ptr - w) * sizeof (CHAR_T));
+  memmove (front_ptr, w, (rear_ptr - w) * sizeof (CHAR_T));
+  CHAR_T *s = front_ptr + (rear_ptr - w);
+
   w = rear_ptr;
 
   /* Process all characters in the string.  */
-  while (s > src)
+  while (s > front_ptr)
     {
       *--w = *--s;
 
-      if (--len == 0 && s > src)
+      if (--len == 0 && s > front_ptr)
 	{
 	  /* A new group begins.  */
 #ifdef COMPILE_WPRINTF
-	  *--w = thousands_sep;
+	  if (w != s)
+	    *--w = thousands_sep;
+	  else
+	    /* Not enough room for the separator.  */
+	    goto copy_rest;
 #else
 	  int cnt = tlen;
-	  do
-	    *--w = thousands_sep[--cnt];
-	  while (cnt > 0);
+	  if (tlen < w - s)
+	    do
+	      *--w = thousands_sep[--cnt];
+	    while (cnt > 0);
+	  else
+	    /* Not enough room for the separator.  */
+	    goto copy_rest;
 #endif
 
 	  if (*grouping == CHAR_MAX
@@ -2179,17 +2183,16 @@ group_number (CHAR_T *w, CHAR_T *rear_ptr, const char *grouping,
 #endif
 		   )
 	    {
-	      /* No further grouping to be done.
-		 Copy the rest of the number.  */
-	      do
-		*--w = *--s;
-	      while (s > src);
+	    copy_rest:
+	      /* No further grouping to be done.  Copy the rest of the
+		 number.  */
+	      memmove (w, s, (front_ptr -s) * sizeof (CHAR_T));
 	      break;
 	    }
 	  else if (*grouping != '\0')
-	    /* The previous grouping repeats ad infinitum.  */
 	    len = *grouping++;
 	  else
+	    /* The previous grouping repeats ad infinitum.  */
 	    len = grouping[-1];
 	}
     }

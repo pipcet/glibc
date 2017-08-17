@@ -51,6 +51,9 @@ __BEGIN_DECLS
 # endif
 #endif	/* X/Open or XPG7 and <sys/wait.h> not included.  */
 
+/* _FloatN API tests for enablement.  */
+#include <bits/floatn.h>
+
 /* Returned by `div'.  */
 typedef struct
   {
@@ -125,6 +128,13 @@ extern long double strtold (const char *__restrict __nptr,
      __THROW __nonnull ((1));
 #endif
 
+#if __HAVE_FLOAT128 && __GLIBC_USE (IEC_60559_TYPES_EXT)
+/* Likewise for the '_Float128' format  */
+extern _Float128 strtof128 (const char *__restrict __nptr,
+		      char **__restrict __endptr)
+     __THROW __nonnull ((1));
+#endif
+
 /* Convert a string to a long integer.  */
 extern long int strtol (const char *__restrict __nptr,
 			char **__restrict __endptr, int __base)
@@ -175,58 +185,59 @@ extern int strfroml (char *__dest, size_t __size, const char *__format,
      __THROW __nonnull ((3));
 #endif
 
+#if __HAVE_FLOAT128 && __GLIBC_USE (IEC_60559_TYPES_EXT)
+extern int strfromf128 (char *__dest, size_t __size, const char * __format,
+			_Float128 __f)
+     __THROW __nonnull ((3));
+#endif
+
 
 #ifdef __USE_GNU
-/* The concept of one static locale per category is not very well
-   thought out.  Many applications will need to process its data using
-   information from several different locales.  Another problem is
-   the implementation of the internationalization handling in the
-   ISO C++ standard library.  To support this another set of
-   the functions using locale data exist which take an additional
-   argument.
+/* Parallel versions of the functions above which take the locale to
+   use as an additional parameter.  These are GNU extensions inspired
+   by the POSIX.1-2008 extended locale API.  */
+# include <bits/types/locale_t.h>
 
-   Attention: even though several *_l interfaces are part of POSIX:2008,
-   these are not.  */
-
-/* Structure for reentrant locale using functions.  This is an
-   (almost) opaque type for the user level programs.  */
-# include <xlocale.h>
-
-/* Special versions of the functions above which take the locale to
-   use as an additional parameter.  */
 extern long int strtol_l (const char *__restrict __nptr,
 			  char **__restrict __endptr, int __base,
-			  __locale_t __loc) __THROW __nonnull ((1, 4));
+			  locale_t __loc) __THROW __nonnull ((1, 4));
 
 extern unsigned long int strtoul_l (const char *__restrict __nptr,
 				    char **__restrict __endptr,
-				    int __base, __locale_t __loc)
+				    int __base, locale_t __loc)
      __THROW __nonnull ((1, 4));
 
 __extension__
 extern long long int strtoll_l (const char *__restrict __nptr,
 				char **__restrict __endptr, int __base,
-				__locale_t __loc)
+				locale_t __loc)
      __THROW __nonnull ((1, 4));
 
 __extension__
 extern unsigned long long int strtoull_l (const char *__restrict __nptr,
 					  char **__restrict __endptr,
-					  int __base, __locale_t __loc)
+					  int __base, locale_t __loc)
      __THROW __nonnull ((1, 4));
 
 extern double strtod_l (const char *__restrict __nptr,
-			char **__restrict __endptr, __locale_t __loc)
+			char **__restrict __endptr, locale_t __loc)
      __THROW __nonnull ((1, 3));
 
 extern float strtof_l (const char *__restrict __nptr,
-		       char **__restrict __endptr, __locale_t __loc)
+		       char **__restrict __endptr, locale_t __loc)
      __THROW __nonnull ((1, 3));
 
 extern long double strtold_l (const char *__restrict __nptr,
 			      char **__restrict __endptr,
-			      __locale_t __loc)
+			      locale_t __loc)
      __THROW __nonnull ((1, 3));
+
+# if __HAVE_FLOAT128
+extern _Float128 strtof128_l (const char *__restrict __nptr,
+			      char **__restrict __endptr,
+			      locale_t __loc)
+     __THROW __nonnull ((1, 3));
+# endif
 #endif /* GNU */
 
 

@@ -22,11 +22,10 @@ escape_char /
 % Date: 1997-11-05
 % Application: general
 % Users: general
-% Charset: ISO-8859-2
 
 LC_IDENTIFICATION
 title      "Slovenian locale for Slovenia"
-source     "USM/MZT"
+source     "USM//MZT"
 address    "Kotnikova 6,, Ljubljana, Slovenia"
 contact    ""
 email      "bug-glibc-locales@gnu.org"
@@ -2135,7 +2134,7 @@ LC_MONETARY
 int_curr_symbol           "<U0045><U0055><U0052><U0020>"
 currency_symbol           "<U20AC>"
 mon_decimal_point         "<U002C>"
-mon_thousands_sep         "<U0020>"
+mon_thousands_sep         "<U202F>"
 mon_grouping              3;3
 positive_sign             ""
 negative_sign             "<U002D>"
@@ -2151,7 +2150,7 @@ END LC_MONETARY
 
 LC_NUMERIC
 decimal_point             "<U002C>"
-thousands_sep             "<U0020>"
+thousands_sep             "<U202F>"
 grouping                  0;0
 END LC_NUMERIC
 
@@ -2202,6 +2201,7 @@ LC_TELEPHONE
 tel_int_fmt    "<U002B><U0025><U0063><U0020><U0025><U0061><U0020><U0025>/
 <U006C>"
 int_prefix     "<U0033><U0038><U0036>"
+int_select     "<U0030><U0030>"
 END LC_TELEPHONE
 
 LC_MEASUREMENT

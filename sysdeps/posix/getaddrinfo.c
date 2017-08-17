@@ -60,6 +60,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <netdb.h>
 #include <nss.h>
 #include <resolv/resolv-internal.h>
+#include <resolv/resolv_context.h>
+#include <resolv/res_use_inet6.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdio_ext.h>
@@ -80,7 +82,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <not-cancel.h>
 #include <nscd/nscd-client.h>
 #include <nscd/nscd_proto.h>
-#include <resolv/res_hconf.h>
 #include <scratch_buffer.h>
 #include <inet/net-internal.h>
 
@@ -190,16 +191,16 @@ gaih_inet_serv (const char *servicename, const struct gaih_typeproto *tp,
 
 /* Convert struct hostent to a list of struct gaih_addrtuple objects.
    h_name is not copied, and the struct hostent object must not be
-   deallocated prematurely.  *RESULT must be NULL or a pointer to an
-   object allocated using malloc, which is freed.  */
+   deallocated prematurely.  *RESULT must be NULL or a pointer to a
+   linked-list.  The new addresses are appended at the end.  */
 static bool
 convert_hostent_to_gaih_addrtuple (const struct addrinfo *req,
 				   int family,
 				   struct hostent *h,
 				   struct gaih_addrtuple **result)
 {
-  free (*result);
-  *result = NULL;
+  while (*result)
+    result = &(*result)->next;
 
   /* Count the number of addresses in h->h_addr_list.  */
   size_t count = 0;
@@ -254,6 +255,8 @@ convert_hostent_to_gaih_addrtuple (const struct addrinfo *req,
       break;								      \
     if (!scratch_buffer_grow (tmpbuf))					      \
       {									      \
+	__resolv_context_enable_inet6 (res_ctx, res_enable_inet6);	      \
+	__resolv_context_put (res_ctx);					      \
 	result = -EAI_MEMORY;						      \
 	goto free_and_return;						      \
       }									      \
@@ -267,7 +270,8 @@ convert_hostent_to_gaih_addrtuple (const struct addrinfo *req,
       if (herrno == NETDB_INTERNAL)					      \
 	{								      \
 	  __set_h_errno (herrno);					      \
-	  _res.options |= old_res_options & DEPRECATED_RES_USE_INET6;	      \
+	  __resolv_context_enable_inet6 (res_ctx, res_enable_inet6);	      \
+	  __resolv_context_put (res_ctx);				      \
 	  result = -EAI_SYSTEM;						      \
 	  goto free_and_return;						      \
 	}								      \
@@ -280,15 +284,23 @@ convert_hostent_to_gaih_addrtuple (const struct addrinfo *req,
     {									      \
       if (!convert_hostent_to_gaih_addrtuple (req, _family,h, &addrmem))      \
 	{								      \
-	  _res.options |= old_res_options & DEPRECATED_RES_USE_INET6;	      \
+	  __resolv_context_enable_inet6 (res_ctx, res_enable_inet6);	      \
+	  __resolv_context_put (res_ctx);				      \
 	  result = -EAI_SYSTEM;						      \
 	  goto free_and_return;						      \
 	}								      \
       *pat = addrmem;							      \
 									      \
-      if (localcanon !=	NULL && canon == NULL)				      \
-	canon = strdupa (localcanon);					      \
-									      \
+      if (localcanon != NULL && canon == NULL)				      \
+	{								      \
+	  canonbuf = __strdup (localcanon);				      \
+	  if (canonbuf == NULL)						      \
+	    {								      \
+	      result = -EAI_SYSTEM;					      \
+	      goto free_and_return;					      \
+	    }								      \
+	  canon = canonbuf;						      \
+	}								      \
       if (_family == AF_INET6 && *pat != NULL)				      \
 	got_ipv6 = true;						      \
     }									      \
@@ -308,6 +320,30 @@ typedef enum nss_status (*nss_getcanonname_r)
    int *errnop, int *h_errnop);
 extern service_user *__nss_hosts_database attribute_hidden;
 
+/* This function is called if a canonical name is requested, but if
+   the service function did not provide it.  It tries to obtain the
+   name using getcanonname_r from the same service NIP.  If the name
+   cannot be canonicalized, return a copy of NAME.  Return NULL on
+   memory allocation failure.  The returned string is allocated on the
+   heap; the caller has to free it.  */
+static char *
+getcanonname (service_user *nip, struct gaih_addrtuple *at, const char *name)
+{
+  nss_getcanonname_r cfct = __nss_lookup_function (nip, "getcanonname_r");
+  char *s = (char *) name;
+  if (cfct != NULL)
+    {
+      char buf[256];
+      int herrno;
+      int rc;
+      if (DL_CALL_FCT (cfct, (at->name ?: name, buf, sizeof (buf),
+			      &s, &rc, &herrno)) != NSS_STATUS_SUCCESS)
+	/* If the canonical name cannot be determined, use the passed
+	   string.  */
+	s = (char *) name;
+    }
+  return __strdup (name);
+}
 
 static int
 gaih_inet (const char *name, const struct gaih_service *service,
@@ -384,13 +420,9 @@ gaih_inet (const char *name, const struct gaih_service *service,
 		    alloca_account (sizeof (struct gaih_servtuple),
 				    alloca_used);
 
-		  if ((rc = gaih_inet_serv (service->name,
-					    tp, req, newp, tmpbuf)))
-		    {
-		      if (rc)
-			continue;
-		      return rc;
-		    }
+		  if (gaih_inet_serv (service->name,
+				      tp, req, newp, tmpbuf) != 0)
+		    continue;
 
 		  *pst = newp;
 		  pst = &(newp->next);
@@ -443,7 +475,6 @@ gaih_inet (const char *name, const struct gaih_service *service,
 
   bool malloc_name = false;
   struct gaih_addrtuple *addrmem = NULL;
-  bool malloc_canonbuf = false;
   char *canonbuf = NULL;
   int result = 0;
 
@@ -509,46 +540,11 @@ gaih_inet (const char *name, const struct gaih_service *service,
 	{
 	  char *scope_delim = strchr (name, SCOPE_DELIMITER);
 	  int e;
-
-	  {
-	    bool malloc_namebuf = false;
-	    char *namebuf = (char *) name;
-
-	    if (__glibc_unlikely (scope_delim != NULL))
-	      {
-		if (malloc_name)
-		  *scope_delim = '\0';
-		else
-		  {
-		    if (__libc_use_alloca (alloca_used
-					   + scope_delim - name + 1))
-		      {
-			namebuf = alloca_account (scope_delim - name + 1,
-						  alloca_used);
-			*((char *) __mempcpy (namebuf, name,
-					      scope_delim - name)) = '\0';
-		      }
-		    else
-		      {
-			namebuf = __strndup (name, scope_delim - name);
-			if (namebuf == NULL)
-			  {
-			    assert (!malloc_name);
-			    return -EAI_MEMORY;
-			  }
-			malloc_namebuf = true;
-		      }
-		  }
-	      }
-
-	    e = inet_pton (AF_INET6, namebuf, at->addr);
-
-	    if (malloc_namebuf)
-	      free (namebuf);
-	    else if (scope_delim != NULL && malloc_name)
-	      /* Undo what we did above.  */
-	      *scope_delim = SCOPE_DELIMITER;
-	  }
+	  if (scope_delim == NULL)
+	    e = inet_pton (AF_INET6, name, at->addr);
+	  else
+	    e = __inet_pton_length (AF_INET6, name, scope_delim - name,
+				    at->addr);
 	  if (e > 0)
 	    {
 	      if (req->ai_family == AF_UNSPEC || req->ai_family == AF_INET6)
@@ -588,7 +584,8 @@ gaih_inet (const char *name, const struct gaih_service *service,
 	  enum nss_status inet6_status = NSS_STATUS_UNAVAIL;
 	  enum nss_status status = NSS_STATUS_UNAVAIL;
 	  int no_more;
-	  int old_res_options;
+	  struct resolv_context *res_ctx = NULL;
+	  bool res_enable_inet6 = false;
 
 	  /* If we do not have to look for IPv6 addresses or the canonical
 	     name, use the simple, old functions, which do not support
@@ -702,22 +699,13 @@ gaih_inet (const char *name, const struct gaih_service *service,
 			(*pat)->name = NULL;
 		      else if (canonbuf == NULL)
 			{
-			  size_t canonlen = strlen (air->canon) + 1;
-			  if ((req->ai_flags & AI_CANONIDN) != 0
-			      && __libc_use_alloca (alloca_used + canonlen))
-			    canonbuf = alloca_account (canonlen, alloca_used);
-			  else
+			  canonbuf = __strdup (air->canon);
+			  if (canonbuf == NULL)
 			    {
-			      canonbuf = malloc (canonlen);
-			      if (canonbuf == NULL)
-				{
-				  result = -EAI_MEMORY;
-				  goto free_and_return;
-				}
-			      malloc_canonbuf = true;
+			      result = -EAI_MEMORY;
+			      goto free_and_return;
 			    }
-			  canon = (*pat)->name = memcpy (canonbuf, air->canon,
-							 canonlen);
+			  canon = (*pat)->name = canonbuf;
 			}
 
 		      if (air->family[i] == AF_INET
@@ -780,17 +768,14 @@ gaih_inet (const char *name, const struct gaih_service *service,
 	    no_more = 0;
 	  nip = __nss_hosts_database;
 
-	  /* Initialize configurations.  */
-	  _res_hconf_init ();
-	  if (__res_maybe_init (&_res, 0) == -1)
-	    no_more = 1;
-
 	  /* If we are looking for both IPv4 and IPv6 address we don't
 	     want the lookup functions to automatically promote IPv4
-	     addresses to IPv6 addresses.  Currently this is decided
-	     by setting the RES_USE_INET6 bit in _res.options.  */
-	  old_res_options = _res.options;
-	  _res.options &= ~DEPRECATED_RES_USE_INET6;
+	     addresses to IPv6 addresses, so we use the no_inet6
+	     function variant.  */
+	  res_ctx = __resolv_context_get ();
+	  res_enable_inet6 = __resolv_context_disable_inet6 (res_ctx);
+	  if (res_ctx == NULL)
+	    no_more = 1;
 
 	  while (!no_more)
 	    {
@@ -827,8 +812,9 @@ gaih_inet (const char *name, const struct gaih_service *service,
 
 		      if (!scratch_buffer_grow (tmpbuf))
 			{
-			  _res.options
-			    |= old_res_options & DEPRECATED_RES_USE_INET6;
+			  __resolv_context_enable_inet6
+			    (res_ctx, res_enable_inet6);
+			  __resolv_context_put (res_ctx);
 			  result = -EAI_MEMORY;
 			  goto free_and_return;
 			}
@@ -924,55 +910,16 @@ gaih_inet (const char *name, const struct gaih_service *service,
 			  if ((req->ai_flags & AI_CANONNAME) != 0
 			      && canon == NULL)
 			    {
-			      /* If we need the canonical name, get it
-				 from the same service as the result.  */
-			      nss_getcanonname_r cfct;
-			      int herrno;
-
-			      cfct = __nss_lookup_function (nip,
-							    "getcanonname_r");
-			      if (cfct != NULL)
+			      canonbuf = getcanonname (nip, at, name);
+			      if (canonbuf == NULL)
 				{
-				  const size_t max_fqdn_len = 256;
-				  if ((req->ai_flags & AI_CANONIDN) != 0
-				      && __libc_use_alloca (alloca_used
-							    + max_fqdn_len))
-				    canonbuf = alloca_account (max_fqdn_len,
-							       alloca_used);
-				  else
-				    {
-				      canonbuf = malloc (max_fqdn_len);
-				      if (canonbuf == NULL)
-					{
-					  _res.options
-					    |= old_res_options
-					       & DEPRECATED_RES_USE_INET6;
-					  result = -EAI_MEMORY;
-					  goto free_and_return;
-					}
-				      malloc_canonbuf = true;
-				    }
-				  char *s;
-
-				  if (DL_CALL_FCT (cfct, (at->name ?: name,
-							  canonbuf,
-							  max_fqdn_len,
-							  &s, &rc, &herrno))
-				      == NSS_STATUS_SUCCESS)
-				    canon = s;
-				  else
-				    {
-				      /* If the canonical name cannot be
-					 determined, use the passed in
-					 string.  */
-				      if (malloc_canonbuf)
-					{
-					  free (canonbuf);
-					  malloc_canonbuf = false;
-					}
-				      canon = name;
-				    }
+				  __resolv_context_enable_inet6
+				    (res_ctx, res_enable_inet6);
+				  __resolv_context_put (res_ctx);
+				  result = -EAI_MEMORY;
+				  goto free_and_return;
 				}
+			      canon = canonbuf;
 			    }
 			  status = NSS_STATUS_SUCCESS;
 			}
@@ -1008,7 +955,8 @@ gaih_inet (const char *name, const struct gaih_service *service,
 		nip = nip->next;
 	    }
 
-	  _res.options |= old_res_options & DEPRECATED_RES_USE_INET6;
+	  __resolv_context_enable_inet6 (res_ctx, res_enable_inet6);
+	  __resolv_context_put (res_ctx);
 
 	  if (h_errno == NETDB_INTERNAL)
 	    {
@@ -1118,9 +1066,10 @@ gaih_inet (const char *name, const struct gaih_service *service,
 #ifdef HAVE_LIBIDN
 	      make_copy:
 #endif
-		if (malloc_canonbuf)
-		  /* We already allocated the string using malloc.  */
-		  malloc_canonbuf = false;
+		if (canonbuf != NULL)
+		  /* We already allocated the string using malloc, but
+		     the buffer is now owned by canon.  */
+		  canonbuf = NULL;
 		else
 		  {
 		    canon = __strdup (canon);
@@ -1215,8 +1164,7 @@ gaih_inet (const char *name, const struct gaih_service *service,
   if (malloc_name)
     free ((char *) name);
   free (addrmem);
-  if (malloc_canonbuf)
-    free (canonbuf);
+  free (canonbuf);
 
   return result;
 }

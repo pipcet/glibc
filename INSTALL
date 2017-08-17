@@ -177,18 +177,16 @@ will be used, and CFLAGS sets optimization options for the compiler.
 
 '--enable-tunables'
      Tunables support allows additional library parameters to be
-     customized at runtime.  This is an experimental feature and affects
-     startup time and is thus disabled by default.  This option can take
-     the following values:
-
-     'no'
-          This is the default if the option is not passed to configure.
-          This disables tunables.
+     customized at runtime.  This feature is enabled by default.  This
+     option can take the following values:
 
      'yes'
-          This is the default if the option is passed to configure.
-          This enables tunables and selects the default frontend
-          (currently 'valstring').
+          This is the default if no option is passed to configure.  This
+          enables tunables and selects the default frontend (currently
+          'valstring').
+
+     'no'
+          This option disables tunables.
 
      'valstring'
           This enables tunables and selects the 'valstring' frontend for
@@ -201,6 +199,12 @@ will be used, and CFLAGS sets optimization options for the compiler.
      compatibility and the NSS modules libnss_compat, libnss_nis and
      libnss_nisplus are not built at all.  Use this option to enable
      libnsl with all depending NSS modules and header files.
+
+'--disable-experimental-malloc'
+     By default, a per-thread cache is enabled in 'malloc'.  While this
+     cache can be disabled on a per-application basis using tunables
+     (set glibc.malloc.tcache_count to zero), this option can be used to
+     remove it from the build completely.
 
 '--build=BUILD-SYSTEM'
 '--host=HOST-SYSTEM'
@@ -422,13 +426,18 @@ build the GNU C Library:
      recommend GNU 'make' version 3.79.  All earlier versions have
      severe bugs or lack features.
 
-   * GCC 4.7 or newer
+   * GCC 4.9 or newer
 
-     GCC 4.7 or higher is required.  In general it is recommended to use
+     GCC 4.9 or higher is required.  In general it is recommended to use
      the newest version of the compiler that is known to work for
      building the GNU C Library, as newer compilers usually produce
-     better code.  As of release time, GCC 6.3 is the newest compiler
+     better code.  As of release time, GCC 7.1 is the newest compiler
      verified to work to build the GNU C Library.
+
+     For PowerPC 64-bits little-endian (powerpc64le), GCC 6.2 or higher
+     is required.  This compiler version is the first to provide the
+     features required for building the GNU C Library with support for
+     '_Float128'.
 
      For multi-arch support it is recommended to use a GCC which has
      been built with support for GNU indirect functions.  This ensures
@@ -445,11 +454,11 @@ build the GNU C Library:
      Check the FAQ for any special compiler issues on particular
      platforms.
 
-   * GNU 'binutils' 2.22 or later
+   * GNU 'binutils' 2.25 or later
 
      You must use GNU 'binutils' (as and ld) to build the GNU C Library.
      No other assembler or linker has the necessary functionality at the
-     moment.  As of release time, GNU 'binutils' 2.25 is the newest
+     moment.  As of release time, GNU 'binutils' 2.27 is the newest
      verified to work to build the GNU C Library.
 
    * GNU 'texinfo' 4.7 or later

@@ -55,8 +55,15 @@ typedef __uid_t uid_t;
 
 #if defined __USE_POSIX199309 || defined __USE_XOPEN_EXTENDED
 # include <bits/types/siginfo_t.h>
-# include <bits/types/sigevent_t.h>
 # include <bits/siginfo-consts.h>
+#endif
+
+#ifdef __USE_MISC
+# include <bits/types/sigval_t.h>
+#endif
+
+#ifdef __USE_POSIX199309
+# include <bits/types/sigevent_t.h>
 # include <bits/sigevent-consts.h>
 #endif
 
@@ -91,7 +98,7 @@ extern __sighandler_t __REDIRECT_NTH (signal,
 # endif
 #endif
 
-#if defined __USE_XOPEN && !defined __USE_XOPEN2K8
+#if defined __USE_XOPEN_EXTENDED && !defined __USE_XOPEN2K8
 /* The X/Open definition of `signal' conflicts with the BSD version.
    So they defined another function `bsd_signal'.  */
 extern __sighandler_t bsd_signal (int __sig, __sighandler_t __handler)
@@ -139,7 +146,7 @@ extern void psiginfo (const siginfo_t *__pinfo, const char *__s);
    This function is a cancellation point and therefore not marked with
    __THROW.  */
 
-#ifdef __USE_XOPEN
+#ifdef __USE_XOPEN_EXTENDED
 # ifdef __GNUC__
 extern int sigpause (int __sig) __asm__ ("__xpg_sigpause");
 # else
@@ -237,12 +244,14 @@ extern int sigaction (int __sig, const struct sigaction *__restrict __act,
 extern int sigpending (sigset_t *__set) __THROW __nonnull ((1));
 
 
+# ifdef __USE_POSIX199506
 /* Select any of pending signals from SET or wait for any to arrive.
 
    This function is a cancellation point and therefore not marked with
    __THROW.  */
 extern int sigwait (const sigset_t *__restrict __set, int *__restrict __sig)
      __nonnull ((1, 2));
+# endif /* Use POSIX 1995.  */
 
 # ifdef __USE_POSIX199309
 /* Select any of pending signals from SET and place information in INFO.
@@ -291,25 +300,27 @@ extern int sigreturn (struct sigcontext *__scp) __THROW;
 # define __need_size_t
 # include <stddef.h>
 
+# include <bits/types/stack_t.h>
+# if defined __USE_XOPEN || defined __USE_XOPEN2K8
+/* This will define `ucontext_t' and `mcontext_t'.  */
+#  include <sys/ucontext.h>
+# endif
+#endif /* Use POSIX.1-2008 or X/Open Unix.  */
+
+#if defined __USE_XOPEN_EXTENDED || defined __USE_MISC
 /* If INTERRUPT is nonzero, make signal SIG interrupt system calls
    (causing them to fail with EINTR); if INTERRUPT is zero, make system
    calls be restarted after signal SIG.  */
 extern int siginterrupt (int __sig, int __interrupt) __THROW;
 
 # include <bits/sigstack.h>
-# include <bits/types/stack_t.h>
 # include <bits/ss_flags.h>
-# if defined __USE_XOPEN || defined __USE_XOPEN2K8
-/* This will define `ucontext_t' and `mcontext_t'.  */
-#  include <sys/ucontext.h>
-# endif
 
 /* Alternate signal handler stack interface.
    This interface should always be preferred over `sigstack'.  */
-extern int sigaltstack (const struct sigaltstack *__restrict __ss,
-			struct sigaltstack *__restrict __oss) __THROW;
-
-#endif /* Use POSIX.1-2008 or X/Open Unix.  */
+extern int sigaltstack (const stack_t *__restrict __ss,
+			stack_t *__restrict __oss) __THROW;
+#endif /* __USE_XOPEN_EXTENDED || __USE_MISC */
 
 #if ((defined __USE_XOPEN_EXTENDED && !defined __USE_XOPEN2K8)	\
      || defined __USE_MISC)
@@ -355,6 +366,9 @@ extern __sighandler_t sigset (int __sig, __sighandler_t __disp) __THROW;
 extern int __libc_current_sigrtmin (void) __THROW;
 /* Return number of available real-time signal with lowest priority.  */
 extern int __libc_current_sigrtmax (void) __THROW;
+
+#define SIGRTMIN        (__libc_current_sigrtmin ())
+#define SIGRTMAX        (__libc_current_sigrtmax ())
 
 __END_DECLS
 

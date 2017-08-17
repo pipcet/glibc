@@ -18,7 +18,7 @@
 
 #include <sysdep.h>
 
-/* __ptr_t [r3] memset (__ptr_t s [r3], int c [r4], size_t n [r5]));
+/* void * [r3] memset (void *s [r3], int c [r4], size_t n [r5]));
    Returns 's'.
 
    The memset is done in three sizes: byte (8 bits), word (32 bits),
@@ -29,7 +29,7 @@
 # define MEMSET memset
 #endif
 	.machine power6
-EALIGN (MEMSET, 7, 0)
+ENTRY_TOCLESS (MEMSET, 7)
 	CALL_MCOUNT 3
 
 #define rTMP	r0
@@ -384,7 +384,7 @@ libc_hidden_builtin_def (memset)
 
 /* Copied from bzero.S to prevent the linker from inserting a stub
    between bzero and memset.  */
-ENTRY (__bzero)
+ENTRY_TOCLESS (__bzero)
 	CALL_MCOUNT 3
 	mr	r5,r4
 	li	r4,0

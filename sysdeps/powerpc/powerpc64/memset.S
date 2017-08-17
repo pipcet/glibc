@@ -24,7 +24,7 @@
 	.section	".text"
 	.align 2
 
-/* __ptr_t [r3] memset (__ptr_t s [r3], int c [r4], size_t n [r5]));
+/* void * [r3] memset (void *s [r3], int c [r4], size_t n [r5]));
    Returns 's'.
 
    The memset is done in three sizes: byte (8 bits), word (32 bits),
@@ -35,7 +35,7 @@
 # define MEMSET memset
 #endif
 
-EALIGN (MEMSET, 5, 0)
+ENTRY (MEMSET, 5)
 	CALL_MCOUNT 3
 
 #define rTMP	r0

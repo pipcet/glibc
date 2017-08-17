@@ -12,8 +12,6 @@ escape_char /
 %
 % Niuean, Vagahau Niue language locale for Niue
 %
-% Charset: UTF-8
-%
 % Niuean terms provided by Emani Fakaotimanava-Lui <emani@niue.nu>
 %
 % Prepared and contributed to glibc by Chris Leonard <cjl@sugarlabs.org> and
@@ -192,4 +190,5 @@ LC_TELEPHONE
 tel_int_fmt "<U002B><U0025><U0063><U0020><U0025><U0061><U0020><U0025><U006C>"
 % 683
 int_prefix  "<U0036><U0038><U0033>"
+int_select     "<U0030><U0030>"
 END LC_TELEPHONE

@@ -8,8 +8,6 @@ escape_char /
 % exempt you from the conditions of the license if your use would
 % otherwise be governed by that license.
 
-% Charset: UTF-8
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % Revision 1.1 created by Alastair McKinstry <mckinstry@computer.org>, 2000-06-12
@@ -20,7 +18,7 @@ escape_char /
 LC_IDENTIFICATION
 title        "Scots Gaelic language locale for Great Britain"
 source       "Akerbeltz"
-address      "1/2, 47 Wilton Street, Glasgow G20 6RT, UK"
+address      "1//2, 47 Wilton Street, Glasgow G20 6RT, UK"
 contact      "Michael Bauer"
 email        "fios@akerbeltz.org"
 tel          ""

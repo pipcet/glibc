@@ -313,6 +313,13 @@ AC_ARG_ENABLE([multi-arch],
 	      [multi_arch=$enableval],
 	      [multi_arch=default])
 
+AC_ARG_ENABLE([experimental-malloc],
+	      AC_HELP_STRING([--disable-experimental-malloc],
+			     [disable experimental malloc features]),
+	      [experimental_malloc=$enableval],
+	      [experimental_malloc=yes])
+AC_SUBST(experimental_malloc)
+
 AC_ARG_ENABLE([nss-crypt],
 	      AC_HELP_STRING([--enable-nss-crypt],
 			     [enable libcrypt to use nss]),
@@ -436,7 +443,7 @@ AC_ARG_ENABLE([tunables],
 	      [AS_HELP_STRING([--enable-tunables],
 	       [Enable tunables support. Known values are 'yes', 'no' and 'valstring'])],
 	      [have_tunables=$enableval],
-	      [have_tunables=no])
+	      [have_tunables=yes])
 AC_SUBST(have_tunables)
 if test "$have_tunables" = yes; then
   AC_DEFINE(HAVE_TUNABLES)
@@ -1076,10 +1083,19 @@ AC_CHECK_PROG_VER(AS, $AS, --version,
 		  [GNU assembler.* \([0-9]*\.[0-9.]*\)],
 		  [2.1[0-9][0-9]*|2.2[2-9]*|2.[3-9][0-9]*|[3-9].*|[1-9][0-9]*],
 		  AS=: critic_missing="$critic_missing as")
-AC_CHECK_PROG_VER(LD, $LD, --version,
-		  [GNU ld.* \([0-9][0-9]*\.[0-9.]*\)],
-		  [2.1[0-9][0-9]*|2.2[2-9]*|2.[3-9][0-9]*|[3-9].*|[1-9][0-9]*],
-		  LD=: critic_missing="$critic_missing ld")
+
+if test -n "`$LD --version | sed -n 's/^GNU \(gold\).*$/\1/p'`"; then
+  # Accept gold 1.14 or higher
+  AC_CHECK_PROG_VER(LD, $LD, --version,
+		    [GNU gold.* \([0-9][0-9]*\.[0-9.]*\)],
+		    [1.1[4-9]*|1.[2-9][0-9]*|1.1[0-9][0-9]*|[2-9].*|[1-9][0-9]*],
+		    LD=: critic_missing="$critic_missing GNU gold")
+else
+  AC_CHECK_PROG_VER(LD, $LD, --version,
+		    [GNU ld.* \([0-9][0-9]*\.[0-9.]*\)],
+		    [2.1[0-9][0-9]*|2.2[5-9]*|2.[3-9][0-9]*|[3-9].*|[1-9][0-9]*],
+		    LD=: critic_missing="$critic_missing GNU ld")
+fi
 
 # These programs are version sensitive.
 AC_CHECK_TOOL_PREFIX
@@ -1105,7 +1121,7 @@ AC_CHECK_PROG_VER(AWK, gawk, --version,
 
 AC_CACHE_CHECK([if $CC is sufficient to build libc], libc_cv_compiler_ok, [
 AC_TRY_COMPILE([], [
-#if !defined __GNUC__ || __GNUC__ < 4 || (__GNUC__ == 4 && __GNUC_MINOR__ < 7)
+#if !defined __GNUC__ || __GNUC__ < 4 || (__GNUC__ == 4 && __GNUC_MINOR__ < 9)
 #error insufficient compiler
 #endif],
 	       [libc_cv_compiler_ok=yes],
@@ -1187,13 +1203,16 @@ AC_SUBST(CXX_SYSINCLUDES)
 # copy of those headers in Makerules.
 if test -n "$CXX"; then
   find_cxx_header () {
-    echo "#include <$1>" | $CXX -M -MP -x c++ - | sed -n "/$1:/{s/:\$//;p}"
+    echo "#include <$1>" | $CXX -M -MP -x c++ - 2>/dev/null \
+	 | sed -n "\,$1:,{s/:\$//;p}"
   }
   CXX_CSTDLIB_HEADER="$(find_cxx_header cstdlib)"
   CXX_CMATH_HEADER="$(find_cxx_header cmath)"
+  CXX_BITS_STD_ABS_H="$(find_cxx_header bits/std_abs.h)"
 fi
 AC_SUBST(CXX_CSTDLIB_HEADER)
 AC_SUBST(CXX_CMATH_HEADER)
+AC_SUBST(CXX_BITS_STD_ABS_H)
 
 # Test if LD_LIBRARY_PATH contains the notation for the current directory
 # since this would lead to problems installing/building glibc.
@@ -1278,6 +1297,27 @@ EOF
 		rm -f conftest.*
 	       ])
 AC_SUBST(libc_cv_protected_data)
+
+AC_CACHE_CHECK(linker support for INSERT in linker script,
+	       libc_cv_insert,
+	       [cat > conftest.c <<EOF
+		const int __attribute__ ((section(".bar"))) bar = 0x12345678;
+		int test (void) { return bar; }
+EOF
+		cat > conftest.t <<EOF
+		SECTIONS
+		{
+		  .bar : { *(.bar) }
+		}
+		INSERT AFTER .rela.dyn;
+EOF
+		libc_cv_insert=no
+		if AC_TRY_COMMAND([${CC-cc} -nostdlib -nostartfiles $no_ssp -fPIC -shared conftest.c -Wl,-T,conftest.t -o conftest.so]); then
+		  libc_cv_insert=yes
+		fi
+		rm -f conftest.*
+	       ])
+AC_SUBST(libc_cv_insert)
 
 AC_CACHE_CHECK(for broken __attribute__((alias())),
 	       libc_cv_broken_alias_attribute,

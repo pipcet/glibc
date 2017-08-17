@@ -30,8 +30,9 @@ routines	= $(all-dl-routines) dl-support dl-iteratephdr \
 # profiled libraries.
 dl-routines	= $(addprefix dl-,load lookup object reloc deps hwcaps \
 				  runtime init fini debug misc \
-				  version profile conflict tls origin scope \
-				  execstack caller open close trampoline)
+				  version profile tls origin scope \
+				  execstack caller open close trampoline \
+				  exception)
 ifeq (yes,$(use-ldconfig))
 dl-routines += dl-cache
 endif
@@ -51,13 +52,13 @@ endif
 all-dl-routines = $(dl-routines) $(sysdep-dl-routines)
 # But they are absent from the shared libc, because that code is in ld.so.
 elide-routines.os = $(all-dl-routines) dl-support enbl-secure dl-origin \
-		    dl-sysdep
+		    dl-sysdep dl-exception
 shared-only-routines += dl-caller
 
 # ld.so uses those routines, plus some special stuff for being the program
 # interpreter and operating independent of libc.
 rtld-routines	= rtld $(all-dl-routines) dl-sysdep dl-environ dl-minimal \
-  dl-error-minimal
+  dl-error-minimal dl-conflict
 all-rtld-routines = $(rtld-routines) $(sysdep-rtld-routines)
 
 CFLAGS-dl-runtime.c = -fexceptions -fasynchronous-unwind-tables
@@ -289,9 +290,11 @@ ifeq (yesyes,$(have-fpie)$(build-shared))
 modules-names += tst-piemod1
 tests += tst-pie1 tst-pie2
 tests-pie += tst-pie1 tst-pie2
+ifeq (yes,$(have-protected-data))
 tests += vismain
 tests-pie += vismain
 CFLAGS-vismain.c = $(PIE-ccflag)
+endif
 endif
 modules-execstack-yes = tst-execstack-mod
 extra-test-objs += $(addsuffix .os,$(strip $(modules-names)))
@@ -356,6 +359,9 @@ update-all-abi: update-all-abi-ld
 
 ifeq ($(have-glob-dat-reloc),yes)
 tests += tst-prelink
+# Don't compile tst-prelink.c with PIE for GLOB_DAT relocation.
+CFLAGS-tst-prelink.c += -fno-pie
+LDFLAGS-tst-prelink = $(no-pie-ldflag)
 ifeq ($(run-built-tests),yes)
 tests-special += $(objpfx)tst-prelink-cmp.out
 endif
@@ -844,7 +850,7 @@ $(objpfx)tst-pathopt: $(libdl)
 $(objpfx)tst-pathopt.out: tst-pathopt.sh $(objpfx)tst-pathopt \
 			  $(objpfx)pathoptobj.so
 	$(SHELL) $< $(common-objpfx) '$(test-wrapper-env)' \
-		 '$(run-program-env)'; \
+		 '$(run-program-env)' > $@; \
 	$(evaluate-test)
 
 $(objpfx)tst-rtld-load-self.out: tst-rtld-load-self.sh $(objpfx)ld.so

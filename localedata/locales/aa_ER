@@ -10,9 +10,7 @@ escape_char /
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% Afar language locale for Eritrea (Cadu/Laaqo Dialects).
-%
-% Charset: UTF-8
+% Afar language locale for Eritrea (Cadu//Laaqo Dialects).
 %
 % Afar terms provided by Mohamed Obakar <loubak@6sens.com> of the
 % Afar Civilization Researcher, Melka Werer Research Center.
@@ -28,7 +26,7 @@ escape_char /
 
 LC_IDENTIFICATION
 %
-title      "Afar language locale for Eritrea (Cadu/Laaqo Dialects)."
+title      "Afar language locale for Eritrea (Cadu//Laaqo Dialects)."
 source     "Ge'ez Frontier Foundation"
 address    "7802 Solomon Seal Dr., Springfield, VA 22152, USA"
 contact    ""

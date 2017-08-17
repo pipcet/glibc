@@ -22,7 +22,6 @@ escape_char /
 % Date: 1996-10-15
 % Application: general
 % Users: general
-% Charset: ISO-8859-1
 
 %
 % some updates done by Elhuyar http://www.elhuyar.com/
@@ -89,9 +88,9 @@ n_sign_posn          1
 END LC_MONETARY
 
 LC_NUMERIC
-decimal_point        "<U002C>"
-thousands_sep        ""
-grouping             0;0
+decimal_point        ","
+thousands_sep        "."
+grouping             3;3
 END LC_NUMERIC
 
 LC_TIME
@@ -147,6 +146,7 @@ LC_TELEPHONE
 tel_int_fmt    "<U002B><U0025><U0063><U0020><U0025><U0061><U0020><U0025>/
 <U006C>"
 int_prefix     "<U0033><U0034>"
+int_select     "<U0030><U0030>"
 END LC_TELEPHONE
 
 LC_MEASUREMENT
@@ -171,7 +171,7 @@ country_num 724
 % E
 country_car    "<U0045>"
 % Euskara
-lang_name    "<U0045><U0075><U0073><U006B><U0061><U0072><U0061>"
+lang_name    "<U0065><U0075><U0073><U006B><U0061><U0072><U0061>"
 % eu
 lang_ab      "<U0065><U0075>"
 % eus

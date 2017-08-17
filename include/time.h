@@ -2,7 +2,7 @@
 #include <time/time.h>
 
 #ifndef _ISOMAC
-# include <xlocale.h>
+# include <bits/types/locale_t.h>
 
 extern __typeof (strftime_l) __strftime_l;
 libc_hidden_proto (__strftime_l)
@@ -78,7 +78,7 @@ extern struct tm *__tz_convert (const time_t *timer, int use_localtime, struct t
 
 extern int __nanosleep (const struct timespec *__requested_time,
 			struct timespec *__remaining);
-libc_hidden_proto (__nanosleep)
+hidden_proto (__nanosleep)
 extern int __nanosleep_nocancel (const struct timespec *__requested_time,
 				 struct timespec *__remaining)
   attribute_hidden;
@@ -92,7 +92,7 @@ extern int __getclktck (void);
 /* strptime support.  */
 extern char * __strptime_internal (const char *rp, const char *fmt,
 				   struct tm *tm, void *statep,
-				   __locale_t locparam)
+				   locale_t locparam)
      internal_function;
 
 extern double __difftime (time_t time1, time_t time0);

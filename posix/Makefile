@@ -30,8 +30,8 @@ headers	:= sys/utsname.h sys/times.h sys/wait.h sys/types.h unistd.h	      \
 	   bits/posix1_lim.h bits/posix2_lim.h bits/posix_opt.h		      \
 	   bits/local_lim.h tar.h bits/utsname.h bits/confname.h	      \
 	   bits/waitflags.h bits/waitstatus.h sys/unistd.h sched.h	      \
-	   bits/sched.h re_comp.h wait.h bits/environments.h cpio.h	      \
-	   spawn.h bits/unistd.h
+	   bits/sched.h bits/cpu-set.h re_comp.h wait.h bits/environments.h   \
+	   cpio.h spawn.h bits/unistd.h
 
 routines :=								      \
 	uname								      \
@@ -92,7 +92,8 @@ tests		:= test-errno tstgetopt testfnm runtests runptests \
 		   tst-pathconf tst-getaddrinfo4 tst-rxspencer-no-utf8 \
 		   tst-fnmatch3 bug-regex36 tst-getaddrinfo5 \
 		   tst-posix_spawn-fd tst-posix_spawn-setsid \
-		   tst-posix_fadvise tst-posix_fadvise64
+		   tst-posix_fadvise tst-posix_fadvise64 \
+		   tst-sysconf-empty-chroot
 tests-internal	:= bug-regex5 bug-regex20 bug-regex33 \
 		   tst-rfc3484 tst-rfc3484-2 tst-rfc3484-3
 xtests		:= bug-ga2
@@ -151,11 +152,11 @@ ifeq ($(run-built-tests),yes)
 ifeq (yes,$(build-shared))
 $(objpfx)globtest.out: globtest.sh $(objpfx)globtest
 	$(SHELL) $< $(common-objpfx) '$(test-via-rtld-prefix)' \
-		'$(test-program-prefix)' '$(test-wrapper-env)'; \
+		'$(test-program-prefix)' '$(test-wrapper-env)' > $@; \
 	$(evaluate-test)
 $(objpfx)wordexp-tst.out: wordexp-tst.sh $(objpfx)wordexp-test
 	$(SHELL) $< $(common-objpfx) '$(test-program-prefix-before-env)' \
-		 '$(run-program-env)' '$(test-program-prefix-after-env)'; \
+		 '$(run-program-env)' '$(test-program-prefix-after-env)' > $@; \
 	$(evaluate-test)
 endif
 
@@ -334,7 +335,7 @@ $(objpfx)tst-boost-mem.out: $(objpfx)tst-boost.out
 	$(evaluate-test)
 
 $(objpfx)tst-getconf.out: tst-getconf.sh $(objpfx)getconf
-	$(SHELL) $< $(common-objpfx) '$(built-program-cmd)'; \
+	$(SHELL) $< $(common-objpfx) '$(built-program-cmd)' > $@; \
 	$(evaluate-test)
 
 $(objpfx)bug-ga2-mem.out: $(objpfx)bug-ga2.out

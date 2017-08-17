@@ -56,5 +56,22 @@ PROCINFO_CLASS struct cpu_features _dl_aarch64_cpu_features
 # endif
 #endif
 
+#if !defined PROCINFO_DECL && defined SHARED
+  ._dl_aarch64_cap_flags
+#else
+PROCINFO_CLASS const char _dl_aarch64_cap_flags[16][10]
+#endif
+#ifndef PROCINFO_DECL
+/* Matches the names in arch/arm64/kernel/cpuinfo.c of Linux.  */
+= { "fp", "asimd", "evtstrm", "aes", "pmull", "sha1", "sha2", "crc32",
+    "atomics", "fphp", "asimdhp", "cpuid", "asimdrdm", "jscvt", "fcma",
+    "lrcpc" }
+#endif
+#if !defined SHARED || defined PROCINFO_DECL
+;
+#else
+,
+#endif
+
 #undef PROCINFO_DECL
 #undef PROCINFO_CLASS

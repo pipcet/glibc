@@ -18,7 +18,6 @@ escape_char /
 % Date:		2006-10-12
 % Application:	general
 % Users:	general
-% Charset:	ISO-8859-9
 
 LC_IDENTIFICATION
 title		"Tatar language locale using IQTElif alphabet; for Tatarstan, Russian Federation"
@@ -87,7 +86,7 @@ LC_MONETARY
 int_curr_symbol           "<U0052><U0055><U0042><U0020>"
 currency_symbol           "<U20BD>"
 mon_decimal_point         "<U002E>"
-mon_thousands_sep         "<U2002>"
+mon_thousands_sep         "<U202F>"
 mon_grouping              3;3
 positive_sign             ""
 negative_sign             "<U002D>"

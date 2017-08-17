@@ -21,82 +21,38 @@
  */
 
 #ifndef _WCHAR_H
+#define _WCHAR_H 1
 
-#if !defined __need_mbstate_t && !defined __need_wint_t
-# define _WCHAR_H 1
-# define __GLIBC_INTERNAL_STARTING_HEADER_IMPLEMENTATION
-# include <bits/libc-header-start.h>
+#define __GLIBC_INTERNAL_STARTING_HEADER_IMPLEMENTATION
+#include <bits/libc-header-start.h>
+
+/* Gather machine dependent type support.  */
+#include <bits/floatn.h>
+
+#define __need_size_t
+#define __need_wchar_t
+#define __need_NULL
+#include <stddef.h>
+
+#define __need___va_list
+#include <stdarg.h>
+
+#include <bits/wchar.h>
+#include <bits/types/wint_t.h>
+#include <bits/types/mbstate_t.h>
+#include <bits/types/__FILE.h>
+
+#if defined __USE_UNIX98 || defined __USE_XOPEN2K
+# include <bits/types/FILE.h>
 #endif
-
-#ifdef _WCHAR_H
-/* Get FILE definition.  */
-# define __need___FILE
-# if defined __USE_UNIX98 || defined __USE_XOPEN2K
-#  define __need_FILE
-# endif
-# include <stdio.h>
-/* Get va_list definition.  */
-# define __need___va_list
-# include <stdarg.h>
-
-# include <bits/wchar.h>
-
-/* Get size_t, wchar_t, wint_t and NULL from <stddef.h>.  */
-# define __need_size_t
-# define __need_wchar_t
-# define __need_NULL
+#ifdef __USE_XOPEN2K8
+# include <bits/types/locale_t.h>
 #endif
-#if defined _WCHAR_H || defined __need_wint_t || !defined __WINT_TYPE__
-# undef __need_wint_t
-# define __need_wint_t
-# include <stddef.h>
-
-/* We try to get wint_t from <stddef.h>, but not all GCC versions define it
-   there.  So define it ourselves if it remains undefined.  */
-# ifndef _WINT_T
-/* Integral type unchanged by default argument promotions that can
-   hold any value corresponding to members of the extended character
-   set, as well as at least one value that does not correspond to any
-   member of the extended character set.  */
-#  define _WINT_T
-typedef unsigned int wint_t;
-# endif
 
 /* Tell the caller that we provide correct C++ prototypes.  */
-# if defined __cplusplus && __GNUC_PREREQ (4, 4)
-#  define __CORRECT_ISO_CPP_WCHAR_H_PROTO
-# endif
+#if defined __cplusplus && __GNUC_PREREQ (4, 4)
+# define __CORRECT_ISO_CPP_WCHAR_H_PROTO
 #endif
-
-#if (defined _WCHAR_H || defined __need_mbstate_t) && !defined ____mbstate_t_defined
-# define ____mbstate_t_defined	1
-/* Conversion state information.  */
-typedef struct
-{
-  int __count;
-  union
-  {
-# ifdef __WINT_TYPE__
-    __WINT_TYPE__ __wch;
-# else
-    wint_t __wch;
-# endif
-    char __wchb[4];
-  } __value;		/* Value so far.  */
-} __mbstate_t;
-#endif
-#undef __need_mbstate_t
-
-
-/* The rest of the file is only used if used if __need_mbstate_t is not
-   defined.  */
-#ifdef _WCHAR_H
-
-# ifndef __mbstate_t_defined
-/* Public type.  */
-typedef __mbstate_t mbstate_t;
-#  define __mbstate_t_defined 1
-# endif
 
 #ifndef WCHAR_MIN
 /* These constants might also be defined in <inttypes.h>.  */
@@ -108,12 +64,17 @@ typedef __mbstate_t mbstate_t;
 # define WEOF (0xffffffffu)
 #endif
 
-/* For XPG4 compliance we have to define the stuff from <wctype.h> here
-   as well.  */
-#if defined __USE_XOPEN && !defined __USE_UNIX98
-# include <wctype.h>
+/* All versions of XPG prior to the publication of ISO C99 required
+   the bulk of <wctype.h>'s declarations to appear in this header
+   (because <wctype.h> did not exist prior to C99).  In POSIX.1-2001
+   those declarations were marked as XSI extensions; in -2008 they
+   were additionally marked as obsolescent.  _GNU_SOURCE mode
+   anticipates the removal of these declarations in the next revision
+   of POSIX.  */
+#if (defined __USE_XOPEN && !defined __USE_GNU \
+     && !(defined __USE_XOPEN2K && !defined __USE_XOPEN2KXSI))
+# include <bits/wctype-wchar.h>
 #endif
-
 
 __BEGIN_DECLS
 
@@ -158,13 +119,11 @@ extern int wcsncasecmp (const wchar_t *__s1, const wchar_t *__s2,
 
 /* Similar to the two functions above but take the information from
    the provided locale and not the global locale.  */
-# include <xlocale.h>
-
 extern int wcscasecmp_l (const wchar_t *__s1, const wchar_t *__s2,
-			 __locale_t __loc) __THROW;
+			 locale_t __loc) __THROW;
 
 extern int wcsncasecmp_l (const wchar_t *__s1, const wchar_t *__s2,
-			  size_t __n, __locale_t __loc) __THROW;
+			  size_t __n, locale_t __loc) __THROW;
 #endif
 
 /* Compare S1 and S2, both interpreted as appropriate to the
@@ -183,13 +142,13 @@ extern size_t wcsxfrm (wchar_t *__restrict __s1,
 /* Compare S1 and S2, both interpreted as appropriate to the
    LC_COLLATE category of the given locale.  */
 extern int wcscoll_l (const wchar_t *__s1, const wchar_t *__s2,
-		      __locale_t __loc) __THROW;
+		      locale_t __loc) __THROW;
 
 /* Transform S2 into array pointed to by S1 such that if wcscmp is
    applied to two transformed strings the result is the as applying
    `wcscoll' to the original strings.  */
 extern size_t wcsxfrm_l (wchar_t *__s1, const wchar_t *__s2,
-			 size_t __n, __locale_t __loc) __THROW;
+			 size_t __n, locale_t __loc) __THROW;
 
 /* Duplicate S, returning an identical malloc'd string.  */
 extern wchar_t *wcsdup (const wchar_t *__s) __THROW __attribute_malloc__;
@@ -426,6 +385,12 @@ extern long double wcstold (const wchar_t *__restrict __nptr,
 			    wchar_t **__restrict __endptr) __THROW;
 #endif /* C99 */
 
+/* Likewise for `_Float128' when support is enabled.  */
+#if __HAVE_FLOAT128 && defined __USE_GNU
+extern _Float128 wcstof128 (const wchar_t *__restrict __nptr,
+			    wchar_t **__restrict __endptr) __THROW;
+#endif
+
 
 /* Convert initial portion of wide string NPTR to `long int'
    representation.  */
@@ -471,53 +436,45 @@ extern unsigned long long int wcstouq (const wchar_t *__restrict __nptr,
 #endif /* Use GNU.  */
 
 #ifdef __USE_GNU
-/* The concept of one static locale per category is not very well
-   thought out.  Many applications will need to process its data using
-   information from several different locales.  Another application is
-   the implementation of the internationalization handling in the
-   upcoming ISO C++ standard library.  To support this another set of
-   the functions using locale data exist which have an additional
-   argument.
-
-   Attention: all these functions are *not* standardized in any form.
-   This is a proof-of-concept implementation.  */
-
-/* Structure for reentrant locale using functions.  This is an
-   (almost) opaque type for the user level programs.  */
-# include <xlocale.h>
-
-/* Special versions of the functions above which take the locale to
-   use as an additional parameter.  */
+/* Parallel versions of the functions above which take the locale to
+   use as an additional parameter.  These are GNU extensions inspired
+   by the POSIX.1-2008 extended locale API.  */
 extern long int wcstol_l (const wchar_t *__restrict __nptr,
 			  wchar_t **__restrict __endptr, int __base,
-			  __locale_t __loc) __THROW;
+			  locale_t __loc) __THROW;
 
 extern unsigned long int wcstoul_l (const wchar_t *__restrict __nptr,
 				    wchar_t **__restrict __endptr,
-				    int __base, __locale_t __loc) __THROW;
+				    int __base, locale_t __loc) __THROW;
 
 __extension__
 extern long long int wcstoll_l (const wchar_t *__restrict __nptr,
 				wchar_t **__restrict __endptr,
-				int __base, __locale_t __loc) __THROW;
+				int __base, locale_t __loc) __THROW;
 
 __extension__
 extern unsigned long long int wcstoull_l (const wchar_t *__restrict __nptr,
 					  wchar_t **__restrict __endptr,
-					  int __base, __locale_t __loc)
+					  int __base, locale_t __loc)
      __THROW;
 
 extern double wcstod_l (const wchar_t *__restrict __nptr,
-			wchar_t **__restrict __endptr, __locale_t __loc)
+			wchar_t **__restrict __endptr, locale_t __loc)
      __THROW;
 
 extern float wcstof_l (const wchar_t *__restrict __nptr,
-		       wchar_t **__restrict __endptr, __locale_t __loc)
+		       wchar_t **__restrict __endptr, locale_t __loc)
      __THROW;
 
 extern long double wcstold_l (const wchar_t *__restrict __nptr,
 			      wchar_t **__restrict __endptr,
-			      __locale_t __loc) __THROW;
+			      locale_t __loc) __THROW;
+
+# if __HAVE_FLOAT128
+extern _Float128 wcstof128_l (const wchar_t *__restrict __nptr,
+			      wchar_t **__restrict __endptr,
+			      locale_t __loc) __THROW;
+# endif
 #endif	/* use GNU */
 
 
@@ -813,26 +770,13 @@ extern size_t wcsftime (wchar_t *__restrict __s, size_t __maxsize,
 			const struct tm *__restrict __tp) __THROW;
 
 # ifdef __USE_GNU
-# include <xlocale.h>
-
 /* Similar to `wcsftime' but takes the information from
    the provided locale and not the global locale.  */
 extern size_t wcsftime_l (wchar_t *__restrict __s, size_t __maxsize,
 			  const wchar_t *__restrict __format,
 			  const struct tm *__restrict __tp,
-			  __locale_t __loc) __THROW;
+			  locale_t __loc) __THROW;
 # endif
-
-/* The X/Open standard demands that most of the functions defined in
-   the <wctype.h> header must also appear here.  This is probably
-   because some X/Open members wrote their implementation before the
-   ISO C standard was published and introduced the better solution.
-   We have to provide these definitions for compliance reasons but we
-   do this nonsense only if really necessary.  */
-#if defined __USE_UNIX98 && !defined __USE_GNU
-# define __need_iswxxx
-# include <wctype.h>
-#endif
 
 /* Define some macros helping to catch buffer overflows.  */
 #if __USE_FORTIFY_LEVEL > 0 && defined __fortify_function
@@ -845,11 +789,4 @@ extern size_t wcsftime_l (wchar_t *__restrict __s, size_t __maxsize,
 
 __END_DECLS
 
-#endif	/* _WCHAR_H defined */
-
 #endif /* wchar.h  */
-
-/* Undefine all __need_* constants in case we are included to get those
-   constants but the whole file was already read.  */
-#undef __need_mbstate_t
-#undef __need_wint_t

@@ -18,7 +18,6 @@ escape_char /
 % Date:		2009-08-16
 % Application:	general
 % Users:	general
-% Charset:	UTF-8
 
 LC_IDENTIFICATION
 title		"Crimean Tatar (Crimean Turkish) language locale for Ukraine"
@@ -138,7 +137,7 @@ LC_MONETARY
 int_curr_symbol           "<U0055><U0041><U0048><U0020>"
 currency_symbol           "<U20B4>"
 mon_decimal_point         "<U002E>"
-mon_thousands_sep         "<U0020>"
+mon_thousands_sep         "<U202F>"
 mon_grouping              3;3
 positive_sign             ""
 negative_sign             "<U002D>"
@@ -239,6 +238,7 @@ LC_TELEPHONE
 tel_int_fmt    "<U002B><U0025><U0063><U0020><U0025><U0061><U0020><U0025>/
 <U006C>"
 int_prefix     "<U0033><U0038><U0030>"
+int_select     "<U0030><U0030>"
 END LC_TELEPHONE
 
 LC_NAME

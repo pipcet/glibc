@@ -47,12 +47,14 @@ sysincludes = @SYSINCLUDES@
 c++-sysincludes = @CXX_SYSINCLUDES@
 c++-cstdlib-header = @CXX_CSTDLIB_HEADER@
 c++-cmath-header = @CXX_CMATH_HEADER@
+c++-bits-std_abs-h = @CXX_BITS_STD_ABS_H@
 all-warnings = @all_warnings@
 enable-werror = @enable_werror@
 
 have-z-combreloc = @libc_cv_z_combreloc@
 have-z-execstack = @libc_cv_z_execstack@
 have-protected-data = @libc_cv_protected_data@
+have-insert = @libc_cv_insert@
 have-glob-dat-reloc = @libc_cv_has_glob_dat@
 with-fp = @with_fp@
 enable-timezone-tools = @enable_timezone_tools@
@@ -76,6 +78,8 @@ have-loop-to-function = @libc_cv_cc_loop_to_function@
 multi-arch = @multi_arch@
 
 mach-interface-list = @mach_interface_list@
+
+experimental-malloc = @experimental_malloc@
 
 nss-crypt = @libc_cv_nss_crypt@
 static-nss-crypt = @libc_cv_static_nss_crypt@
@@ -116,6 +120,7 @@ BISON = @BISON@
 AUTOCONF = @AUTOCONF@
 OBJDUMP = @OBJDUMP@
 OBJCOPY = @OBJCOPY@
+GPROF = @GPROF@
 READELF = @READELF@
 
 # Installation tools.

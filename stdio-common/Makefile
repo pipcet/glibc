@@ -58,7 +58,9 @@ tests := tstscanf test_rdwr test-popen tstgetln test-fseek \
 	 scanf16 scanf17 tst-setvbuf1 tst-grouping bug23 bug24 \
 	 bug-vfprintf-nargs tst-long-dbl-fphex tst-fphex-wide tst-sprintf3 \
 	 bug25 tst-printf-round bug23-2 bug23-3 bug23-4 bug26 tst-fmemopen3 \
-	 tst-printf-bz18872 tst-vfprintf-width-prec tst-fmemopen4
+	 tst-printf-bz18872 tst-vfprintf-width-prec tst-fmemopen4 \
+	 tst-vfprintf-user-type \
+	 tst-vfprintf-mbs-prec \
 
 test-srcs = tst-unbputc tst-printf
 
@@ -85,6 +87,7 @@ $(objpfx)tst-grouping.out: $(gen-locales)
 $(objpfx)tst-sprintf.out: $(gen-locales)
 $(objpfx)tst-sscanf.out: $(gen-locales)
 $(objpfx)tst-swprintf.out: $(gen-locales)
+$(objpfx)tst-vfprintf-mbs-prec.out: $(gen-locales)
 endif
 
 tst-printf-bz18872-ENV = MALLOC_TRACE=$(objpfx)tst-printf-bz18872.mtrace
@@ -92,11 +95,11 @@ tst-vfprintf-width-prec-ENV = \
   MALLOC_TRACE=$(objpfx)tst-vfprintf-width-prec.mtrace
 
 $(objpfx)tst-unbputc.out: tst-unbputc.sh $(objpfx)tst-unbputc
-	$(SHELL) $< $(common-objpfx) '$(test-program-prefix)'; \
+	$(SHELL) $< $(common-objpfx) '$(test-program-prefix)' > $@; \
 	$(evaluate-test)
 
 $(objpfx)tst-printf.out: tst-printf.sh $(objpfx)tst-printf
-	$(SHELL) $< $(common-objpfx) '$(test-program-prefix)'; \
+	$(SHELL) $< $(common-objpfx) '$(test-program-prefix)' > $@; \
 	$(evaluate-test)
 
 # We generate this source because it requires a printf invocation with

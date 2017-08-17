@@ -33,6 +33,7 @@ tests := mallocbug tst-malloc tst-valloc tst-calloc tst-obstack \
 	 tst-mallocfork2 \
 	 tst-interpose-nothread \
 	 tst-interpose-thread \
+	 tst-alloc_buffer \
 
 tests-static := \
 	 tst-interpose-static-nothread \
@@ -40,6 +41,12 @@ tests-static := \
 	 tst-malloc-usable-static \
 
 tests-internal := tst-mallocstate tst-scratch_buffer
+
+# The dynarray framework is only available inside glibc.
+tests-internal += \
+	 tst-dynarray \
+	 tst-dynarray-fail \
+	 tst-dynarray-at-fail \
 
 ifneq (no,$(have-tunables))
 tests += tst-malloc-usable-tunables
@@ -51,7 +58,17 @@ test-srcs = tst-mtrace
 
 routines = malloc morecore mcheck mtrace obstack reallocarray \
   scratch_buffer_grow scratch_buffer_grow_preserve \
-  scratch_buffer_set_array_size
+  scratch_buffer_set_array_size \
+  dynarray_at_failure \
+  dynarray_emplace_enlarge \
+  dynarray_finalize \
+  dynarray_resize \
+  dynarray_resize_clear \
+  alloc_buffer_alloc_array \
+  alloc_buffer_allocate \
+  alloc_buffer_copy_bytes  \
+  alloc_buffer_copy_string \
+  alloc_buffer_create_failure \
 
 install-lib := libmcheck.a
 non-lib.a := libmcheck.a
@@ -137,6 +154,8 @@ ifeq ($(run-built-tests),yes)
 ifeq (yes,$(build-shared))
 ifneq ($(PERL),no)
 tests-special += $(objpfx)tst-mtrace.out
+tests-special += $(objpfx)tst-dynarray-mem.out
+tests-special += $(objpfx)tst-dynarray-fail-mem.out
 endif
 endif
 endif
@@ -158,7 +177,7 @@ ifeq (yes,$(build-shared))
 ifneq ($(PERL),no)
 $(objpfx)tst-mtrace.out: tst-mtrace.sh $(objpfx)tst-mtrace
 	$(SHELL) $< $(common-objpfx) '$(test-program-prefix-before-env)' \
-		 '$(run-program-env)' '$(test-program-prefix-after-env)' ; \
+		 '$(run-program-env)' '$(test-program-prefix-after-env)' > $@; \
 	$(evaluate-test)
 endif
 endif
@@ -170,6 +189,11 @@ tst-malloc-usable-static-ENV = $(tst-malloc-usable-ENV)
 tst-malloc-usable-tunables-ENV = GLIBC_TUNABLES=glibc.malloc.check=3
 tst-malloc-usable-static-tunables-ENV = $(tst-malloc-usable-tunables-ENV)
 
+ifeq ($(experimental-malloc),yes)
+CPPFLAGS-malloc.c += -DUSE_TCACHE=1
+else
+CPPFLAGS-malloc.c += -DUSE_TCACHE=0
+endif
 # Uncomment this for test releases.  For public releases it is too expensive.
 #CPPFLAGS-malloc.o += -DMALLOC_DEBUG=1
 
@@ -208,3 +232,13 @@ $(objpfx)tst-interpose-thread: \
 $(objpfx)tst-interpose-static-nothread: $(objpfx)tst-interpose-aux-nothread.o
 $(objpfx)tst-interpose-static-thread: \
   $(objpfx)tst-interpose-aux-thread.o $(static-thread-library)
+
+tst-dynarray-ENV = MALLOC_TRACE=$(objpfx)tst-dynarray.mtrace
+$(objpfx)tst-dynarray-mem.out: $(objpfx)tst-dynarray.out
+	$(common-objpfx)malloc/mtrace $(objpfx)tst-dynarray.mtrace > $@; \
+	$(evaluate-test)
+
+tst-dynarray-fail-ENV = MALLOC_TRACE=$(objpfx)tst-dynarray-fail.mtrace
+$(objpfx)tst-dynarray-fail-mem.out: $(objpfx)tst-dynarray-fail.out
+	$(common-objpfx)malloc/mtrace $(objpfx)tst-dynarray-fail.mtrace > $@; \
+	$(evaluate-test)

@@ -24,14 +24,14 @@ escape_char /
 % Users: general
 
 LC_IDENTIFICATION
-title      "Norwegian (Bokmal) locale for Norway"
+title      "Norwegian (Bokm<U00E5>l) locale for Norway"
 source     "Norsk Standardiseringsforbund"
 address    "University Library, Drammensveien 41, N-9242 Oslo, Norge"
 contact    ""
 email      "bug-glibc-locales@gnu.org"
 tel        ""
 fax        ""
-language   "Norwegian Bokmål"
+language   "Norwegian Bokm<U00E5>l"
 territory  "Norway"
 revision   "1.0"
 date       "2000-06-29"
@@ -161,7 +161,7 @@ LC_MONETARY
 int_curr_symbol         "<U004E><U004F><U004B><U0020>"
 currency_symbol         "<U006B><U0072>"
 mon_decimal_point       "<U002C>"
-mon_thousands_sep       "<U00A0>"
+mon_thousands_sep       "<U202F>"
 mon_grouping            3;3
 positive_sign           ""
 negative_sign           "<U002D>"
@@ -177,7 +177,7 @@ END LC_MONETARY
 
 LC_NUMERIC
 decimal_point           "<U002C>"
-thousands_sep           "<U00A0>"
+thousands_sep           "<U202F>"
 grouping                3;3
 END LC_NUMERIC
 
@@ -272,7 +272,7 @@ country_num 578
 % N
 country_car    "<U004E>"
 % Bokmål
-lang_name    "<U0042><U006F><U006B><U006D><U00E5><U006C>"
+lang_name    "<U006E><U006F><U0072><U0073><U006B><U0020><U0062><U006F><U006B><U006D><U00E5><U006C>"
 % nb
 lang_ab      "<U006E><U0062>"
 % nob

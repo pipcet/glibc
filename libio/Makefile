@@ -23,7 +23,8 @@ subdir	:= libio
 include ../Makeconfig
 
 headers	:= stdio.h libio.h _G_config.h bits/stdio.h \
-	   bits/sys_errlist.h bits/stdio2.h bits/stdio-ldbl.h bits/libio-ldbl.h
+	   bits/sys_errlist.h bits/stdio2.h bits/stdio-ldbl.h bits/libio-ldbl.h \
+	   bits/types/FILE.h bits/types/__FILE.h
 
 routines	:=							      \
 	filedoalloc iofclose iofdopen iofflush iofgetpos iofgets iofopen      \
@@ -202,7 +203,7 @@ endif
 
 $(objpfx)test-freopen.out: test-freopen.sh $(objpfx)test-freopen
 	$(SHELL) $< $(common-objpfx) '$(test-program-prefix)'	\
-	$(common-objpfx)libio/; \
+	$(common-objpfx)libio/ > $@; \
 	$(evaluate-test)
 
 $(objpfx)tst-fopenloc-cmp.out: ../iconvdata/testdata/ISO-8859-1..UTF8 \

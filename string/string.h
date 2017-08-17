@@ -148,15 +148,16 @@ extern size_t strxfrm (char *__restrict __dest,
      __THROW __nonnull ((2));
 
 #ifdef __USE_XOPEN2K8
-# include <xlocale.h>
+/* POSIX.1-2008 extended locale interface (see locale.h).  */
+# include <bits/types/locale_t.h>
 
 /* Compare the collated forms of S1 and S2, using sorting rules from L.  */
-extern int strcoll_l (const char *__s1, const char *__s2, __locale_t __l)
+extern int strcoll_l (const char *__s1, const char *__s2, locale_t __l)
      __THROW __attribute_pure__ __nonnull ((1, 2, 3));
 /* Put a transformation of SRC into no more than N bytes of DEST,
    using sorting rules from L.  */
 extern size_t strxfrm_l (char *__dest, const char *__src, size_t __n,
-			 __locale_t __l) __THROW __nonnull ((2, 4));
+			 locale_t __l) __THROW __nonnull ((2, 4));
 #endif
 
 #if (defined __USE_XOPEN_EXTENDED || defined __USE_XOPEN2K8	\
@@ -423,7 +424,7 @@ extern char *strerror_r (int __errnum, char *__buf, size_t __buflen)
 
 #ifdef __USE_XOPEN2K8
 /* Translate error number to string according to the locale L.  */
-extern char *strerror_l (int __errnum, __locale_t __l) __THROW;
+extern char *strerror_l (int __errnum, locale_t __l) __THROW;
 #endif
 
 #ifdef __USE_MISC
@@ -487,55 +488,10 @@ extern char *basename (const char *__filename) __THROW __nonnull ((1));
 # endif
 #endif
 
-
 #if __GNUC_PREREQ (3,4)
-# if defined __OPTIMIZE__ && !defined __OPTIMIZE_SIZE__ \
-     && !defined __NO_INLINE__ && !defined __cplusplus
-/* When using GNU CC we provide some optimized versions of selected
-   functions from this header.  There are two kinds of optimizations:
-
-   - machine-dependent optimizations, most probably using inline
-     assembler code; these might be quite expensive since the code
-     size can increase significantly.
-     These optimizations are not used unless the symbol
-	__USE_STRING_INLINES
-     is defined before including this header.
-
-   - machine-independent optimizations which do not increase the
-     code size significantly and which optimize mainly situations
-     where one or more arguments are compile-time constants.
-     These optimizations are used always when the compiler is
-     taught to optimize.
-
-   One can inhibit all optimizations by defining __NO_STRING_INLINES.  */
-
-/* Get the machine-dependent optimizations (if any).  */
-#  include <bits/string.h>
-
-/* These are generic optimizations which do not add too much inline code.  */
-#  include <bits/string2.h>
-# endif
-
 # if __USE_FORTIFY_LEVEL > 0 && defined __fortify_function
 /* Functions with security checks.  */
-#  include <bits/string3.h>
-# endif
-#endif
-
-#if defined __USE_GNU && defined __OPTIMIZE__ \
-    && defined __extern_always_inline && __GNUC_PREREQ (3,2)
-# if !defined _FORCE_INLINES && !defined _HAVE_STRING_ARCH_mempcpy
-
-#define mempcpy(dest, src, n) __mempcpy_inline (dest, src, n)
-#define __mempcpy(dest, src, n) __mempcpy_inline (dest, src, n)
-
-__extern_always_inline void *
-__mempcpy_inline (void *__restrict __dest,
-		  const void *__restrict __src, size_t __n)
-{
-  return (char *) memcpy (__dest, __src, __n) + __n;
-}
-
+#  include <bits/string_fortified.h>
 # endif
 #endif
 

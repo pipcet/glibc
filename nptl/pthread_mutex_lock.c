@@ -197,11 +197,14 @@ __pthread_mutex_lock_full (pthread_mutex_t *mutex)
 	{
 	  /* Try to acquire the lock through a CAS from 0 (not acquired) to
 	     our TID | assume_other_futex_waiters.  */
-	  if (__glibc_likely ((oldval == 0)
-			      && (atomic_compare_and_exchange_bool_acq
-				  (&mutex->__data.__lock,
-				   id | assume_other_futex_waiters, 0) == 0)))
-	      break;
+	  if (__glibc_likely (oldval == 0))
+	    {
+	      oldval
+	        = atomic_compare_and_exchange_val_acq (&mutex->__data.__lock,
+	            id | assume_other_futex_waiters, 0);
+	      if (__glibc_likely (oldval == 0))
+		break;
+	    }
 
 	  if ((oldval & FUTEX_OWNER_DIED) != 0)
 	    {
@@ -597,7 +600,7 @@ __pthread_mutex_lock_full (pthread_mutex_t *mutex)
   return 0;
 }
 #ifndef __pthread_mutex_lock
-strong_alias (__pthread_mutex_lock, pthread_mutex_lock)
+weak_alias (__pthread_mutex_lock, pthread_mutex_lock)
 hidden_def (__pthread_mutex_lock)
 #endif
 

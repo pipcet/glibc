@@ -21,9 +21,9 @@
 #include <sys/mman.h>
 #include <sysdep.h>
 #include <stdint.h>
-#include <mmap_internal.h>
 
 #ifndef __OFF_T_MATCHES_OFF64_T
+# include <mmap_internal.h>
 
 /* An architecture may override this.  */
 # ifndef MMAP_ADJUST_OFFSET
@@ -36,7 +36,7 @@ __mmap (void *addr, size_t len, int prot, int flags, int fd, off_t offset)
   MMAP_CHECK_PAGE_UNIT ();
 
   if (offset & MMAP_OFF_LOW_MASK)
-    return (__ptr_t) INLINE_SYSCALL_ERROR_RETURN_VALUE (EINVAL);
+    return (void *) INLINE_SYSCALL_ERROR_RETURN_VALUE (EINVAL);
 
 #ifdef __NR_mmap2
   return (void *) MMAP_CALL (mmap2, addr, len, prot, flags, fd,
@@ -47,5 +47,6 @@ __mmap (void *addr, size_t len, int prot, int flags, int fd, off_t offset)
 #endif
 }
 weak_alias (__mmap, mmap)
+libc_hidden_def (__mmap)
 
 #endif /* __OFF_T_MATCHES_OFF64_T  */

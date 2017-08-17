@@ -17,6 +17,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 
 extern char **__libc_argv attribute_hidden;
@@ -25,5 +26,5 @@ void
 __attribute__ ((noreturn))
 __stack_chk_fail (void)
 {
-  __fortify_fail ("stack smashing detected");
+  __fortify_fail_abort (false, "stack smashing detected");
 }

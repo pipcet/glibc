@@ -134,7 +134,7 @@ Thu May 26 12:09:51 1994  Michael I Bushnell  (mib@churchy.gnu.ai.mit.edu)
 	_hurd_dtablesize is as big as _hurd_dtable_rlimit, then return
 	EMFILE.  When growing _hurd_dtable, actually do something if
 	_hurd_dtablesize is zero.
-	
+
 	* hurd/hurdmalloc.c (malloc_fork_prepare, malloc_fork_parent,
 	malloc_fork_child): Declare as static so they don't conflict with
 	the user's version of this file.
@@ -227,12 +227,12 @@ Mon May 23 14:24:50 1994  Michael I Bushnell  (mib@churchy.gnu.ai.mit.edu)
 	is D, not FD.
 
 	* hurd/alloc-fd.c (_hurd_alloc_fd): Arg FIRST_FD is not actually
-	const. 
+	const.
 	* hurd/hurdsig.c (_hurd_internal_post_signal [case SIGINFO]): If
 	we are not the process group leader, ignore the signal.
 	(_S_sig_post [case SIGURG]): Declaration of D was out of place.
 
-	* sysdeps/mach/hurd/fdopen.c: Include <hurd/io.h> for 
+	* sysdeps/mach/hurd/fdopen.c: Include <hurd/io.h> for
 	io_get_openmodes prototype.
 
 Sat May 21 16:03:23 1994  Roland McGrath  (roland@churchy.gnu.ai.mit.edu)
@@ -425,13 +425,13 @@ Wed May 18 17:54:00 1994  Roland McGrath  (roland@churchy.gnu.ai.mit.edu)
 Tue May 17 12:46:31 1994  Michael I Bushnell  (mib@churchy.gnu.ai.mit.edu)
 
 	* mach/mach/mach_traps.h (__mach_reply_port, __mach_thread_self,
-	__mach_task_self, __mach_host_self): New declarations of __ 
+	__mach_task_self, __mach_host_self): New declarations of __
 	versions of syscall traps.
 	(swtch, __swtch, swtch_pri, __swtch_pri, thread_switch,
 	__thread_switch, evc_wait, __evc_wait): New prototypes.
 	* mach/Makefile (headers): Added mach/mach_traps.h so that the
 	GNU version is installed instead of the Mach version.
-	
+
 Mon May 16 15:34:12 1994  Roland McGrath  (roland@churchy.gnu.ai.mit.edu)
 
 	* sysdeps/stub/sys/param.h: New file.
@@ -543,7 +543,7 @@ Wed May 11 18:49:31 1994  Roland McGrath  (roland@churchy.gnu.ai.mit.edu)
 	* hurd/hurd/signal.h (struct hurd_sigstate): Add new
 	`critical_section' member.  Remove #if 0'd out vfork crap.
 	(_hurd_critical_section_lock, _hurd_critical_section_unlock): New
-	functions. 
+	functions.
 	(HURD_CRITICAL_BEGIN, HURD_CRITICAL_END): New macros.
 
 	* io/Makefile (headers): Add poll.h and sys/poll.h.
@@ -564,7 +564,7 @@ Wed May 11 18:49:31 1994  Roland McGrath  (roland@churchy.gnu.ai.mit.edu)
 
 Wed May 11 13:44:33 1994  Michael I Bushnell  (mib@geech.gnu.ai.mit.edu)
 
-	* hurd/hurd/threadvar.h (__hurd_errno_location): Remove 
+	* hurd/hurd/threadvar.h (__hurd_errno_location): Remove
 	__volatile keyword.  `volatile int errno' is not the same
 	as `int errno'; user programs often mention the latter.
 	* errno.h: Remove __volatile keyword; same reason.
@@ -648,10 +648,10 @@ Wed May  4 14:02:29 1994  Michael I Bushnell  (mib@churchy.gnu.ai.mit.edu)
 	* sysdeps/mach/hurd/__getitmr.c: Corresponding changes from
 	mutex calls to spin lock calls here too.
 
-	* sysdeps/mach/hurd/__setitmr.c (setitimer_locked): Fixed syntax 
+	* sysdeps/mach/hurd/__setitmr.c (setitimer_locked): Fixed syntax
 	of declaration of PREEMPT.
 	(setitimer_locked): Declare variables ERR and ELAPSED.
-	(setitimer_locked): Fix some references to REMAINING that 
+	(setitimer_locked): Fix some references to REMAINING that
 	were using it as an itimerval instead of a timeval.
 	(setitimer_locked): Deleted unused label STILLBORN.
 
@@ -750,7 +750,7 @@ Thu Apr 28 21:29:47 1994  Roland McGrath  (roland@churchy.gnu.ai.mit.edu)
 
 	* Merged gmp-1.99.3+ mpn code from tege for printf_fp.
 	* stdio/printf_fp.c: Include "longlong.h"; gmp-impl.h no longer does.
-	
+
 	* Makerules (+depfiles): Filter $(extra-objs) to get only .o files.
 
 Wed Apr 27 00:20:41 1994  Roland McGrath  (roland@churchy.gnu.ai.mit.edu)
@@ -760,7 +760,7 @@ Wed Apr 27 00:20:41 1994  Roland McGrath  (roland@churchy.gnu.ai.mit.edu)
 
 Tue Apr 26 20:05:55 1994  Roland McGrath  (roland@churchy.gnu.ai.mit.edu)
 
-	* sysdeps/unix/bsd/bsd4.4/tcdrain.c: Don't include <termios.h> to 
+	* sysdeps/unix/bsd/bsd4.4/tcdrain.c: Don't include <termios.h> to
 	avoid <sys/ioctl.h> conflicts.
 	* sysdeps/unix/bsd/bsd4.4/tcsetattr.c: Undefine ECHO, MDMBUF,
 	TOSTOP, FLUSHO, PENDIN, and NOFLSH after including <termios.h> and
@@ -838,7 +838,7 @@ Mon Apr 11 17:36:59 1994  Michael I Bushnell  (mib@churchy.gnu.ai.mit.edu)
 
 	* sysdeps/mach/hurd/start.c (start1): Bother to set __environ.
 
-	* sysdeps/mach/hurd/__ioctl.c (__ioctl): Comment out use of 
+	* sysdeps/mach/hurd/__ioctl.c (__ioctl): Comment out use of
 	HURD_EINTR_RPC until signals work.
 
 Mon Apr 11 14:16:40 1994  Michael I Bushnell  (mib@geech.gnu.ai.mit.edu)
@@ -854,7 +854,7 @@ Mon Apr 11 14:16:40 1994  Michael I Bushnell  (mib@geech.gnu.ai.mit.edu)
 	needs to be allocated with ANYWHERE cleared.
 
 	* (This change occurred on April 8, 1994) hurd/hurdexec.c
-	(_hurd_exec): The arguments to exec_exec had the length and 
+	(_hurd_exec): The arguments to exec_exec had the length and
 	type parameters transposed.  In addition, fetch the correct
 	procserver port for the new task.
 
@@ -1425,7 +1425,7 @@ Wed Feb  2 16:56:29 1994  Roland McGrath  (roland@churchy.gnu.ai.mit.edu)
 	* sysdeps/unix/sysv/sco3.2.4/sigsuspend.S: Moved to unix/sysv/sysv4.
 	Replaced with #include of that file.
 
-	* sysdeps/unix/sysv/sysv4/solaris2/sigaltstack.S: Moved to 
+	* sysdeps/unix/sysv/sysv4/solaris2/sigaltstack.S: Moved to
 	sysdeps/unix/sysv/sysv4/sigaltstk.S.
 
 	* sysdeps/unix/sysv/sysv4/i386/__lstat.S: Syscall lxstat, not xlstat.
@@ -1466,7 +1466,7 @@ Mon Jan 31 19:33:04 1994  Roland McGrath  (roland@churchy.gnu.ai.mit.edu)
 	* sysdeps/unix/sparc/sysdep.S: New file.
 
 	* sysdeps/unix/sysv/sysv4/i386/__vfork.S: New file, just #include
-	unix/bsd/i386 version. 
+	unix/bsd/i386 version.
 
 	* sysdeps/unix/bsd/i386/__vfork.S: Use `scratch' in place of %edx.
 

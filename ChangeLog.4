@@ -117,7 +117,7 @@ Fri Dec  9 00:01:21 1994  Roland McGrath  <roland@churchy.gnu.ai.mit.edu>
 	* sysdeps/mach/hurd/i386/trampoline.c: Likewise.
 	* hurd/preempt-sig.c: Likewise.
 
-	* configure.in (machine): Don't recognize r[34]00.  
+	* configure.in (machine): Don't recognize r[34]00.
 	Convert mips64* to mips/mips64/& and mips* to mips/&.
 	* sysdeps/mips/mipsel/bytesex.h: New file.
 	* sysdeps/mips/r4000: Directory renamed to sysdeps/mips/mips64.
@@ -254,7 +254,7 @@ Sun Dec  4 12:06:36 1994  Roland McGrath  <roland@churchy.gnu.ai.mit.edu>
 	__FAVOR_BSD.
 	[__OPTIMIZE__] (longjmp): Remove #define.
 	[__USE_BSD] (_longjmp): Declare it, another name for `longjmp'.
-	[__USE_BSD] (_setjmp): Define macro to do __sigsetjmp (ENV, 0).	
+	[__USE_BSD] (_setjmp): Define macro to do __sigsetjmp (ENV, 0).
 	[__FAVOR_BSD]: Remove all these defns.
 	[__USE_POSIX] (sigjmp_buf): Define as another name for `jmp_buf'.
 	[__USE_POSIX] (sigsetjmp): Define to call __sigsetjmp.
@@ -652,7 +652,7 @@ Wed Oct 19 02:40:02 1994  Roland McGrath  <roland@churchy.gnu.ai.mit.edu>
 
 	* assert/assert-perror.c (__assert_perror_fail): New file.
 	* assert/assert.h (assert_perror): New macro.
- 
+
 	* Version 1.08.11.
 
 	* hurd/hurdsig.c (abort_rpcs): Actually return a port instead of
@@ -760,7 +760,7 @@ Fri Sep 30 16:49:09 1994  Roland McGrath  <roland@churchy.gnu.ai.mit.edu>
 	For ctty fds, use the `ctty' cell for the ctty-special port.
 	* hurd/dtable.c (get_dtable_port): Use port, never ctty.
 	(fork_child_dtable): Reset D->ctty instead of D->port.
-	(ctty_new_pgrp): Likewise. 
+	(ctty_new_pgrp): Likewise.
 	* sysdeps/mach/hurd/__ioctl.c: Use ctty port for RPC if set and
         !NOCTTY.
 	* hurd/port2fd.c (_hurd_port2fd): Install normal port in D->port

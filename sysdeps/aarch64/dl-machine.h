@@ -194,8 +194,8 @@ _dl_start_user:								\n\
 	cmp	" PTR "0, #0						\n\
 	bne	1b							\n\
 	// Update _dl_argv						\n\
-	adrp	x3, _dl_argv						\n\
-	str	" PTR "2, [x3, #:lo12:_dl_argv]				\n\
+	adrp	x3, __GI__dl_argv					\n\
+	str	" PTR "2, [x3, #:lo12:__GI__dl_argv]			\n\
 .L_done_stack_adjust:							\n\
 	// compute envp							\n\
 	add	" PTR "3, " PTR "2, " PTR "1, lsl #" PTR_SIZE_LOG "	\n\
@@ -245,6 +245,7 @@ dl_platform_init (void)
 
 static inline ElfW(Addr)
 elf_machine_fixup_plt (struct link_map *map, lookup_t t,
+		       const ElfW(Sym) *refsym, const ElfW(Sym) *sym,
 		       const ElfW(Rela) *reloc,
 		       ElfW(Addr) *reloc_addr,
 		       ElfW(Addr) value)

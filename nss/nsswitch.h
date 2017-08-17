@@ -168,8 +168,7 @@ extern void __nss_disable_nscd (void (*) (size_t, struct traced_file *));
 
 
 typedef int (*db_lookup_function) (service_user **, const char *, const char *,
-				   void **)
-     internal_function;
+				   void **);
 typedef enum nss_status (*setent_function) (int);
 typedef enum nss_status (*endent_function) (void);
 typedef enum nss_status (*getent_function) (void *, char *, size_t,
@@ -197,7 +196,17 @@ extern int __nss_getent_r (const char *getent_func_name,
 extern void *__nss_getent (getent_r_function func,
 			   void **resbuf, char **buffer, size_t buflen,
 			   size_t *buffer_size, int *h_errnop);
+struct resolv_context;
 struct hostent;
+extern int __nss_hostname_digits_dots_context (struct resolv_context *,
+					       const char *name,
+					       struct hostent *resbuf,
+					       char **buffer,
+					       size_t *buffer_size,
+					       size_t buflen,
+					       struct hostent **result,
+					       enum nss_status *status, int af,
+					       int *h_errnop) attribute_hidden;
 extern int __nss_hostname_digits_dots (const char *name,
 				       struct hostent *resbuf, char **buffer,
 				       size_t *buffer_size, size_t buflen,
@@ -209,5 +218,13 @@ libc_hidden_proto (__nss_hostname_digits_dots)
 /* Maximum number of aliases we allow.  */
 #define MAX_NR_ALIASES  48
 #define MAX_NR_ADDRS    48
+
+/* Prototypes for __nss_*_lookup2 functions.  */
+#define DEFINE_DATABASE(arg)				    \
+  int __nss_##arg##_lookup2 (service_user **, const char *, \
+			     const char *, void **);	    \
+  libc_hidden_proto (__nss_##arg##_lookup2)
+#include "databases.def"
+#undef DEFINE_DATABASE
 
 #endif	/* nsswitch.h */

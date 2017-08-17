@@ -230,7 +230,7 @@ LDLIBS-tst-thread_local1 = -lstdc++
 
 tests = tst-attr1 tst-attr2 tst-attr3 tst-default-attr \
 	tst-mutex1 tst-mutex2 tst-mutex3 tst-mutex4 tst-mutex5 tst-mutex6 \
-	tst-mutex7 tst-mutex9 tst-mutex5a tst-mutex7a \
+	tst-mutex7 tst-mutex9 tst-mutex5a tst-mutex7a tst-mutex7robust \
 	tst-mutexpi1 tst-mutexpi2 tst-mutexpi3 tst-mutexpi4 tst-mutexpi5 \
 	tst-mutexpi5a tst-mutexpi6 tst-mutexpi7 tst-mutexpi7a \
 	tst-mutexpi9 \
@@ -302,9 +302,11 @@ tests = tst-attr1 tst-attr2 tst-attr3 tst-default-attr \
 			    c89 gnu89 c99 gnu99 c11 gnu11) \
 	tst-bad-schedattr \
 	tst-thread_local1 tst-mutex-errorcheck tst-robust10 \
-	tst-robust-fork tst-create-detached
+	tst-robust-fork tst-create-detached tst-memstream
 
-tests-internal := tst-typesizes tst-rwlock19 tst-sem11 tst-sem12 tst-sem13 \
+tests-internal := tst-typesizes \
+		  tst-rwlock19 tst-rwlock20 \
+		  tst-sem11 tst-sem12 tst-sem13 \
 		  tst-barrier5 tst-signal7 tst-mutex8 tst-mutex8-static \
 		  tst-mutexpi8 tst-mutexpi8-static
 
@@ -365,7 +367,7 @@ tests += tst-cancelx2 tst-cancelx3 tst-cancelx4 tst-cancelx5 \
 	 tst-cleanupx0 tst-cleanupx1 tst-cleanupx2 tst-cleanupx3 tst-cleanupx4 \
 	 tst-oncex3 tst-oncex4
 ifeq ($(build-shared),yes)
-tests += tst-atfork2 tst-tls4 tst-_res1 tst-fini1
+tests += tst-atfork2 tst-tls4 tst-_res1 tst-fini1 tst-compat-forwarder
 tests-internal += tst-tls3 tst-tls3-malloc tst-tls5 tst-stackguard1
 tests-nolibpthread += tst-fini1
 ifeq ($(have-z-execstack),yes)
@@ -377,7 +379,7 @@ modules-names = tst-atfork2mod tst-tls3mod tst-tls4moda tst-tls4modb \
 		tst-tls5mod tst-tls5moda tst-tls5modb tst-tls5modc \
 		tst-tls5modd tst-tls5mode tst-tls5modf tst-stack4mod \
 		tst-_res1mod1 tst-_res1mod2 tst-execstack-mod tst-fini1mod \
-		tst-join7mod
+		tst-join7mod tst-compat-forwarder-mod
 extra-test-objs += $(addsuffix .os,$(strip $(modules-names))) \
 		   tst-cleanup4aux.o tst-cleanupx4aux.o
 test-extras += tst-cleanup4aux tst-cleanupx4aux
@@ -590,7 +592,7 @@ $(objpfx)tst-tls6.out: tst-tls6.sh $(objpfx)tst-tls5 \
 		       $(objpfx)tst-tls5modc.so $(objpfx)tst-tls5modd.so \
 		       $(objpfx)tst-tls5mode.so $(objpfx)tst-tls5modf.so
 	$(BASH) $< $(common-objpfx) '$(test-via-rtld-prefix)' \
-	  '$(test-wrapper-env)' '$(run-program-env)'; \
+	  '$(test-wrapper-env)' '$(run-program-env)' > $@; \
 	$(evaluate-test)
 endif
 
@@ -715,6 +717,8 @@ $(objpfx)tst-oddstacklimit.out: $(objpfx)tst-oddstacklimit $(objpfx)tst-basic1
 	$(test-program-prefix) $< --command '$(host-test-program-cmd)' > $@; \
 	$(evaluate-test)
 endif
+
+$(objpfx)tst-compat-forwarder: $(objpfx)tst-compat-forwarder-mod.so
 
 # The tests here better do not run in parallel
 ifneq ($(filter %tests,$(MAKECMDGOALS)),)

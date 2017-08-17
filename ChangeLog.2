@@ -370,7 +370,7 @@ Fri Dec 17 01:18:27 1993  Michael I Bushnell  (mib@geech.gnu.ai.mit.edu)
 	* Made the Hurd error system 0x10 again; this undid many
 	of the changes of Nov 23.  Affected all the err_ files in
 	mach; recreated sysdeps/hurd/err_hurd.sub; changed back
-	err_kern.sub to have the Unix error codes. 
+	err_kern.sub to have the Unix error codes.
 
 Thu Dec 16 15:40:25 1993  Brendan Kehoe  (brendan@zen.org)
 
@@ -517,7 +517,7 @@ Mon Nov 29 16:21:38 1993  Michael I Bushnell  (mib@geech.gnu.ai.mit.edu)
 
 	* sysdeps/mach/_strerror.c: Include <mach/errorlib.h>.
 
-	* hurd/setuids.c: Put entire file inside #ifndef MIB_HACKS; 
+	* hurd/setuids.c: Put entire file inside #ifndef MIB_HACKS;
 	it uses the old auth_makeauth call.
 
 	* hurd/__setauth.c: Put entire file inside #ifndef MIB_HACKS;
@@ -532,7 +532,7 @@ Wed Nov 24 00:59:15 1993  Michael I Bushnell  (mib@geech.gnu.ai.mit.edu)
 
 	* mach/mach_error_string.c (do_compat): Change name to
 	__mach_error_map_compat; make it no longer static.
-	(mach_error_type, mach_error_string_int): Use 
+	(mach_error_type, mach_error_string_int): Use
 	__mach_error_map_compat instead of do_compat.
 	* sysdeps/mach/_strerror.c: Use __mach_error_map_compat.
 
@@ -551,7 +551,7 @@ Tue Nov 23 23:16:13 1993  Michael I Bushnell  (mib@geech.gnu.ai.mit.edu)
 	they are meaningful in our environment.  The files have been
 	renamed to equivalent names with an equal sign prepended; this
 	will inhibit distribution and prevent the Makefile from looking at
-	them. 
+	them.
 	* mach/err_kern.sub: Deleted the definitios of err_codes_unix;
 	get the strings from _sys_errlist.  Rename `unix' to `hurd'.
 	Rename err_os_sub to be err_kern_sub to match what errsystems.awk
@@ -577,7 +577,7 @@ Tue Nov 23 12:43:38 1993  Michael I. Bushnell  (mib at ernst.gnu.ai.mit.edu)
 
 	* mach/errsystems.awk: $i is not an index; make i a variable and
 	increment it properly.  Don't call `err_get_system'; use the
-	system number as the index in the array directly. 
+	system number as the index in the array directly.
 
         * mach/errorlib.h: Added `const' in all the right places.
         * sysdeps/mach/hurd/err_hurd.sub: Cast _sys_errlist to
@@ -604,8 +604,8 @@ Tue Nov 23 12:43:38 1993  Michael I. Bushnell  (mib at ernst.gnu.ai.mit.edu)
 	* mach/errsystems.awk: The array that split creates is origin 1,
 	not origin 0; fixed loop to match.
 
-	* sysdeps/mach/hurd/errnos.awk: Ernst's awk doesn't grok 
-	backslash-newline inside strings.  
+	* sysdeps/mach/hurd/errnos.awk: Ernst's awk doesn't grok
+	backslash-newline inside strings.
 
 Sat Nov 20 19:02:25 1993  Brendan Kehoe  (brendan@zen.org)
 
@@ -757,7 +757,7 @@ Tue Oct 26 18:19:34 1993  Roland McGrath  (roland@churchy.gnu.ai.mit.edu)
 
 	* sysdeps/unix/sysv/sco3.2.4/__sysconf.S: Don't include <limits.h>.
 
-	* Makerules [inhibit-sysdep-asm] 
+	* Makerules [inhibit-sysdep-asm]
 	(open-check-inhibit-asm, close-check-inhibit-asm): New variables.
 	($(+sysdir_pfx)sysd-rules): Use them around .s and .S rules.
 	Depend on existing sysdep makefiles.
@@ -1326,7 +1326,7 @@ Mon May 31 21:49:04 1993  Roland McGrath  (roland@churchy.gnu.ai.mit.edu)
 
 Sun May 30 20:04:50 1993  Roland McGrath  (roland@churchy.gnu.ai.mit.edu)
 
-	* sysdeps/posix/stdio_init.c: (int)cookie is FD, not *(int*)cookie. 
+	* sysdeps/posix/stdio_init.c: (int)cookie is FD, not *(int*)cookie.
 
 	* time/Makefile ($({localtime,posixrules}-file)): Don't pass -d
 	switch (no need, since directory is compiled into zic).  Don't use
@@ -1466,7 +1466,7 @@ Mon May 24 16:49:54 1993  Roland McGrath  (roland@churchy.gnu.ai.mit.edu)
 	Use $(<D) for directory to pass zic.
 
 	* Makerules (installdirs): Use `sort' function to uniquize list of
-	directories. 
+	directories.
 
 	* time/Makefile (install-others): Use $(datadir)/zoneinfo, not
 	$(datadir)zoneinfo (missing /).
@@ -2324,7 +2324,7 @@ Fri Apr 16 12:24:21 1993  Roland McGrath  (roland@churchy.gnu.ai.mit.edu)
 	* stdio/ungetc.c: Test STREAM->__pushed_back before flushing the
 	STREAM if it's writable.
 
-	* posix/glob.c, posix/fnmatch.c: Surround code with 
+	* posix/glob.c, posix/fnmatch.c: Surround code with
 	#if defined (_LIBC) || !defined (__GNU_LIBRARY__)
 
 Thu Apr 15 19:35:59 1993  Roland McGrath  (roland@churchy.gnu.ai.mit.edu)
@@ -2571,7 +2571,7 @@ Thu Mar 25 13:40:17 1993  Roland McGrath  (roland@churchy.gnu.ai.mit.edu)
 	* Rules (all): Depend on others.
 
 	* time/Makefile (zonenames): Change target to $(objpfx)zonenames.
-	Make the generated file prepend $(objpfx) to 
+	Make the generated file prepend $(objpfx) to
 	Include that instead of zonenames.
 	(zones-%): Change target to $(objpfx)zones-%.
 

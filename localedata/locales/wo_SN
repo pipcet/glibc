@@ -18,7 +18,6 @@ escape_char /
 % Revision: 1.0
 % Date: 2004-09-15
 % Users: general
-% Charset: UTF-8
 
 LC_IDENTIFICATION
 title      "Wolof locale for Senegal"
@@ -73,7 +72,7 @@ LC_MONETARY
 int_curr_symbol           "<U0058><U004F><U0046><U0020>"
 currency_symbol           "<U0043><U0046><U0041>"
 mon_decimal_point         "<U002C>"
-mon_thousands_sep         "<U0020>"
+mon_thousands_sep         "<U202F>"
 mon_grouping              3;3
 positive_sign             ""
 negative_sign             "<U002D>"
@@ -173,6 +172,8 @@ postal_fmt    "<U0025><U0066><U0025><U004E><U0025><U0061><U0025><U004E>/
 <U0020><U0025><U0068><U0020><U0025><U0065><U0020><U0025><U0072><U0025>/
 <U004E><U0025><U007A><U0020><U0025><U0054><U0025>/
 <U004E><U0025><U0063><U0025><U004E>"
+% https://wo.wikipedia.org/wiki/Senegaal
+country_name "Senegaal"
 country_ab2 "<U0053><U004E>"
 country_ab3 "<U0053><U0045><U004E>"
 country_num 686

@@ -8,8 +8,6 @@ escape_char /
 % exempt you from the conditions of the license if your use would
 % otherwise be governed by that license.
 
-% Charset: UTF-8
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % Akan locale for Ghana
@@ -27,7 +25,7 @@ escape_char /
 
 LC_IDENTIFICATION
 title        "Akan locale for Ghana"
-source       "Sugar Labs / OLPC"
+source       "Sugar Labs // OLPC"
 address      ""
 contact      "sugarlabs.org"
 email        "libc-alpha@sourceware.org"

@@ -16,7 +16,6 @@ escape_char /
 % Date: 2006-01-16
 % Application: general
 % Users: general
-% Charset: ISO-8859-15
 
 LC_IDENTIFICATION
 title      "Catalan locale for Italy (L'Alguer) "
@@ -97,6 +96,7 @@ country_ab3 "<U0049><U0054><U0041>"
 country_num 380
 % I
 country_car    "<U0049>"
+country_isbn "978-88,979-12"
 % català
 lang_name    "<U0063><U0061><U0074><U0061><U006C><U00E0>"
 % ca

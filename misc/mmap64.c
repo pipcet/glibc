@@ -28,8 +28,8 @@
    for errors (in which case `errno' is set).  A successful `mmap' call
    deallocates any previous mapping for the affected region.  */
 
-__ptr_t
-__mmap64 (__ptr_t addr, size_t len, int prot, int flags, int fd,
+void *
+__mmap64 (void *addr, size_t len, int prot, int flags, int fd,
 	  __off64_t offset)
 {
   off_t small_offset = (off_t) offset;
@@ -45,3 +45,4 @@ __mmap64 (__ptr_t addr, size_t len, int prot, int flags, int fd,
 }
 
 weak_alias (__mmap64, mmap64)
+libc_hidden_def (__mmap64)

@@ -21,7 +21,6 @@ escape_char /
 % Revision: 4.3
 % Date: 1996-10-15
 % Users: general
-% Charset: ISO-8859-1
 
 LC_IDENTIFICATION
 title      "French locale for Luxemburg"
@@ -69,7 +68,7 @@ LC_MONETARY
 int_curr_symbol           "<U0045><U0055><U0052><U0020>"
 currency_symbol           "<U20AC>"
 mon_decimal_point         "<U002C>"
-mon_thousands_sep         "<U0020>"
+mon_thousands_sep         "<U202F>"
 mon_grouping              3;3
 positive_sign             ""
 negative_sign             "<U002D>"
@@ -85,7 +84,7 @@ END LC_MONETARY
 
 LC_NUMERIC
 decimal_point             "<U002C>"
-thousands_sep             "<U0020>"
+thousands_sep             "<U202F>"
 grouping                  3;3
 END LC_NUMERIC
 
@@ -136,6 +135,8 @@ LC_TELEPHONE
 tel_int_fmt    "<U002B><U0025><U0063><U0020><U0025><U0061><U0020><U0025>/
 <U006C>"
 int_prefix     "<U0033><U0035><U0032>"
+% 00
+int_select  "<U0030><U0030>"
 END LC_TELEPHONE
 
 LC_MEASUREMENT
@@ -160,7 +161,7 @@ country_num 442
 % L
 country_car    "<U004C>"
 % Français
-lang_name "<U0046><U0072><U0061><U006E><U00E7><U0061><U0069><U0073>"
+lang_name "<U0066><U0072><U0061><U006E><U00E7><U0061><U0069><U0073>"
 % fr
 lang_ab      "<U0066><U0072>"
 % fra

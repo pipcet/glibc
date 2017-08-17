@@ -25,6 +25,7 @@ CFLAGS-tee.c = -fexceptions -fasynchronous-unwind-tables
 CFLAGS-vmsplice.c = -fexceptions -fasynchronous-unwind-tables
 CFLAGS-splice.c = -fexceptions -fasynchronous-unwind-tables
 CFLAGS-open_by_handle_at.c = -fexceptions -fasynchronous-unwind-tables
+CFLAGS-sync_file_range.c = -fexceptions -fasynchronous-unwind-tables
 CFLAGS-tst-writev.c += "-DARTIFICIAL_LIMIT=(0x80000000-sysconf(_SC_PAGESIZE))"
 
 # Note that bits/mman-linux.h is listed here though the file lives in the
@@ -48,8 +49,8 @@ sysdep_headers += sys/mount.h sys/acct.h sys/sysctl.h \
 		  bits/mman-linux.h \
 		  bits/siginfo-arch.h bits/siginfo-consts-arch.h
 
-tests += tst-clone tst-clone2 tst-fanotify tst-personality tst-quota \
-	 tst-sync_file_range test-errno-linux
+tests += tst-clone tst-clone2 tst-clone3 tst-fanotify tst-personality \
+	 tst-quota tst-sync_file_range test-errno-linux
 
 # Generate the list of SYS_* macros for the system calls (__NR_* macros).
 
@@ -125,6 +126,20 @@ ifeq ($(subdir),time)
 sysdep_headers += sys/timex.h bits/timex.h
 
 sysdep_routines += ntp_gettime ntp_gettimex
+endif
+
+ifeq ($(subdir),signal)
+tests-special += $(objpfx)tst-signal-numbers.out
+# Depending on signal.o* is a hack.  What we actually want is a dependency
+# on signal.h and everything it includes.  That's impractical to write
+# in this context, but signal.c includes signal.h and not much else so it'll
+# be conservatively correct.
+$(objpfx)tst-signal-numbers.out: \
+		../sysdeps/unix/sysv/linux/tst-signal-numbers.sh \
+		$(objpfx)signal.o*
+	AWK=$(AWK) $(SHELL) ../sysdeps/unix/sysv/linux/tst-signal-numbers.sh \
+	$(CC) $(patsubst -DMODULE_NAME=%,-DMODULE_NAME=testsuite,$(CPPFLAGS)) \
+	< /dev/null > $@; $(evaluate-test)
 endif
 
 ifeq ($(subdir),socket)

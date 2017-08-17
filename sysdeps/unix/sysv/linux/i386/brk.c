@@ -16,6 +16,11 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
+#if BUILD_PIE_DEFAULT
+/* Can't use "call *%gs:SYSINFO_OFFSET" during statup in static PIE.  */
+# define I386_USE_SYSENTER 0
+#endif
+
 #include <errno.h>
 #include <unistd.h>
 #include <sysdep.h>

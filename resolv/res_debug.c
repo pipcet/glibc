@@ -106,6 +106,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <shlib-compat.h>
 
 #ifdef SPRINTF_CHAR
 # define SPRINTF(x) strlen(sprintf/**/x)
@@ -114,6 +115,34 @@
 #endif
 
 extern const char *_res_sectioncodes[] attribute_hidden;
+
+/* _res_opcodes was exported by accident as a variable.  */
+#if SHLIB_COMPAT (libresolv, GLIBC_2_0, GLIBC_2_26)
+static const char *res_opcodes[] =
+#else
+static const char res_opcodes[][9] =
+#endif
+  {
+    "QUERY",
+    "IQUERY",
+    "CQUERYM",
+    "CQUERYU",	/* experimental */
+    "NOTIFY",	/* experimental */
+    "UPDATE",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "12",
+    "13",
+    "ZONEINIT",
+    "ZONEREF",
+  };
+#if SHLIB_COMPAT (libresolv, GLIBC_2_0, GLIBC_2_26)
+strong_alias (res_opcodes, _res_opcodes)
+#endif
 
 static const char *p_section(int section, int opcode);
 
@@ -132,9 +161,7 @@ fp_resstat(const res_state statp, FILE *file) {
 }
 
 static void
-do_section(const res_state statp,
-	   ns_msg *handle, ns_sect section,
-	   int pflag, FILE *file)
+do_section (int pfcode, ns_msg *handle, ns_sect section, int pflag, FILE *file)
 {
 	int n, sflag, rrnum;
 	static int buflen = 2048;
@@ -145,8 +172,8 @@ do_section(const res_state statp,
 	/*
 	 * Print answer records.
 	 */
-	sflag = (statp->pfcode & pflag);
-	if (statp->pfcode && !sflag)
+	sflag = (pfcode & pflag);
+	if (pfcode && !sflag)
 		return;
 
 	buf = malloc(buflen);
@@ -163,11 +190,11 @@ do_section(const res_state statp,
 				fprintf(file, ";; ns_parserr: %s\n",
 					strerror(errno));
 			else if (rrnum > 0 && sflag != 0 &&
-				 (statp->pfcode & RES_PRF_HEAD1))
+				 (pfcode & RES_PRF_HEAD1))
 				putc('\n', file);
 			goto cleanup;
 		}
-		if (rrnum == 0 && sflag != 0 && (statp->pfcode & RES_PRF_HEAD1))
+		if (rrnum == 0 && sflag != 0 && (pfcode & RES_PRF_HEAD1))
 			fprintf(file, ";; %s SECTION:\n",
 				p_section(section, opcode));
 		if (section == ns_s_qd)
@@ -209,10 +236,18 @@ do_section(const res_state statp,
  * This is intended to be primarily a debugging routine.
  */
 void
-res_pquery(const res_state statp, const u_char *msg, int len, FILE *file) {
+fp_nquery (const unsigned char *msg, int len, FILE *file)
+{
 	ns_msg handle;
 	int qdcount, ancount, nscount, arcount;
 	u_int opcode, rcode, id;
+
+	/* There is no need to initialize _res: If _res is not yet
+	   initialized, _res.pfcode is zero.  But initialization will
+	   leave it at zero, too.  _res.pfcode is an unsigned long,
+	   but the code here assumes that the flags fit into an int,
+	   so use that.  */
+	int pfcode = _res.pfcode;
 
 	if (ns_initparse(msg, len, &handle) < 0) {
 		fprintf(file, ";; ns_initparse: %s\n", strerror(errno));
@@ -229,13 +264,13 @@ res_pquery(const res_state statp, const u_char *msg, int len, FILE *file) {
 	/*
 	 * Print header fields.
 	 */
-	if ((!statp->pfcode) || (statp->pfcode & RES_PRF_HEADX) || rcode)
+	if ((!pfcode) || (pfcode & RES_PRF_HEADX) || rcode)
 		fprintf(file,
 			";; ->>HEADER<<- opcode: %s, status: %s, id: %d\n",
-			_res_opcodes[opcode], p_rcode(rcode), id);
-	if ((!statp->pfcode) || (statp->pfcode & RES_PRF_HEADX))
+			res_opcodes[opcode], p_rcode(rcode), id);
+	if ((!pfcode) || (pfcode & RES_PRF_HEADX))
 		putc(';', file);
-	if ((!statp->pfcode) || (statp->pfcode & RES_PRF_HEAD2)) {
+	if ((!pfcode) || (pfcode & RES_PRF_HEAD2)) {
 		fprintf(file, "; flags:");
 		if (ns_msg_getflag(handle, ns_f_qr))
 			fprintf(file, " qr");
@@ -254,7 +289,7 @@ res_pquery(const res_state statp, const u_char *msg, int len, FILE *file) {
 		if (ns_msg_getflag(handle, ns_f_cd))
 			fprintf(file, " cd");
 	}
-	if ((!statp->pfcode) || (statp->pfcode & RES_PRF_HEAD1)) {
+	if ((!pfcode) || (pfcode & RES_PRF_HEAD1)) {
 		fprintf(file, "; %s: %d",
 			p_section(ns_s_qd, opcode), qdcount);
 		fprintf(file, ", %s: %d",
@@ -264,20 +299,34 @@ res_pquery(const res_state statp, const u_char *msg, int len, FILE *file) {
 		fprintf(file, ", %s: %d",
 			p_section(ns_s_ar, opcode), arcount);
 	}
-	if ((!statp->pfcode) || (statp->pfcode &
+	if ((!pfcode) || (pfcode &
 		(RES_PRF_HEADX | RES_PRF_HEAD2 | RES_PRF_HEAD1))) {
 		putc('\n',file);
 	}
 	/*
 	 * Print the various sections.
 	 */
-	do_section(statp, &handle, ns_s_qd, RES_PRF_QUES, file);
-	do_section(statp, &handle, ns_s_an, RES_PRF_ANS, file);
-	do_section(statp, &handle, ns_s_ns, RES_PRF_AUTH, file);
-	do_section(statp, &handle, ns_s_ar, RES_PRF_ADD, file);
+	do_section (pfcode, &handle, ns_s_qd, RES_PRF_QUES, file);
+	do_section (pfcode, &handle, ns_s_an, RES_PRF_ANS, file);
+	do_section (pfcode, &handle, ns_s_ns, RES_PRF_AUTH, file);
+	do_section (pfcode, &handle, ns_s_ar, RES_PRF_ADD, file);
 	if (qdcount == 0 && ancount == 0 &&
 	    nscount == 0 && arcount == 0)
 		putc('\n', file);
+}
+libresolv_hidden_def (fp_nquery)
+
+void
+fp_query (const unsigned char *msg, FILE *file)
+{
+  fp_nquery (msg, PACKETSZ, file);
+}
+libresolv_hidden_def (fp_query)
+
+void
+p_query (const unsigned char *msg)
+{
+  fp_query (msg, stdout);
 }
 
 const u_char *
@@ -564,6 +613,7 @@ p_option(u_long option) {
 	case RES_SNGLKUPREOP:	return "single-request-reopen";
 	case RES_USE_DNSSEC:	return "dnssec";
 	case RES_NOTLDQUERY:	return "no-tld-query";
+	case RES_NORELOAD:	return "no-reload";
 				/* XXX nonreentrant */
 	default:		sprintf(nbuf, "?0x%lx?", (u_long)option);
 				return (nbuf);
@@ -575,7 +625,7 @@ libresolv_hidden_def (p_option)
  * Return a mnemonic for a time to live.
  */
 const char *
-p_time(u_int32_t value) {
+p_time(uint32_t value) {
 	static char nbuf[40];		/* XXX nonreentrant */
 
 	if (ns_format_ttl(value, nbuf, sizeof nbuf) < 0)
@@ -604,7 +654,7 @@ static const unsigned int poweroften[10]=
 
 /* takes an XeY precision/size value, returns a string representation. */
 static const char *
-precsize_ntoa (u_int8_t prec)
+precsize_ntoa (uint8_t prec)
 {
 	static char retbuf[sizeof "90000000.00"];	/* XXX nonreentrant */
 	unsigned long val;
@@ -620,11 +670,11 @@ precsize_ntoa (u_int8_t prec)
 }
 
 /* converts ascii size/precision X * 10**Y(cm) to 0xXY.  moves pointer. */
-static u_int8_t
+static uint8_t
 precsize_aton (const char **strptr)
 {
 	unsigned int mval = 0, cmval = 0;
-	u_int8_t retval = 0;
+	uint8_t retval = 0;
 	const char *cp;
 	int exponent;
 	int mantissa;
@@ -661,11 +711,11 @@ precsize_aton (const char **strptr)
 }
 
 /* converts ascii lat/lon to unsigned encoded 32-bit number.  moves pointer. */
-static u_int32_t
+static uint32_t
 latlon2ul (const char **latlonstrptr, int *which)
 {
 	const char *cp;
-	u_int32_t retval;
+	uint32_t retval;
 	int deg = 0, min = 0, secs = 0, secsfrac = 0;
 
 	cp = *latlonstrptr;
@@ -764,12 +814,12 @@ loc_aton (const char *ascii, u_char *binary)
 	const char *cp, *maxcp;
 	u_char *bcp;
 
-	u_int32_t latit = 0, longit = 0, alt = 0;
-	u_int32_t lltemp1 = 0, lltemp2 = 0;
+	uint32_t latit = 0, longit = 0, alt = 0;
+	uint32_t lltemp1 = 0, lltemp2 = 0;
 	int altmeters = 0, altfrac = 0, altsign = 1;
-	u_int8_t hp = 0x16;	/* default = 1e6 cm = 10000.00m = 10km */
-	u_int8_t vp = 0x13;	/* default = 1e3 cm = 10.00m */
-	u_int8_t siz = 0x12;	/* default = 1e2 cm = 1.00m */
+	uint8_t hp = 0x16;	/* default = 1e6 cm = 10000.00m = 10km */
+	uint8_t vp = 0x13;	/* default = 1e3 cm = 10.00m */
+	uint8_t siz = 0x12;	/* default = 1e2 cm = 1.00m */
 	int which1 = 0, which2 = 0;
 
 	cp = ascii;
@@ -855,7 +905,7 @@ loc_aton (const char *ascii, u_char *binary)
  defaults:
 
 	bcp = binary;
-	*bcp++ = (u_int8_t) 0;	/* version byte */
+	*bcp++ = (uint8_t) 0;	/* version byte */
 	*bcp++ = siz;
 	*bcp++ = hp;
 	*bcp++ = vp;
@@ -880,11 +930,11 @@ loc_ntoa (const u_char *binary, char *ascii)
 	char northsouth, eastwest;
 	int altmeters, altfrac, altsign;
 
-	const u_int32_t referencealt = 100000 * 100;
+	const uint32_t referencealt = 100000 * 100;
 
 	int32_t latval, longval, altval;
-	u_int32_t templ;
-	u_int8_t sizeval, hpval, vpval, versionval;
+	uint32_t templ;
+	uint8_t sizeval, hpval, vpval, versionval;
 
 	char *sizestr, *hpstr, *vpstr;
 

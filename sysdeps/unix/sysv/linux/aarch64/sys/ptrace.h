@@ -119,7 +119,7 @@ enum __ptrace_request
   PTRACE_SEIZE = 0x4206,
 #define PTRACE_SEIZE PTRACE_SEIZE
 
-  /* Trap seized trace.  */
+  /* Trap seized tracee.  */
   PTRACE_INTERRUPT = 0x4207,
 #define PTRACE_INTERRUPT PTRACE_INTERRUPT
 
@@ -140,12 +140,6 @@ enum __ptrace_request
 #define PTRACE_SECCOMP_GET_FILTER PTRACE_SECCOMP_GET_FILTER
 };
 
-
-/* Flag for PTRACE_LISTEN.  */
-enum __ptrace_flags
-{
-  PTRACE_SEIZE_DEVEL = 0x80000000
-};
 
 /* Options set using PTRACE_SETOPTIONS.  */
 enum __ptrace_setoptions

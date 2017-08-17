@@ -31,10 +31,13 @@
 typedef int greg_t;
 
 /* Number of general registers.  */
-#define NGREG	18
+#define __NGREG	18
+#ifdef __USE_MISC
+# define NGREG	__NGREG
+#endif
 
 /* Container for all general registers.  */
-typedef greg_t gregset_t[NGREG];
+typedef greg_t gregset_t[__NGREG];
 
 #ifdef __USE_MISC
 /* Number of each register is the `gregset_t' array.  */
@@ -90,11 +93,17 @@ typedef struct fpregset
 } fpregset_t;
 #endif
 
+#ifdef __USE_MISC
+# define __ctx(fld) fld
+#else
+# define __ctx(fld) __ ## fld
+#endif
+
 /* Context to describe whole processor state.  */
 typedef struct
 {
-  int version;
-  gregset_t gregs;
+  int __ctx(version);
+  gregset_t __ctx(gregs);
 } mcontext_t;
 
 #ifdef __USE_MISC
@@ -102,14 +111,16 @@ typedef struct
 #endif
 
 /* Userlevel context.  */
-typedef struct ucontext
+typedef struct ucontext_t
 {
-  unsigned long int uc_flags;
-  struct ucontext *uc_link;
+  unsigned long int __ctx(uc_flags);
+  struct ucontext_t *uc_link;
   sigset_t uc_sigmask;
   stack_t uc_stack;
   mcontext_t uc_mcontext;
-  long int uc_filler[201];
+  long int __glibc_reserved1[201];
 } ucontext_t;
+
+#undef __ctx
 
 #endif /* sys/ucontext.h */

@@ -41,8 +41,8 @@
 #endif
 
 int
-pthread_mutex_timedlock (pthread_mutex_t *mutex,
-			 const struct timespec *abstime)
+__pthread_mutex_timedlock (pthread_mutex_t *mutex,
+			   const struct timespec *abstime)
 {
   int oldval;
   pid_t id = THREAD_GETMEM (THREAD_SELF, tid);
@@ -154,11 +154,14 @@ pthread_mutex_timedlock (pthread_mutex_t *mutex,
 	{
 	  /* Try to acquire the lock through a CAS from 0 (not acquired) to
 	     our TID | assume_other_futex_waiters.  */
-	  if (__glibc_likely ((oldval == 0)
-			      && (atomic_compare_and_exchange_bool_acq
-				  (&mutex->__data.__lock,
-				   id | assume_other_futex_waiters, 0) == 0)))
-	      break;
+	  if (__glibc_likely (oldval == 0))
+	    {
+	      oldval
+	        = atomic_compare_and_exchange_val_acq (&mutex->__data.__lock,
+	            id | assume_other_futex_waiters, 0);
+	      if (__glibc_likely (oldval == 0))
+		break;
+	    }
 
 	  if ((oldval & FUTEX_OWNER_DIED) != 0)
 	    {
@@ -634,3 +637,4 @@ pthread_mutex_timedlock (pthread_mutex_t *mutex,
  out:
   return result;
 }
+weak_alias (__pthread_mutex_timedlock, pthread_mutex_timedlock)

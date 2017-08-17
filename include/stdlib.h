@@ -156,34 +156,34 @@ libc_hidden_proto (__strtoull_internal)
 
 extern double ____strtod_l_internal (const char *__restrict __nptr,
 				     char **__restrict __endptr, int __group,
-				     __locale_t __loc);
+				     locale_t __loc);
 extern float ____strtof_l_internal (const char *__restrict __nptr,
 				    char **__restrict __endptr, int __group,
-				    __locale_t __loc);
+				    locale_t __loc);
 extern long double ____strtold_l_internal (const char *__restrict __nptr,
 					   char **__restrict __endptr,
-					   int __group, __locale_t __loc);
+					   int __group, locale_t __loc);
 extern long int ____strtol_l_internal (const char *__restrict __nptr,
 				       char **__restrict __endptr,
 				       int __base, int __group,
-				       __locale_t __loc);
+				       locale_t __loc);
 extern unsigned long int ____strtoul_l_internal (const char *
 						 __restrict __nptr,
 						 char **__restrict __endptr,
 						 int __base, int __group,
-						 __locale_t __loc);
+						 locale_t __loc);
 __extension__
 extern long long int ____strtoll_l_internal (const char *__restrict __nptr,
 					     char **__restrict __endptr,
 					     int __base, int __group,
-					     __locale_t __loc);
+					     locale_t __loc);
 __extension__
 extern unsigned long long int ____strtoull_l_internal (const char *
 						       __restrict __nptr,
 						       char **
 						       __restrict __endptr,
 						       int __base, int __group,
-						       __locale_t __loc);
+						       locale_t __loc);
 
 libc_hidden_proto (____strtof_l_internal)
 libc_hidden_proto (____strtod_l_internal)
@@ -201,16 +201,12 @@ libc_hidden_proto (strtoll)
 libc_hidden_proto (strtoul)
 libc_hidden_proto (strtoull)
 
-extern float __strtof_nan (const char *, char **, char) internal_function;
-extern double __strtod_nan (const char *, char **, char) internal_function;
-extern long double __strtold_nan (const char *, char **, char)
-     internal_function;
-extern float __wcstof_nan (const wchar_t *, wchar_t **, wchar_t)
-     internal_function;
-extern double __wcstod_nan (const wchar_t *, wchar_t **, wchar_t)
-     internal_function;
-extern long double __wcstold_nan (const wchar_t *, wchar_t **, wchar_t)
-     internal_function;
+extern float __strtof_nan (const char *, char **, char);
+extern double __strtod_nan (const char *, char **, char);
+extern long double __strtold_nan (const char *, char **, char);
+extern float __wcstof_nan (const wchar_t *, wchar_t **, wchar_t);
+extern double __wcstod_nan (const wchar_t *, wchar_t **, wchar_t);
+extern long double __wcstold_nan (const wchar_t *, wchar_t **, wchar_t);
 
 libc_hidden_proto (__strtof_nan)
 libc_hidden_proto (__strtod_nan)
@@ -218,6 +214,33 @@ libc_hidden_proto (__strtold_nan)
 libc_hidden_proto (__wcstof_nan)
 libc_hidden_proto (__wcstod_nan)
 libc_hidden_proto (__wcstold_nan)
+
+/* Enable _FloatN bits as needed.  */
+#include <bits/floatn.h>
+
+#if __HAVE_DISTINCT_FLOAT128
+extern __typeof (strtof128_l) __strtof128_l;
+
+libc_hidden_proto (__strtof128_l)
+libc_hidden_proto (strtof128)
+
+extern _Float128 __strtof128_nan (const char *, char **, char);
+extern _Float128 __wcstof128_nan (const wchar_t *, wchar_t **, wchar_t);
+
+libc_hidden_proto (__strtof128_nan)
+libc_hidden_proto (__wcstof128_nan)
+
+extern _Float128 __strtof128_internal (const char *__restrict __nptr,
+				       char **__restrict __endptr,
+				       int __group);
+libc_hidden_proto (__strtof128_internal)
+
+extern _Float128 ____strtof128_l_internal (const char *__restrict __nptr,
+					   char **__restrict __endptr,
+					   int __group, locale_t __loc);
+
+libc_hidden_proto (____strtof128_l_internal)
+#endif
 
 extern char *__ecvt (double __value, int __ndigit, int *__restrict __decpt,
 		     int *__restrict __sign);

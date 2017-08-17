@@ -121,16 +121,17 @@ extern int strncasecmp (const char *__s1, const char *__s2, size_t __n)
      __THROW __attribute_pure__ __nonnull ((1, 2));
 
 #ifdef	__USE_XOPEN2K8
-# include <xlocale.h>
+/* POSIX.1-2008 extended locale interface (see locale.h).  */
+# include <bits/types/locale_t.h>
 
 /* Compare S1 and S2, ignoring case, using collation rules from LOC.  */
-extern int strcasecmp_l (const char *__s1, const char *__s2, __locale_t __loc)
+extern int strcasecmp_l (const char *__s1, const char *__s2, locale_t __loc)
      __THROW __attribute_pure__ __nonnull ((1, 2, 3));
 
 /* Compare no more than N chars of S1 and S2, ignoring case, using
    collation rules from LOC.  */
 extern int strncasecmp_l (const char *__s1, const char *__s2,
-			  size_t __n, __locale_t __loc)
+			  size_t __n, locale_t __loc)
      __THROW __attribute_pure__ __nonnull ((1, 2, 4));
 #endif
 

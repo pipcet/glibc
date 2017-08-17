@@ -12,8 +12,6 @@ escape_char /
 %
 % Oromo language locale for Kenya.
 %
-% Charset: ISO-8859-1 (Under Qubee conventions)
-%
 % Oromo terms are provided by Mahdi Hamid Muudee of Sagalee Oromoo
 % Publishing Co. Inc and formatted in this locale by Daniel Yacob of
 % the Ge'ez Frontier Foundation.  The Oromo language terms used here
@@ -199,7 +197,8 @@ LC_TELEPHONE
 tel_dom_fmt    "<U0025><U0061><U002D><U0025><U006C>"
 tel_int_fmt    "<U0025><U0063><U002D><U0025><U0061><U002D><U0025><U006C>"
 int_prefix     "<U0032><U0035><U0034>"
-% int_select   unknown
+% 000
+int_select   "<U0030><U0030><U0030>"
 %
 END LC_TELEPHONE
 

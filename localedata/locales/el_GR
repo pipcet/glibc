@@ -21,7 +21,6 @@ escape_char /
 % Revision: 4.3
 % Date: 1996-10-15
 % Users: general
-% Charset: ISO-8859-7
 
 LC_IDENTIFICATION
 title      "Greek locale for Greece"
@@ -183,7 +182,7 @@ country_num 300
 % GR
 country_car    "<U0047><U0052>"
 % ελληνικά
-lang_name    "<U03B5><U03BB><U03BB><U03B7><U03BD><U03B9><U03BA><U03AC>"
+lang_name    "<U0395><U03BB><U03BB><U03B7><U03BD><U03B9><U03BA><U03AC>"
 % el
 lang_ab      "<U0065><U006C>"
 % ell

@@ -74,6 +74,8 @@
 #define bit_cpu_AVX512CD	(1 << 28)
 #define bit_cpu_AVX512BW	(1 << 30)
 #define bit_cpu_AVX512VL	(1u << 31)
+#define bit_cpu_IBT		(1u << 20)
+#define bit_cpu_SHSTK		(1u << 7)
 
 /* XCR0 Feature flags.  */
 #define bit_XMM_state		(1 << 1)
@@ -102,6 +104,9 @@
 # define index_cpu_AVX	COMMON_CPUID_INDEX_1*CPUID_SIZE+CPUID_ECX_OFFSET
 # define index_cpu_AVX2	COMMON_CPUID_INDEX_7*CPUID_SIZE+CPUID_EBX_OFFSET
 # define index_cpu_ERMS	COMMON_CPUID_INDEX_7*CPUID_SIZE+CPUID_EBX_OFFSET
+# define index_cpu_MOVBE COMMON_CPUID_INDEX_1*CPUID_SIZE+CPUID_ECX_OFFSET
+# define index_cpu_IBT	COMMON_CPUID_INDEX_7*CPUID_SIZE+CPUID_EDX_OFFSET
+# define index_cpu_SHSTK COMMON_CPUID_INDEX_7*CPUID_SIZE+CPUID_ECX_OFFSET
 
 # define index_arch_Fast_Rep_String	FEATURE_INDEX_1*FEATURE_SIZE
 # define index_arch_Fast_Copy_Backward	FEATURE_INDEX_1*FEATURE_SIZE
@@ -125,63 +130,6 @@
 # define index_arch_Use_dl_runtime_resolve_opt FEATURE_INDEX_1*FEATURE_SIZE
 # define index_arch_Use_dl_runtime_resolve_slow FEATURE_INDEX_1*FEATURE_SIZE
 # define index_arch_Prefer_No_AVX512	FEATURE_INDEX_1*FEATURE_SIZE
-
-
-# if defined (_LIBC) && !IS_IN (nonlib)
-#  ifdef __x86_64__
-#   ifdef SHARED
-#    if IS_IN (rtld)
-#     define LOAD_RTLD_GLOBAL_RO_RDX
-#     define HAS_FEATURE(offset, field, name) \
-  testl $(bit_##field##_##name), \
-	_rtld_local_ro+offset+(index_##field##_##name)(%rip)
-#    else
-#      define LOAD_RTLD_GLOBAL_RO_RDX \
-  mov _rtld_global_ro@GOTPCREL(%rip), %RDX_LP
-#     define HAS_FEATURE(offset, field, name) \
-  testl $(bit_##field##_##name), \
-	RTLD_GLOBAL_RO_DL_X86_CPU_FEATURES_OFFSET+offset+(index_##field##_##name)(%rdx)
-#    endif
-#   else /* SHARED */
-#    define LOAD_RTLD_GLOBAL_RO_RDX
-#    define HAS_FEATURE(offset, field, name) \
-  testl $(bit_##field##_##name), \
-	_dl_x86_cpu_features+offset+(index_##field##_##name)(%rip)
-#   endif /* !SHARED */
-#  else  /* __x86_64__ */
-#   ifdef SHARED
-#    define LOAD_FUNC_GOT_EAX(func) \
-  leal func@GOTOFF(%edx), %eax
-#    if IS_IN (rtld)
-#    define LOAD_GOT_AND_RTLD_GLOBAL_RO \
-  LOAD_PIC_REG(dx)
-#     define HAS_FEATURE(offset, field, name) \
-  testl $(bit_##field##_##name), \
-	offset+(index_##field##_##name)+_rtld_local_ro@GOTOFF(%edx)
-#    else
-#     define LOAD_GOT_AND_RTLD_GLOBAL_RO \
-  LOAD_PIC_REG(dx); \
-  mov _rtld_global_ro@GOT(%edx), %ecx
-#     define HAS_FEATURE(offset, field, name) \
-  testl $(bit_##field##_##name), \
-	RTLD_GLOBAL_RO_DL_X86_CPU_FEATURES_OFFSET+offset+(index_##field##_##name)(%ecx)
-#    endif
-#   else  /* SHARED */
-#    define LOAD_FUNC_GOT_EAX(func) \
-  leal func, %eax
-#    define LOAD_GOT_AND_RTLD_GLOBAL_RO
-#    define HAS_FEATURE(offset, field, name) \
-  testl $(bit_##field##_##name), \
-	_dl_x86_cpu_features+offset+(index_##field##_##name)
-#   endif /* !SHARED */
-#  endif /* !__x86_64__ */
-# else /* _LIBC && !nonlib */
-#  error "Sorry, <cpu-features.h> is unimplemented for assembler"
-# endif /* !_LIBC || nonlib */
-
-/* HAS_* evaluates to true if we may use the feature at runtime.  */
-# define HAS_CPU_FEATURE(name)	HAS_FEATURE (CPUID_OFFSET, cpu, name)
-# define HAS_ARCH_FEATURE(name) HAS_FEATURE (FEATURE_OFFSET, arch, name)
 
 #else	/* __ASSEMBLER__ */
 
@@ -214,6 +162,14 @@ struct cpu_features
   unsigned int family;
   unsigned int model;
   unsigned int feature[FEATURE_INDEX_MAX];
+  /* Data cache size for use in memory and string routines, typically
+     L1 size.  */
+  unsigned long int data_cache_size;
+  /* Shared cache size for use in memory and string routines, typically
+     L2 or L3 size.  */
+  unsigned long int shared_cache_size;
+  /* Threshold to use non temporal store.  */
+  unsigned long int non_temporal_threshold;
 };
 
 /* Used from outside of glibc to get access to the CPU features
@@ -268,6 +224,8 @@ extern const struct cpu_features *__get_cpu_features (void)
 # define index_cpu_LZCNT	COMMON_CPUID_INDEX_1
 # define index_cpu_MOVBE	COMMON_CPUID_INDEX_1
 # define index_cpu_POPCNT	COMMON_CPUID_INDEX_1
+# define index_cpu_IBT		COMMON_CPUID_INDEX_7
+# define index_cpu_SHSTK	COMMON_CPUID_INDEX_7
 
 # define reg_CX8		edx
 # define reg_CMOV		edx
@@ -297,6 +255,8 @@ extern const struct cpu_features *__get_cpu_features (void)
 # define reg_LZCNT		ecx
 # define reg_MOVBE		ecx
 # define reg_POPCNT		ecx
+# define reg_IBT		edx
+# define reg_SHSTK		ecx
 
 # define index_arch_Fast_Rep_String	FEATURE_INDEX_1
 # define index_arch_Fast_Copy_Backward	FEATURE_INDEX_1

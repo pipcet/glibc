@@ -20,6 +20,15 @@
 #include <cpu-features.h>
 #include <dl-hwcap.h>
 
+#if HAVE_TUNABLES
+# define TUNABLE_NAMESPACE tune
+# include <unistd.h>		/* Get STDOUT_FILENO for _dl_printf.  */
+# include <elf/dl-tunables.h>
+
+extern void TUNABLE_CALLBACK (set_hwcaps) (tunable_val_t *)
+  attribute_hidden;
+#endif
+
 static void
 get_common_indeces (struct cpu_features *cpu_features,
 		    unsigned int *family, unsigned int *model,
@@ -235,10 +244,13 @@ init_cpu_features (struct cpu_features *cpu_features)
 	  |= bit_arch_Prefer_No_AVX512;
 
       /* To avoid SSE transition penalty, use _dl_runtime_resolve_slow.
-         If XGETBV suports ECX == 1, use _dl_runtime_resolve_opt.  */
+         If XGETBV suports ECX == 1, use _dl_runtime_resolve_opt.
+	 Use _dl_runtime_resolve_opt only with AVX512F since it is
+	 slower than _dl_runtime_resolve_slow with AVX.  */
       cpu_features->feature[index_arch_Use_dl_runtime_resolve_slow]
 	|= bit_arch_Use_dl_runtime_resolve_slow;
-      if (cpu_features->max_cpuid >= 0xd)
+      if (CPU_FEATURES_ARCH_P (cpu_features, AVX512F_Usable)
+	  && cpu_features->max_cpuid >= 0xd)
 	{
 	  unsigned int eax;
 
@@ -312,13 +324,26 @@ no_cpuid:
   cpu_features->model = model;
   cpu_features->kind = kind;
 
-#if IS_IN (rtld)
+#if HAVE_TUNABLES
+  TUNABLE_GET (hwcaps, tunable_val_t *, TUNABLE_CALLBACK (set_hwcaps));
+  cpu_features->non_temporal_threshold
+    = TUNABLE_GET (x86_non_temporal_threshold, long int, NULL);
+  cpu_features->data_cache_size
+    = TUNABLE_GET (x86_data_cache_size, long int, NULL);
+  cpu_features->shared_cache_size
+    = TUNABLE_GET (x86_shared_cache_size, long int, NULL);
+#endif
+
   /* Reuse dl_platform, dl_hwcap and dl_hwcap_mask for x86.  */
   GLRO(dl_platform) = NULL;
   GLRO(dl_hwcap) = 0;
+#if !HAVE_TUNABLES && defined SHARED
+  /* The glibc.tune.hwcap_mask tunable is initialized already, so no need to do
+     this.  */
   GLRO(dl_hwcap_mask) = HWCAP_IMPORTANT;
+#endif
 
-# ifdef __x86_64__
+#ifdef __x86_64__
   if (cpu_features->kind == arch_kind_intel)
     {
       if (CPU_FEATURES_ARCH_P (cpu_features, AVX512F_Usable)
@@ -348,7 +373,7 @@ no_cpuid:
 	  && CPU_FEATURES_CPU_P (cpu_features, POPCNT))
 	GLRO(dl_platform) = "haswell";
     }
-# else
+#else
   if (CPU_FEATURES_CPU_P (cpu_features, SSE2))
     GLRO(dl_hwcap) |= HWCAP_X86_SSE2;
 
@@ -356,6 +381,5 @@ no_cpuid:
     GLRO(dl_platform) = "i686";
   else if (CPU_FEATURES_ARCH_P (cpu_features, I586))
     GLRO(dl_platform) = "i586";
-# endif
 #endif
 }

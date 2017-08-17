@@ -20,14 +20,14 @@
 #include <sysdep.h>
 
 
-/* __ptr_t [r3] __mempcpy (__ptr_t dst [r3], __ptr_t src [r4], size_t len [r5]);
+/* void * [r3] __mempcpy (void *dst [r3], void *src [r4], size_t len [r5]);
     Returns 'dst' + 'len'.  */
 
 #ifndef MEMPCPY
 # define MEMPCPY __mempcpy
 #endif
 	.machine  power7
-EALIGN (MEMPCPY, 5, 0)
+ENTRY_TOCLESS (MEMPCPY, 5)
 	CALL_MCOUNT 3
 
 	cmpldi	cr1,5,31
