@@ -34,14 +34,8 @@
 #include <tls.h>
 #include <pthread-functions.h>
 
-#if IS_IN (libpthread)
-/* This gets us the declarations of the __pthread_* internal names,
-   and hidden_proto for them.  */
-# include <nptl/pthreadP.h>
-#endif
-
 /* Mutex type.  */
-#if !IS_IN (libc) && !IS_IN (libpthread)
+#if !IS_IN (libc)
 typedef pthread_mutex_t __libc_lock_t;
 #else
 typedef int __libc_lock_t;

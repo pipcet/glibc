@@ -1100,6 +1100,23 @@ $(common-objpfx)soversions.mk: $(common-objpfx)soversions.i $(..)Makeconfig
 postclean-generated += soversions.mk soversions.i \
 		       shlib-versions.v shlib-versions.v.i
 
+# Build the tunables list header early since it could be used by any module in
+# glibc.
+ifneq (no,$(have-tunables))
+before-compile += $(common-objpfx)dl-tunable-list.h
+common-generated += dl-tunable-list.h dl-tunable-list.stmp
+
+$(common-objpfx)dl-tunable-list.h: $(common-objpfx)dl-tunable-list.stmp; @:
+$(common-objpfx)dl-tunable-list.stmp: \
+		$(..)scripts/gen-tunables.awk \
+		$(..)elf/dl-tunables.list \
+		$(wildcard $(subdirs:%=$(..)%/dl-tunables.list)) \
+		$(wildcard $(sysdirs:%=%/dl-tunables.list))
+	$(AWK) -f $^ > ${@:stmp=T}
+	$(move-if-change) ${@:stmp=T} ${@:stmp=h}
+	touch $@
+endif
+
 # The name under which the run-time dynamic linker is installed.
 # We are currently going for the convention that `/lib/ld.so.1'
 # names the SVR4/ELF ABI-compliant dynamic linker.

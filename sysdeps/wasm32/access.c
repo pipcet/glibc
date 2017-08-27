@@ -23,6 +23,16 @@
 
 #include "thinthin.h"
 
+/* Test for access to FILE without setting errno.   */
+int
+__access_noerrno (const char *file, int type)
+{
+  int olderr = errno;
+  int ret = __access(file, type);
+  errno = olderr;
+  return ret;
+}
+
 /* Test for access to FILE.  */
 int
 __access (const char *file, int type)

@@ -23,6 +23,8 @@
 #include <libc-lock.h>
 #include <resolv-internal.h>
 #include <sys/stat.h>
+#include <atomic.h>
+#include <pthread.h>
 
 /* _res._u._ext.__glibc_extension_index is used as an index into a
    struct resolv_conf_array object.  The intent of this construction

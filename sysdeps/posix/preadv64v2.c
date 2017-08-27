@@ -16,22 +16,3 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <unistd.>
-#include <sys/uio.h>
-
-ssize_t
-preadv64v2 (int fd, const struct iovec *vector, int count, OFF_T offset,
-	    int flags)
-{
-  if (flags != 0)
-    {
-      __set_errno (ENOTSUP);
-      return -1;
-    }
-
-  return preadv64 (fd, vector, count, offset);
-}
-
-#ifdef __OFF_T_MATCHES_OFF64_T
-strong_alias (preadv64v2, preadv2)
-#endif

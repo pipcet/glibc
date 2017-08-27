@@ -100,6 +100,8 @@ typedef struct {
     int is_static;
   } pointer;
 } dtv_t;
+
+typedef dtv_t tcbhead_t;
 #endif
 
 /* Return dtv of given thread descriptor.  */

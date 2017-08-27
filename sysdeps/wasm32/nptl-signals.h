@@ -1,6 +1,6 @@
-/* System-specific malloc support functions.  Generic version.
-   Copyright (C) 2012-2016 Free Software Foundation, Inc.
-   This file is NOT part of the GNU C Library.
+/* Special use of signals in NPTL internals.  Stub version.
+   Copyright (C) 2014-2017 Free Software Foundation, Inc.
+   This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -16,13 +16,7 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <stdbool.h>
-#include <unistd.h>
+/* This file can define the macros SIGCANCEL, SIGTIMER, and SIGSETXID to
+   signal numbers reserved by libpthread for those internal purposes.
 
-/* Force an unmap when the heap shrinks in a secure exec.  This ensures that
-   the old data pages immediately cease to be accessible.  */
-static inline bool
-check_may_shrink_heap (void)
-{
-  return __libc_enable_secure;
-}
+   Note that some code presumes SIGTIMER is the same as SIGCANCEL.  */
