@@ -59,7 +59,7 @@ __gconv_load_cache (void)
     return -1;
 
   /* See whether the cache file exists.  */
-  fd = open_not_cancel (GCONV_MODULES_CACHE, O_RDONLY, 0);
+  fd = __open_nocancel (GCONV_MODULES_CACHE, O_RDONLY, 0);
   if (__builtin_expect (fd, 0) == -1)
     /* Not available.  */
     return -1;
@@ -71,7 +71,7 @@ __gconv_load_cache (void)
       || (size_t) st.st_size < sizeof (struct gconvcache_header))
     {
     close_and_exit:
-      close_not_cancel_no_status (fd);
+      __close_nocancel_nostatus (fd);
       return -1;
     }
 
@@ -108,7 +108,7 @@ __gconv_load_cache (void)
     }
 
   /* We don't need the file descriptor anymore.  */
-  close_not_cancel_no_status (fd);
+  __close_nocancel_nostatus (fd);
 
   /* Check the consistency.  */
   header = (struct gconvcache_header *) gconv_cache;

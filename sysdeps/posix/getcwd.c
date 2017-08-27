@@ -175,8 +175,8 @@ extern char *alloca ();
 # include <not-cancel.h>
 # include <kernel-features.h>
 #else
-# define openat64_not_cancel_3(dfd, name, mode) openat64 (dfd, name, mode)
-# define close_not_cancel_no_status(fd) close (fd)
+# define __openat64_nocancel(dfd, name, mode) openat64 (dfd, name, mode)
+# define __close_nocancel_nostatus(fd) close (fd)
 #endif
 
 #ifndef PATH_MAX
@@ -281,7 +281,7 @@ __getcwd (char *buf, size_t size)
   while (!(thisdev == rootdev && thisino == rootino))
     {
       if (__have_atfcts >= 0)
-	  fd = openat64_not_cancel_3 (fd, "..", O_RDONLY | O_CLOEXEC);
+	  fd = __openat64_nocancel (fd, "..", O_RDONLY | O_CLOEXEC);
       else
 	fd = -1;
       if (fd >= 0)
@@ -521,7 +521,7 @@ __getcwd (char *buf, size_t size)
   if (dirstream != NULL)
     __closedir (dirstream);
   if (fd_needs_closing)
-    close_not_cancel_no_status (fd);
+    __close_nocancel_nostatus (fd);
 #ifndef NO_ALLOCATION
   if (buf == NULL)
     free (path);

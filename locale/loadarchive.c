@@ -203,7 +203,7 @@ _nl_load_locale_from_archive (int category, const char **namep)
       archmapped = &headmap;
 
       /* The archive has never been opened.  */
-      fd = open_not_cancel_2 (archfname, O_RDONLY|O_LARGEFILE|O_CLOEXEC);
+      fd = __open_nocancel (archfname, O_RDONLY|O_LARGEFILE|O_CLOEXEC);
       if (fd < 0)
 	/* Cannot open the archive, for whatever reason.  */
 	return NULL;
@@ -213,7 +213,7 @@ _nl_load_locale_from_archive (int category, const char **namep)
 	  /* stat failed, very strange.  */
 	close_and_out:
 	  if (fd >= 0)
-	    close_not_cancel_no_status (fd);
+	    __close_nocancel_nostatus (fd);
 	  return NULL;
 	}
 
@@ -253,7 +253,7 @@ _nl_load_locale_from_archive (int category, const char **namep)
 	{
 	  /* We've mapped the whole file already, so we can be
 	     sure we won't need this file descriptor later.  */
-	  close_not_cancel_no_status (fd);
+	  __close_nocancel_nostatus (fd);
 	  fd = -1;
 	}
 
@@ -398,8 +398,8 @@ _nl_load_locale_from_archive (int category, const char **namep)
 	  if (fd == -1)
 	    {
 	      struct stat64 st;
-	      fd = open_not_cancel_2 (archfname,
-				      O_RDONLY|O_LARGEFILE|O_CLOEXEC);
+	      fd = __open_nocancel (archfname,
+				    O_RDONLY|O_LARGEFILE|O_CLOEXEC);
 	      if (fd == -1)
 		/* Cannot open the archive, for whatever reason.  */
 		return NULL;
@@ -452,7 +452,7 @@ _nl_load_locale_from_archive (int category, const char **namep)
 
   /* We don't need the file descriptor any longer.  */
   if (fd >= 0)
-    close_not_cancel_no_status (fd);
+    __close_nocancel_nostatus (fd);
   fd = -1;
 
   /* We succeeded in mapping all the necessary regions of the archive.

@@ -62,11 +62,11 @@ static void
 tryopen_o_directory (void)
 {
   int serrno = errno;
-  int x = open_not_cancel_2 ("/dev/null", O_RDONLY|O_NDELAY|O_DIRECTORY);
+  int x = __open_nocancel ("/dev/null", O_RDONLY|O_NDELAY|O_DIRECTORY);
 
   if (x >= 0)
     {
-      close_not_cancel_no_status (x);
+      __close_nocancel_nostatus (x);
       o_directory_works = -1;
     }
   else if (errno != ENOTDIR)
@@ -130,7 +130,7 @@ opendir_tail (int fd)
     {
       __set_errno (ENOTDIR);
     lose:
-      close_not_cancel_no_status (fd);
+      __close_nocancel_nostatus (fd);
       return NULL;
     }
 
@@ -162,7 +162,7 @@ __opendirat (int dfd, const char *name)
 	}
     }
 
-  return opendir_tail (openat_not_cancel_3 (dfd, name, opendir_oflags));
+  return opendir_tail (__openat_nocancel (dfd, name, opendir_oflags));
 }
 #endif
 
@@ -189,7 +189,7 @@ __opendir (const char *name)
 	}
     }
 
-  return opendir_tail (open_not_cancel_2 (name, opendir_oflags));
+  return opendir_tail (__open_nocancel (name, opendir_oflags));
 }
 weak_alias (__opendir, opendir)
 
@@ -228,7 +228,7 @@ __alloc_dir (int fd, bool close_fd, int flags, const struct stat64 *statp)
 	  if (close_fd)
 	    {
 	      int save_errno = errno;
-	      close_not_cancel_no_status (fd);
+	      __close_nocancel_nostatus (fd);
 	      __set_errno (save_errno);
 	    }
 	  return NULL;

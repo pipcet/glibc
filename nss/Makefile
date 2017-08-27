@@ -47,6 +47,7 @@ CPPFLAGS-getent.c	= -DHAVE_SUNRPC=$(have-sunrpc)
 others                  := 
 install-bin             := 
 makedb-modules = xmalloc hash-string
+others-extras		= $(makedb-modules)
 extra-objs		+= $(makedb-modules:=.o)
 
 tests-static            = tst-field

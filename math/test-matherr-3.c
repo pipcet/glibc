@@ -1,5 +1,5 @@
-/* sqrt function.  sparc32 v9 version.
-   Copyright (C) 2012-2017 Free Software Foundation, Inc.
+/* Test matherr not supported for new binaries.
+   Copyright (C) 1997-2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -16,36 +16,29 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <sysdep.h>
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-ENTRY (__sqrt)
-	std	%o0, [%sp + 80]
-	fzero	%f8
-	ldd	[%sp + 80], %f0
-	fcmpd	%f0, %f8
-	fbl	1f
-	 nop
-8:	retl
-	 fsqrtd	%f0, %f0
-1:
-#ifdef SHARED
-	SETUP_PIC_REG_LEAF(o5, g1)
-	sethi	%gdop_hix22(_LIB_VERSION), %g1
-	xor	%g1, %gdop_lox10(_LIB_VERSION), %g1
-	ld	[%o5 + %g1], %g1, %gdop(_LIB_VERSION)
-#else
-	sethi	%hi(_LIB_VERSION), %g1
-	or	%g1, %lo(_LIB_VERSION), %g1
-#endif
-	ld	[%g1], %g1
-	cmp	%g1, -1
-	be	8b
-	 mov	%o0, %o2
-	mov	%o1, %o3
-	mov	26, %o4
-	mov	%o7, %g1
-	call	__kernel_standard
-	 mov	%g1, %o7
-END (__sqrt)
+#include <math-svid-compat.h>
 
-weak_alias (__sqrt, sqrt)
+_LIB_VERSION_TYPE _LIB_VERSION = _SVID_;
+
+static int fail = 0;
+
+int
+matherr (struct exception *s)
+{
+  printf ("matherr is working, but should not be\n");
+  fail = 1;
+  return 1;
+}
+
+static int
+do_test (void)
+{
+  acos (2.0);
+  return fail;
+}
+
+#include <support/test-driver.c>

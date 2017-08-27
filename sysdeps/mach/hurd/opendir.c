@@ -84,9 +84,9 @@ __opendirat (int dfd, const char *name)
   int fd;
 #if IS_IN (rtld)
   assert (dfd == AT_FDCWD);
-  fd = open_not_cancel_2 (name, flags);
+  fd = __open_nocancel (name, flags);
 #else
-  fd = openat_not_cancel_3 (dfd, name, flags);
+  fd = __openat_nocancel (dfd, name, flags);
 #endif
   if (fd < 0)
     return NULL;

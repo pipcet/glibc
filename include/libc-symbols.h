@@ -363,7 +363,8 @@ for linking")
   strong_alias(real, name)
 #endif
 
-#if defined SHARED || defined LIBC_NONSHARED
+#if defined SHARED || defined LIBC_NONSHARED \
+  || (BUILD_PIE_DEFAULT && IS_IN (libc))
 # define attribute_hidden __attribute__ ((visibility ("hidden")))
 #else
 # define attribute_hidden
@@ -512,8 +513,20 @@ for linking")
 # endif
 #else
 # ifndef __ASSEMBLER__
-#  define hidden_proto(name, attrs...)
-#  define hidden_tls_proto(name, attrs...)
+#  if !defined SHARED && IS_IN (libc) && !defined LIBC_NONSHARED \
+      && !defined NO_HIDDEN
+#   define __hidden_proto_hiddenattr(attrs...) \
+  __attribute__ ((visibility ("hidden"), ##attrs))
+#   define hidden_proto(name, attrs...) \
+  __hidden_proto (name, , name, ##attrs)
+#   define hidden_tls_proto(name, attrs...) \
+  __hidden_proto (name, __thread, name, ##attrs)
+#  define __hidden_proto(name, thread, internal, attrs...)	     \
+  extern thread __typeof (name) name __hidden_proto_hiddenattr (attrs);
+# else
+#   define hidden_proto(name, attrs...)
+#   define hidden_tls_proto(name, attrs...)
+# endif
 # else
 #  define HIDDEN_JUMPTARGET(name) JUMPTARGET(name)
 # endif /* Not  __ASSEMBLER__ */
@@ -790,7 +803,8 @@ for linking")
 
 /* Helper / base  macros for indirect function symbols.  */
 #define __ifunc_resolver(type_name, name, expr, arg, init, classifier)	\
-  classifier inhibit_stack_protector void *name##_ifunc (arg)					\
+  classifier inhibit_stack_protector					\
+  __typeof (type_name) *name##_ifunc (arg)				\
   {									\
     init ();								\
     __typeof (type_name) *res = expr;					\
@@ -817,7 +831,7 @@ for linking")
 
 # define __ifunc(type_name, name, expr, arg, init)			\
   extern __typeof (type_name) name;					\
-  void *name##_ifunc (arg) __asm__ (#name);				\
+  __typeof (type_name) *name##_ifunc (arg) __asm__ (#name);		\
   __ifunc_resolver (type_name, name, expr, arg, init,)			\
  __asm__ (".type " #name ", %gnu_indirect_function");
 

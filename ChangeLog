@@ -1,3 +1,1127 @@
+2017-08-25  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* sysdeps/x86/cpu-features.h [__ASSEMBLER__]
+	(index_cpu_*, index_arch_*): Removed.
+
+2017-08-25  Szabolcs Nagy  <szabolcs.nagy@arm.com>
+
+	* sysdeps/unix/sysv/linux/aarch64/sys/procfs.h (elf_greg_t):
+	Use uint64_t instead of unsigned long.
+
+2017-08-25  Joseph Myers  <joseph@codesourcery.com>
+
+	* math/tgmath.h [__HAVE_FLOAT128]: Change conditional to
+	[__HAVE_DISTINCT_FLOAT128].
+
+	* math/math.h (_MSUFTO_): Define and undefine for each inclusion
+	of <bits/math-finite.h>.
+	(__MATH_DECLARING_LDOUBLE): Do not define and undefine for each
+	inclusion of <bits/math-finite.h>.
+	* math/bits/math-finite.h (__REDIRTO_X): Do not define
+	conditionally on [__MATH_DECLARING_LDOUBLE && defined
+	__NO_LONG_DOUBLE_MATH].
+	(__MATH_REDIRCALL): Use _MSUFTO_ in __REDIRTO call.
+	(__MATH_REDIRCALL_2): Likewise.
+	(__MATH_REDIRCALL_INTERNAL): Likewise.
+	(__REDIRFROM (lgamma, , _MSUF_)): Likewise.
+	(__REDIRFROM (gamma, , _MSUF_)): Likewise.
+	(__REDIRFROM (tgamma, , _MSUF_)): Likewise.
+
+	* sysdeps/powerpc/powerpc32/power4/fpu/multiarch/w_sqrt_compat-power5.S:
+	Remove file.
+	* sysdeps/powerpc/powerpc32/power4/fpu/multiarch/w_sqrt_compat-ppc32.S:
+	Likewise.
+	* sysdeps/powerpc/powerpc32/power4/fpu/multiarch/w_sqrt_compat.c:
+	Likewise.
+	* sysdeps/powerpc/powerpc32/power4/fpu/multiarch/w_sqrtf_compat-power5.S:
+	Likewise.
+	* sysdeps/powerpc/powerpc32/power4/fpu/multiarch/w_sqrtf_compat-ppc32.S:
+	Likewise.
+	* sysdeps/powerpc/powerpc32/power4/fpu/multiarch/w_sqrtf_compat.c:
+	Likewise.
+	* sysdeps/powerpc/powerpc32/power4/fpu/w_sqrt_compat.S: Likewise.
+	* sysdeps/powerpc/powerpc32/power4/fpu/w_sqrtf_compat.S: Likewise.
+	* sysdeps/powerpc/powerpc32/power5/fpu/w_sqrt_compat.S: Likewise.
+	* sysdeps/powerpc/powerpc32/power5/fpu/w_sqrtf_compat.S: Likewise.
+	* sysdeps/powerpc/powerpc32/power4/fpu/multiarch/Makefile
+	(libm-sysdep-routines): Remove w_sqrt_compat-power5,
+	w_sqrt_compat-ppc32, w_sqrtf_compat-power5 and
+	w_sqrtf_compat-ppc32.
+
+2017-08-24  Gabriel F. T. Gomes  <gftg@linux.vnet.ibm.com>
+
+	* math/math.h [defined __cplusplus] (issignaling): In the long
+	double case, call __issignalingl only if __NO_LONG_DOUBLE_MATH
+	is not defined.  Call __issignaling, otherwise.
+
+2017-08-24  Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+
+	* sysdeps/unix/make-syscalls.sh: Remove cancellable tagging for
+	syscall definitions and replace __builtin_expect with __glibc_likely.
+	* sysdeps/unix/syscall-template.S: Update comment about cancellable
+	syscall.
+	 (SYSCALL_CANCELLABLE): Removedefinition
+	* sysdeps/unix/sysv/linux/aarch64/sysdep-cancel.h (PSEUDO): Remove
+	definition.
+	(PSEUDO_END): Likewise.
+	[IS_IN (libpthread)] (CENABLE): Likewise.
+	[IS_IN (libpthread)] (CDISABLE): Likewise.
+	[IS_IN (libc)] (CENABLE): Likewise.
+	[IS_IN (libc)] (CENABLE): Likewise.
+	[IS_IN (librt)] (CDISABLE): Likewise.
+	[IS_IN (librt)] (CDISABLE): Likewise.
+	[__ASSEMBLER__] (SINGLE_THREAD_P): Likewise.
+	* sysdeps/unix/sysv/linux/alpha/sysdep-cancel.h (PSEUDO): Remove
+	definition.
+	(PSEUDO_END): Likewise.
+	[IS_IN (libpthread)] (__local_enable_asynccancel): Likewise.
+	[IS_IN (libpthread)] (__local_disable_asynccancel): Likewise.
+	[IS_IN (libc)] (__local_enable_asynccancel): Likewise.
+	[IS_IN (libc)] (__local_enable_asynccancel): Likewise.
+	[IS_IN (librt)] (__local_disable_asynccancel): Likewise.
+	[IS_IN (librt)] (__local_disable_asynccancel): Likewise.
+	(CENABLE): Likewise.
+	(CDISABLE): Likewise.
+	[__ASSEMBLER__] (SINGLE_THREAD_P): Likewise.
+	* sysdeps/unix/sysv/linux/arm/sysdep-cancel.h (PSEUDO): Remove
+	defintion.
+	(PSEUDO_END): Likewise.
+	[IS_IN (libpthread)] (CENABLE): Likewise.
+	[IS_IN (libpthread)] (CDISABLE): Likewise.
+	[IS_IN (libc)] (CENABLE): Likewise.
+	[IS_IN (libc)] (CENABLE): Likewise.
+	[IS_IN (librt)] (CDISABLE): Likewise.
+	[IS_IN (librt)] (CDISABLE): Likewise.
+	[__ASSEMBLER__] (SINGLE_THREAD_P): Likewise.
+	* sysdeps/unix/sysv/linux/hppa/sysdep-cancel.h (PSEUDO): Remove
+	definition.
+	(PSEUDO_END): Likewise.
+	[IS_IN (libpthread)] (CENABLE): Likewise.
+	[IS_IN (libpthread)] (CDISABLE): Likewise.
+	[IS_IN (libc)] (CENABLE): Likewise.
+	[IS_IN (libc)] (CENABLE): Likewise.
+	[IS_IN (librt)] (CDISABLE): Likewise.
+	[IS_IN (librt)] (CDISABLE): Likewise.
+	[__ASSEMBLER__] (SINGLE_THREAD_P): Likewise.
+	* sysdeps/unix/sysv/linux/i386/sysdep-cancel.h (PSEUDO): Remove
+	definition.
+	(PSEUDO_END): Likewise.
+	[IS_IN (libpthread)] (CENABLE): Likewise.
+	[IS_IN (libpthread)] (CDISABLE): Likewise.
+	[IS_IN (libc)] (CENABLE): Likewise.
+	[IS_IN (libc)] (CENABLE): Likewise.
+	[IS_IN (librt)] (CDISABLE): Likewise.
+	[IS_IN (librt)] (CDISABLE): Likewise.
+	[__ASSEMBLER__] (SINGLE_THREAD_P): Likewise.
+	* sysdeps/unix/sysv/linux/ia64/sysdep-cancel.h (PSEUDO): Remove
+	definition.
+	(PSEUDO_END): Likewise.
+	[IS_IN (libpthread)] (CENABLE): Likewise.
+	[IS_IN (libpthread)] (CDISABLE): Likewise.
+	[IS_IN (libc)] (CENABLE): Likewise.
+	[IS_IN (libc)] (CENABLE): Likewise.
+	[IS_IN (librt)] (CDISABLE): Likewise.
+	[IS_IN (librt)] (CDISABLE): Likewise.
+	[__ASSEMBLER__] (SINGLE_THREAD_P): Likewise.
+	* sysdeps/unix/sysv/linux/m68k/sysdep-cancel.h (PSEUDO): Remove
+	definition.
+	(PSEUDO_END): Likewise.
+	[IS_IN (libpthread)] (CENABLE): Likewise.
+	[IS_IN (libpthread)] (CDISABLE): Likewise.
+	[IS_IN (libc)] (CENABLE): Likewise.
+	[IS_IN (libc)] (CENABLE): Likewise.
+	[IS_IN (librt)] (CDISABLE): Likewise.
+	[IS_IN (librt)] (CDISABLE): Likewise.
+	[__ASSEMBLER__] (SINGLE_THREAD_P): Likewise.
+	* sysdeps/unix/sysv/linux/microblaze/sysdep-cancel.h (PSEUDO): Remove
+	definition.
+	(PSEUDO_END): Likewise.
+	[IS_IN (libpthread)] (CENABLE): Likewise.
+	[IS_IN (libpthread)] (CDISABLE): Likewise.
+	[IS_IN (libc)] (CENABLE): Likewise.
+	[IS_IN (libc)] (CENABLE): Likewise.
+	[IS_IN (librt)] (CDISABLE): Likewise.
+	[IS_IN (librt)] (CDISABLE): Likewise.
+	[__ASSEMBLER__] (SINGLE_THREAD_P): Likewise.
+	* sysdeps/unix/sysv/linux/mips/mips64/sysdep-cancel.h (PSEUDO):
+	Remove definition.
+	(PSEUDO_END): Likewise.
+	[IS_IN (libpthread)] (CENABLE): Likewise.
+	[IS_IN (libpthread)] (CDISABLE): Likewise.
+	[IS_IN (libc)] (CENABLE): Likewise.
+	[IS_IN (libc)] (CENABLE): Likewise.
+	[IS_IN (librt)] (CDISABLE): Likewise.
+	[IS_IN (librt)] (CDISABLE): Likewise.
+	(SINGLE_THREAD_P): Likewise.
+	* sysdeps/unix/sysv/linux/mips/sysdep-cancel.h (PSEUDO): Remove
+	definition.
+	(PSEUDO_END): Likewise.
+	[IS_IN (libpthread)] (CENABLE): Likewise.
+	[IS_IN (libpthread)] (CDISABLE): Likewise.
+	[IS_IN (libc)] (CENABLE): Likewise.
+	[IS_IN (libc)] (CENABLE): Likewise.
+	[IS_IN (librt)] (CDISABLE): Likewise.
+	[IS_IN (librt)] (CDISABLE): Likewise.
+	[__ASSEMBLER__] (SINGLE_THREAD_P): Likewise.
+	* sysdeps/unix/sysv/linux/nios2/sysdep-cancel.h (PSEUDO): Remove
+	definition.
+	(PSEUDO_END): Likewise.
+	[IS_IN (libpthread)] (CENABLE): Likewise.
+	[IS_IN (libpthread)] (CDISABLE): Likewise.
+	[IS_IN (libc)] (CENABLE): Likewise.
+	[IS_IN (libc)] (CENABLE): Likewise.
+	[IS_IN (librt)] (CDISABLE): Likewise.
+	[IS_IN (librt)] (CDISABLE): Likewise.
+	[__ASSEMBLER__] (SINGLE_THREAD_P): Likewise.
+	* sysdeps/sysv/linux/powerpc/powerpc32/sysdep-cancel.h: Remove file.
+	* sysdeps/sysv/linux/powerpc/powerpc64/sysdep-cancel.h: Likewise.
+	* sysdeps/unix/sysv/linux/powerpc/sysdep-cancel.h: New file.
+	* sysdeps/unix/sysv/linux/s390/s390-32/sysdep-cancel.h (PSEUDO): Remove
+	definition.
+	(PSEUDO_END): Likewise.
+	[IS_IN (libpthread)] (CENABLE): Likewise.
+	[IS_IN (libpthread)] (CDISABLE): Likewise.
+	[IS_IN (libc)] (CENABLE): Likewise.
+	[IS_IN (libc)] (CENABLE): Likewise.
+	[IS_IN (librt)] (CDISABLE): Likewise.
+	[IS_IN (librt)] (CDISABLE): Likewise.
+	[__ASSEMBLER__] (SINGLE_THREAD_P): Likewise.
+	* sysdeps/unix/sysv/linux/s390/s390-64/sysdep-cancel.h (PSEUDO): Remove
+	definition.
+	(PSEUDO_END): Likewise.
+	[IS_IN (libpthread)] (CENABLE): Likewise.
+	[IS_IN (libpthread)] (CDISABLE): Likewise.
+	[IS_IN (libc)] (CENABLE): Likewise.
+	[IS_IN (libc)] (CENABLE): Likewise.
+	[IS_IN (librt)] (CDISABLE): Likewise.
+	[IS_IN (librt)] (CDISABLE): Likewise.
+	[__ASSEMBLER__] (SINGLE_THREAD_P): Likewise.
+	* sysdeps/unix/sysv/linux/sh/sysdep-cancel.h (PSEUDO): Remove
+	definition.
+	(PSEUDO_END): Likewise.
+	[IS_IN (libpthread)] (CENABLE): Likewise.
+	[IS_IN (libpthread)] (CDISABLE): Likewise.
+	[IS_IN (libc)] (CENABLE): Likewise.
+	[IS_IN (libc)] (CENABLE): Likewise.
+	[IS_IN (librt)] (CDISABLE): Likewise.
+	[IS_IN (librt)] (CDISABLE): Likewise.
+	[__ASSEMBLER__] (SINGLE_THREAD_P): Likewise.
+	* sysdeps/unix/sysv/linux/sparc/sparc32/sysdep-cancel.h: Remove file.
+	* sysdeps/unix/sysv/linux/sparc/sparc64/sysdep-cancel.h: Likewise.
+	* sysdeps/unix/sysv/linux/sparc/sysdep-cancel.h: New file.
+	* sysdeps/unix/sysv/linux/tile/sysdep-cancel.h (PSEUDO): Remove
+	definition.
+	(PSEUDO_END): Likewise.
+	[IS_IN (libpthread)] (CENABLE): Likewise.
+	[IS_IN (libpthread)] (CDISABLE): Likewise.
+	[IS_IN (libc)] (CENABLE): Likewise.
+	[IS_IN (libc)] (CENABLE): Likewise.
+	[IS_IN (librt)] (CDISABLE): Likewise.
+	[IS_IN (librt)] (CDISABLE): Likewise.
+	[__ASSEMBLER__] (SINGLE_THREAD_P): Likewise.
+	* sysdeps/unix/sysv/linux/x86_64/sysdep-cancel.h (PSEUDO): Remove
+	definition.
+	(PSEUDO_END): Likewise.
+	[IS_IN (libpthread)] (CENABLE): Likewise.
+	[IS_IN (libpthread)] (CDISABLE): Likewise.
+	[IS_IN (libc)] (CENABLE): Likewise.
+	[IS_IN (libc)] (CENABLE): Likewise.
+	[IS_IN (librt)] (CDISABLE): Likewise.
+	[IS_IN (librt)] (CDISABLE): Likewise.
+	[__ASSEMBLER__] (SINGLE_THREAD_P): Likewise.
+
+2017-08-24  Szabolcs Nagy  <szabolcs.nagy@arm.com>
+
+	* sysdeps/ieee754/dbl-64/Makefile: Don't override CFLAGS.
+
+2017-08-23  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* sysdeps/x86_64/fpu/libm-test-ulps: Regenerated.
+
+2017-08-23  H.J. Lu  <hongjiu.lu@intel.com>
+
+	[BZ #21982]
+	* string/stratcliff.c (do_test): Declare size, nchars, inner,
+	middle and outer with size_t instead of int.  Repleace %d and
+	%Zd with %zu in printf.  Update "MAX (0, nchars - 128)" and
+	"MAX (outer, nchars - 64)" to support unsigned outer and
+	nchars.  Also exit loop when outer == 0.
+
+2017-08-23  Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+
+	* include/fcntl.h (__fcntl_nocancel): Remove definition.
+	* include/signal.h (__sigsuspend_nocancel): Likewise.
+	* include/time.h (__nanosleep_nocancel): Likewise.
+	* sysdeps/generic/not-cancel.h (__fcntl_nocancel): New macro.
+	* login/utmp_file.c: Include non cancellable syscall header.
+	* sysdeps/unix/sysv/linux/not-cancel.h (__fcntl_nocancel): New
+	prototype.
+
+2017-08-23  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* sysdeps/x86_64/fpu/svml_d_sincos8_core.S: Replace AVX512F
+	.byte sequences with AVX512F instructions.
+	* sysdeps/x86_64/fpu/svml_d_wrapper_impl.h: Likewise.
+	* sysdeps/x86_64/fpu/svml_s_sincosf16_core.S: Likewise.
+	* sysdeps/x86_64/fpu/svml_s_wrapper_impl.h: Likewise.
+	* sysdeps/x86_64/fpu/multiarch/svml_d_sincos8_core_avx512.S:
+	Likewise.
+	* sysdeps/x86_64/fpu/multiarch/svml_s_sincosf16_core_avx512.S:
+	Likewise.
+
+2017-08-22  Szabolcs Nagy  <szabolcs.nagy@arm.com>
+	    Steve Ellcey  <sellcey@cavium.com>
+
+	* sysdeps/aarch64/dl-tlsdesc.S (_dl_tlsdesc_dynamic):
+	Use PTR_REG macro in cmp instruction.
+
+2017-08-22  Gabriel F. T. Gomes  <gftg@linux.vnet.ibm.com>
+
+	* include/libc-symbols.h: [!defined HAVE_GCC_IFUNC] (__ifunc):
+	Change the return type of the ifunc resolver to match the return
+	type of the target function.
+
+2017-08-22  Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+
+	* sysdeps/unix/sysv/linux/x86_64/syscalls.list (pread64): Remove.
+	(preadv64): Likewise.
+	(pwrite64(: Likewise.
+	(pwritev64): Likewise.
+
+	* sysdeps/unix/sysv/linux/x86_64/sysdep.h
+	(INTERNAL_SYSCALL_NCS_TYPES): Remove define.
+	(LOAD_ARGS_0): Likewise.
+	(LOAD_ARGS_1): Likewise.
+	(LOAD_ARGS_2): Likewise.
+	(LOAD_ARGS_3): Likewise.
+	(LOAD_ARGS_4): Likewise.
+	(LOAD_ARGS_5): Likewise.
+	(LOAD_ARGS_6): Likewise.
+	(LOAD_REGS_0): Likewise.
+	(LOAD_REGS_1): Likewise.
+	(LOAD_REGS_2): Likewise.
+	(LOAD_REGS_3): Likewise.
+	(LOAD_REGS_4): Likewise.
+	(LOAD_REGS_5): Likewise.
+	(LOAD_REGS_6): Likewise.
+	(ASM_ARGS_0): Likewise.
+	(ASM_ARGS_1): Likewise.
+	(ASM_ARGS_2): Likewise.
+	(ASM_ARGS_3): Likewise.
+	(ASM_ARGS_4): Likewise.
+	(ASM_ARGS_5): Likewise.
+	(ASM_ARGS_6): Likewise.
+	(LOAD_ARGS_TYPES_1): Likewise.
+	(LOAD_ARGS_TYPES_2): Likewise.
+	(LOAD_ARGS_TYPES_3): Likewise.
+	(LOAD_ARGS_TYPES_4): Likewise.
+	(LOAD_ARGS_TYPES_5): Likewise.
+	(LOAD_ARGS_TYPES_6): Likewise.
+	(LOAD_REGS_TYPES_1): Likewise.
+	(LOAD_REGS_TYPES_2): Likewise.
+	(LOAD_REGS_TYPES_3): Likewise.
+	(LOAD_REGS_TYPES_4): Likewise.
+	(LOAD_REGS_TYPES_5): Likewise.
+	(LOAD_REGS_TYPES_6): Likewise.
+	(TYPEFY): New define.
+	(ARGIFY): Likewise.
+	(internal_syscall0): Likewise.
+	(internal_syscall1): Likewise.
+	(internal_syscall2): Likewise.
+	(internal_syscall3): Likewise.
+	(internal_syscall4): Likewise.
+	(internal_syscall5): Likewise.
+	(internal_syscall6): Likewise.
+	* sysdeps/unix/sysv/linux/x86_64/x32/times.c
+	(INTERNAL_SYSCALL_NCS): Remove define.
+	(internal_syscall1): Add define.
+
+2017-08-22  Gabriel F. T. Gomes  <gftg@linux.vnet.ibm.com>
+
+	* math/w_remainder_compat.c: Remove duplicate inclusion of
+	math-svid-compat.h.
+	* math/w_remainderf_compat.c: Likewise.
+	* math/w_remainderl_compat.c: Likewise.
+
+2017-08-22  Gabriel F. T. Gomes  <gftg@linux.vnet.ibm.com>
+
+	* sysdeps/powerpc/fpu/libm-test-ulps: Update.
+
+2017-08-22  Joseph Myers  <joseph@codesourcery.com>
+
+	[BZ #21684]
+	* math/tgmath.h (__floating_type): Simplify definitions.
+	(__real_integer_type): New macro.
+	(__complex_integer_type): Likewise.
+	(__expr_is_real): Likewise.
+	(__tgmath_real_type_sub): Update comment to describe handling of
+	complex types.
+	(__tgmath_complex_type_sub): New macro.
+	(__tgmath_complex_type): Likewise.
+	[__HAVE_FLOAT128 && __GLIBC_USE (IEC_60559_TYPES_EXT)]
+	(__TGMATH_CF128): Use __expr_is_real.
+	(__TGMATH_UNARY_REAL_IMAG): Use __tgmath_complex_type and
+	__expr_is_real.
+	(__TGMATH_BINARY_REAL_IMAG): Likewise.
+	(__TGMATH_UNARY_REAL_IMAG_RET_REAL): Use __expr_is_real.
+	* math/gen-tgmath-tests.py (Type.create_type): Create complex
+	integer types.
+
+2017-08-22  Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+
+	* sysdeps/generic/not-cancel.h (sigsuspend_not_cancel): Remove
+	macro.
+	* sysdeps/mach/hurd/sigsuspend.c (sigsuspend_not_cancel): Remove
+	alias.
+	* sysdeps/unix/sysv/linux/not-cancel.h (sigsuspend_not_cancel):
+	Likewise.
+
+	* nptl/pthread_mutex_timedlock.c (__pthread_mutex_timedlock): Replace
+	nanosleep_not_cancel with __nanosleep_nocancel.
+	* sysdeps/generic/not-cancel.h (nanosleep_not_cancel): Remove macro.
+	(__nanosleep_nocancel): New macro.
+	* sysdeps/unix/sysv/linux/nanosleep.c (__nanosleep_nocancel): New
+	function.
+	* sysdeps/unix/sysv/linux/not-cancel.h (nanosleep_not_cancel): Remove
+	macro.
+	(__nanosleep_nocancel): New prototype.
+
+	* nptl/pthread_mutex_lock.c (__pthread_mutex_lock_full): Replace
+	pause_not_cancel with __pause_nocancel.
+	* sysdeps/generic/not-cancel.h (pause_not_cancel): Remove macro.
+	(__pause_nocancel): New macro.
+	* sysdeps/unix/sysv/linux/not-cancel.h (pause_not_cancel): Remove
+	macro.
+	(__pause_nocancel): New prototype.
+	* sysdeps/unix/sysv/linux/pause.c (__pause_nocancel): New function.
+
+2017-08-22  Martin Sebor  <msebor@redhat.com>
+
+	* include/libc-symbols.h (__ifunc_resolver): Declare resolver
+	to return a pointer to the same type as the target function.
+
+2017-08-22  H.J. Lu  <hongjiu.lu@intel.com>
+
+	[BZ #18822]
+	[BZ #21986]
+	* include/printf.h (__printf_fphex): Add attribute_hidden.
+	(__guess_grouping): New prototype.
+	* stdio-common/printf_fp.c (__guess_grouping): Removed.
+	* stdio-common/reg-printf.c (__register_printf_specifier): Add
+	libc_hidden_proto and libc_hidden_def.
+	* stdlib/strfmon_l.c (__guess_grouping): Removed.
+	(__vstrfmon_l): Remove the third argument passed to
+	__guess_grouping.
+
+2017-08-22  Gabriel F. T. Gomes  <gftg@linux.vnet.ibm.com>
+
+	* math/math.h [defined __cplusplus] (issignaling): Provide a C++
+	definition for issignaling that does not rely on __MATH_TG,
+	since __MATH_TG uses __builtin_types_compatible_p, which is only
+	available in C mode.
+	(CFLAGS-test-math-issignaling.cc): New variable.
+	* math/Makefile [CXX] (tests): Add test-math-issignaling.
+	* math/test-math-issignaling.cc: New test for C++ implementation
+	of type-generic issignaling.
+	* sysdeps/powerpc/powerpc64le/Makefile [subdir == math]
+	(CXXFLAGS-test-math-issignaling.cc): Add -mfloat128 to the build
+	options of test-math-issignaling on powerpc64le.
+
+2017-08-22  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* include/libc-symbols.h (__hidden_proto_hiddenattr): New for
+	building libc.a.
+	(hidden_proto): Likewise.
+	(hidden_tls_proto): Likewise.
+	(__hidden_proto): Likewise.
+
+2017-08-22  Florian Weimer  <fweimer@redhat.com>
+
+	math: Statically link tests of internal functionality.
+	* math/Makefile (tests): Remove atest-exp, atest-sincos,
+	atest-exp2.
+	(tests-static): Add atest-exp, atest-sincos, atest-exp2.
+	(gmp-objs): Remove assignment.
+	(atest-exp, atest-sincos, atest-exp2): Remove targets.
+
+2017-08-22  Joseph Myers  <joseph@codesourcery.com>
+
+	[BZ #21987]
+	* sysdeps/unix/sysv/linux/sparc/bits/long-double.h: Remove file
+	and copy to ...
+	* sysdeps/unix/sysv/linux/sparc/sparc32/bits/long-double.h:
+	... here.
+	* sysdeps/unix/sysv/linux/sparc/sparc64/bits/long-double.h:
+	... and here.
+
+	* assert/Makefile [$(have-cxx-thread_local)]: Move conditional
+	variable definitions above inclusion of ../Rules.
+
+2017-08-21  Joseph Myers  <joseph@codesourcery.com>
+
+	* sysdeps/ieee754/k_standard.c (__kernel_standard): Add default
+	case calling __builtin_unreachable.
+
+2017-08-21  Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+
+	* libio/ioopen.c (_IO_waitpid): Replace waitpid_not_cancel with
+	__waitpid_nocancel.
+	* sysdeps/generic/not-cancel.h (waitpid_not_cancel): Remove macro.
+	(__waitpid_nocancel): New macro.
+	* sysdeps/unix/sysv/linux/not-cancel.h (waitpid_not_cancel): Remove
+	macro.
+	(__waitpid_nocancel): Replace macro with a function.
+	* sysdeps/unix/sysv/linux/waitpid.c (__waitpid_nocancel): New
+	function.
+
+	* login/utmp_file.c (timeout_handler): Replace fcntl_not_cancel with
+	__fcntl_nocancel.
+	* sysdeps/generic/not-cancel.h (fcntl_not_cancel): Remove macro.
+	* sysdeps/unix/sysv/linux/not-cancel.h (fcntl_not_cancel): Likewise.
+
+	* gmon/gmon.c (write_hist): Replace writev_not_cancel_no_status with
+	__writev_nocancel_nostatus.
+	(write_call_graph): Likewise.
+	(write_bb_counts): Likewise.
+	* resolv/herror.c (herror): Likewise.
+	* sysdeps/generic/not-cancel.h (writev_not_cancel_no_status): Remove
+	macro.
+	(__writev_nocancel_nostatus): New macro.
+	* sysdeps/unix/sysv/linux/not-cancel.h (writev_not_cancel_no_status):
+	Remove macro.
+	(__writev_nocancel_nostatus): New function.
+
+2017-08-21  Joseph Myers  <joseph@codesourcery.com>
+
+	Revert:
+	2017-08-21  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* include/libc-symbols.h (__hidden_proto_hiddenattr): New for
+	building libc.a.
+	(hidden_proto): Likewise.
+	(hidden_tls_proto): Likewise.
+	(__hidden_proto): Likewise.
+
+	[BZ #21973]
+	* sysdeps/sparc/sparc32/fpu/w_sqrt_compat.S: Remove file.
+	* sysdeps/sparc/sparc32/fpu/w_sqrtf_compat.S: Likewise.
+	* sysdeps/sparc/sparc32/sparcv9/fpu/multiarch/w_sqrt_compat-vis3.S:
+	Likewise.
+	* sysdeps/sparc/sparc32/sparcv9/fpu/multiarch/w_sqrt_compat.S:
+	Likewise.
+	* sysdeps/sparc/sparc32/sparcv9/fpu/multiarch/w_sqrtf_compat-vis3.S:
+	Likewise.
+	* sysdeps/sparc/sparc32/sparcv9/fpu/multiarch/w_sqrtf_compat.S:
+	Likewise.
+	* sysdeps/sparc/sparc32/sparcv9/fpu/w_sqrt_compat.S : Likewise.
+	* sysdeps/sparc/sparc32/sparcv9/fpu/w_sqrtf_compat.S: Likewise.
+	* sysdeps/sparc/sparc64/fpu/w_sqrt_compat.S: Likewise.
+	* sysdeps/sparc/sparc64/fpu/w_sqrtf_compat.S: Likewise.
+	* sysdeps/unix/sysv/linux/sparc/sparc32/libm.abilist: Add
+	GLIBC_2.0 sqrtl symbol.
+
+	* math/math.h [__USE_MISC] (_LIB_VERSION_TYPE): Remove.
+	[__USE_MISC] (_LIB_VERSION): Likewise.
+	[__USE_MISC] (struct exception): Likewise.
+	[__USE_MISC] (matherr): Likewise.
+	[__USE_MISC] (DOMAIN): Likewise.
+	[__USE_MISC] (SING): Likewise.
+	[__USE_MISC] (OVERFLOW): Likewise.
+	[__USE_MISC] (UNDERFLOW): Likewise.
+	[__USE_MISC] (TLOSS): Likewise.
+	[__USE_MISC] (PLOSS): Likewise.
+	[__USE_MISC] (HUGE): Likewise.
+	[__USE_XOPEN] (MAXFLOAT): Define even if [__USE_MISC].
+	* math/math-svid-compat.h: New file.
+	* conform/linknamespace.pl (@whitelist): Remove matherr, matherrf
+	and matherrl.
+	* include/math.h [!_ISOMAC] (__matherr): Remove.
+	* manual/arith.texi (FP Exceptions): Do not document matherr.
+	* math/Makefile (tests): Change test-matherr to test-matherr-3.
+	(tests-internal): New variable.
+	(install-lib): Do not add libieee.a.
+	(non-lib.a): Likewise.
+	(extra-objs): Do not add libieee.a and ieee-math.o.
+	(CPPFLAGS-s_lib_version.c): Remove variable.
+	($(objpfx)libieee.a): Remove rule.
+	($(addprefix $(objpfx), $(tests-internal)): Depend on $(libm).
+	* math/ieee-math.c: Remove.
+	* math/libm-test-support.c (matherr): Remove.
+	* math/test-matherr.c: Use <support/test-driver.c>.  Add copyright
+	and license notices.  Include <math-svid-compat.h> and
+	<shlib-compat.h>.
+	(matherr): Undefine as macro.  Use compat_symbol_reference.
+	(_LIB_VERSION): Likewise.
+	* math/test-matherr-2.c: New file.
+	* math/test-matherr-3.c: Likewise.
+	* sysdeps/generic/math_private.h (__kernel_standard): Remove
+	declaration.
+	(__kernel_standard_f): Likewise.
+	(__kernel_standard_l): Likewise.
+	* sysdeps/ieee754/s_lib_version.c: Do not include <math.h> or
+	<math_private.h>.  Include <math-svid-compat.h>.
+	(_LIB_VERSION): Undefine as macro.
+	(_LIB_VERSION_INTERNAL): Always initialize to _POSIX_.  Define
+	only if [LIBM_SVID_COMPAT || !defined SHARED].  If
+	[LIBM_SVID_COMPAT], use compat_symbol.
+	* sysdeps/ieee754/s_matherr.c: Do not include <math.h> or
+	<math_private.h>.  Include <math-svid-compat.h>.
+	(matherr): Undefine as macro.
+	(__matherr): Define only if [LIBM_SVID_COMPAT].  Use
+	compat_symbol.
+	* sysdeps/ia64/fpu/libm_error.c: Include <math-svid-compat.h>.
+	[_LIBC && LIBM_SVID_COMPAT] (matherrf): Use
+	compat_symbol_reference.
+	[_LIBC && LIBM_SVID_COMPAT] (matherrl): Likewise.
+	[_LIBC && !LIBM_SVID_COMPAT] (matherrf): Define as macro.
+	[_LIBC && !LIBM_SVID_COMPAT] (matherrl): Likewise.
+	* sysdeps/ia64/fpu/libm_support.h: Include <math-svid-compat.h>.
+	(MATHERR_D): Remove declaration.
+	[!_LIBC] (_LIB_VERSION_TYPE): Likewise
+	[!LIBM_BUILD] (_LIB_VERSIONIMF): Likewise.
+	[LIBM_BUILD] (pmatherrf): Likewise.
+	[LIBM_BUILD] (pmatherr): Likewise.
+	[LIBM_BUILD] (pmatherrl): Likewise.
+	(DOMAIN): Likewise.
+	(SING): Likewise.
+	(OVERFLOW): Likewise.
+	(UNDERFLOW): Likewise.
+	(TLOSS): Likewise.
+	(PLOSS): Likewise.
+	* sysdeps/ia64/fpu/s_matherrf.c: Include <math-svid-compat.h>.
+	(__matherrf): Define only if [LIBM_SVID_COMPAT].  Use
+	compat_symbol.
+	* sysdeps/ia64/fpu/s_matherrl.c: Include <math-svid-compat.h>.
+	(__matherrl): Define only if [LIBM_SVID_COMPAT].  Use
+	compat_symbol.
+	* math/lgamma-compat.h: Include <math-svid-compat.h>.
+	* math/w_acos_compat.c: Likewise.
+	* math/w_acosf_compat.c: Likewise.
+	* math/w_acosh_compat.c: Likewise.
+	* math/w_acoshf_compat.c: Likewise.
+	* math/w_acoshl_compat.c: Likewise.
+	* math/w_acosl_compat.c: Likewise.
+	* math/w_asin_compat.c: Likewise.
+	* math/w_asinf_compat.c: Likewise.
+	* math/w_asinl_compat.c: Likewise.
+	* math/w_atan2_compat.c: Likewise.
+	* math/w_atan2f_compat.c: Likewise.
+	* math/w_atan2l_compat.c: Likewise.
+	* math/w_atanh_compat.c: Likewise.
+	* math/w_atanhf_compat.c: Likewise.
+	* math/w_atanhl_compat.c: Likewise.
+	* math/w_cosh_compat.c: Likewise.
+	* math/w_coshf_compat.c: Likewise.
+	* math/w_coshl_compat.c: Likewise.
+	* math/w_exp10_compat.c: Likewise.
+	* math/w_exp10f_compat.c: Likewise.
+	* math/w_exp10l_compat.c: Likewise.
+	* math/w_exp2_compat.c: Likewise.
+	* math/w_exp2f_compat.c: Likewise.
+	* math/w_exp2l_compat.c: Likewise.
+	* math/w_fmod_compat.c: Likewise.
+	* math/w_fmodf_compat.c: Likewise.
+	* math/w_fmodl_compat.c: Likewise.
+	* math/w_hypot_compat.c: Likewise.
+	* math/w_hypotf_compat.c: Likewise.
+	* math/w_hypotl_compat.c: Likewise.
+	* math/w_j0_compat.c: Likewise.
+	* math/w_j0f_compat.c: Likewise.
+	* math/w_j0l_compat.c: Likewise.
+	* math/w_j1_compat.c: Likewise.
+	* math/w_j1f_compat.c: Likewise.
+	* math/w_j1l_compat.c: Likewise.
+	* math/w_jn_compat.c: Likewise.
+	* math/w_jnf_compat.c: Likewise.
+	* math/w_jnl_compat.c: Likewise.
+	* math/w_lgamma_main.c: Likewise.
+	* math/w_lgamma_r_compat.c: Likewise.
+	* math/w_lgammaf_main.c: Likewise.
+	* math/w_lgammaf_r_compat.c: Likewise.
+	* math/w_lgammal_main.c: Likewise.
+	* math/w_lgammal_r_compat.c: Likewise.
+	* math/w_log10_compat.c: Likewise.
+	* math/w_log10f_compat.c: Likewise.
+	* math/w_log10l_compat.c: Likewise.
+	* math/w_log2_compat.c: Likewise.
+	* math/w_log2f_compat.c: Likewise.
+	* math/w_log2l_compat.c: Likewise.
+	* math/w_log_compat.c: Likewise.
+	* math/w_logf_compat.c: Likewise.
+	* math/w_logl_compat.c: Likewise.
+	* math/w_pow_compat.c: Likewise.
+	* math/w_powf_compat.c: Likewise.
+	* math/w_powl_compat.c: Likewise.
+	* math/w_remainder_compat.c: Likewise.
+	* math/w_remainderf_compat.c: Likewise.
+	* math/w_remainderl_compat.c: Likewise.
+	* math/w_scalb_compat.c: Likewise.
+	* math/w_scalbf_compat.c: Likewise.
+	* math/w_scalbl_compat.c: Likewise.
+	* math/w_sinh_compat.c: Likewise.
+	* math/w_sinhf_compat.c: Likewise.
+	* math/w_sinhl_compat.c: Likewise.
+	* math/w_sqrt_compat.c: Likewise.
+	* math/w_sqrtf_compat.c: Likewise.
+	* math/w_sqrtl_compat.c: Likewise.
+	* math/w_tgamma_compat.c: Likewise.
+	* math/w_tgammaf_compat.c: Likewise.
+	* math/w_tgammal_compat.c: Likewise.
+	* sysdeps/ieee754/dbl-64/w_exp_compat.c: Likewise.
+	* sysdeps/ieee754/flt-32/w_expf_compat.c: Likewise.
+	* sysdeps/ieee754/k_standard.c: Likewise.
+	* sysdeps/ieee754/k_standardf.c: Likewise.
+	* sysdeps/ieee754/k_standardl.c: Likewise.
+	* sysdeps/ieee754/ldbl-128/w_expl_compat.c: Likewise.
+	* sysdeps/ieee754/ldbl-128ibm/w_expl_compat.c: Likewise.
+	* sysdeps/ieee754/ldbl-96/w_expl_compat.c: Likewise.
+	* sysdeps/powerpc/powerpc32/power4/fpu/w_sqrt_compat.S: Likewise.
+	* sysdeps/powerpc/powerpc32/power4/fpu/w_sqrtf_compat.S: Likewise.
+	* sysdeps/powerpc/powerpc32/power5/fpu/w_sqrt_compat.S: Likewise.
+	* sysdeps/powerpc/powerpc32/power5/fpu/w_sqrtf_compat.S: Likewise.
+	* sysdeps/sparc/sparc32/fpu/w_sqrt_compat.S: Likewise.
+	* sysdeps/sparc/sparc32/fpu/w_sqrtf_compat.S: Likewise.
+	* sysdeps/sparc/sparc32/sparcv9/fpu/multiarch/w_sqrt_compat-vis3.S:
+	Likewise.
+	* sysdeps/sparc/sparc32/sparcv9/fpu/multiarch/w_sqrtf_compat-vis3.S:
+	Likewise.
+	* sysdeps/sparc/sparc32/sparcv9/fpu/w_sqrt_compat.S: Likewise.
+	* sysdeps/sparc/sparc32/sparcv9/fpu/w_sqrtf_compat.S: Likewise.
+	* sysdeps/sparc/sparc64/fpu/w_sqrt_compat.S: Likewise.
+	* sysdeps/sparc/sparc64/fpu/w_sqrtf_compat.S: Likewise.
+
+2017-08-21  Florian Weimer  <fweimer@redhat.com>
+
+	[BZ #21864]
+	Do not compile benchmark helper objects with -DMODULE_NAME=libc.
+	* benchtests/Makefile (others-extras): Set to $(bench-extra-objs).
+	Move before inclusion of ../Rules.
+
+2017-08-21  Florian Weimer  <fweimer@redhat.com>
+
+	[BZ #21972]
+	* assert/assert.h (assert): Use static_cast (bool) for C++.
+	Use the ternary operator in the warning branch for GNU C.
+	* assert/Makefile (tests): Add tst-assert-c++, tst-assert-g++.
+	(CFLAGS-tst-assert-c++.o): Compile in C++11 mode.
+	(CFLAGS-tst-assert-g++.o): Compile in GnU C++11 mode.
+	(LDLIBS-tst-assert-c++, LDLIBS-tst-assert-g++): Link with libstdc++.
+	* assert/tst-assert-c++.cc, assert/tst-assert-g++.cc: New files.
+
+2017-08-21  H.J. Lu  <hongjiu.lu@intel.com>
+
+	[BZ #18822]
+	* sysdeps/unix/sysv/linux/x86_64/init-first.c
+	(__syscall_clock_gettime): Add attribute_hidden.
+	* sysdeps/unix/sysv/linux/x86_64/makecontext.c
+	(__start_context): Likewise.
+
+2017-08-21  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* include/libc-symbols.h (__hidden_proto_hiddenattr): New for
+	building libc.a.
+	(hidden_proto): Likewise.
+	(hidden_tls_proto): Likewise.
+	(__hidden_proto): Likewise.
+
+2017-08-21  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* include/libc-symbols.h (attribute_hidden): Enable hidden
+	visibility in libc.a compiled with PIE.
+
+2017-08-21  H.J. Lu  <hongjiu.lu@intel.com>
+
+	[BZ #18822]
+	* sysdeps/unix/sysv/linux/x86/libc-vdso.h (VDSO_SYMBOL(getcpu)):
+	Add attribute_hidden.
+
+2017-08-21  H.J. Lu  <hongjiu.lu@intel.com>
+
+	[BZ #21864]
+	* Makerules (all-nonlib): Add $(others-extras).
+	* catgets/Makefile (others-extras): New.
+	* elf/Makefile (others-extras): Likewise.
+	* nss/Makefile (others-extras): Likewise.
+
+2017-08-21  H.J. Lu  <hongjiu.lu@intel.com>
+
+	[BZ #18822]
+	* csu/libc-start.c (__libc_multiple_libcs): Removed.
+	* elf/dl-open.c: Include <libc-internal.h>.
+	(__libc_multiple_libcs): Removed.
+	* elf/dl-sysdep.c: Include <libc-internal.h> instead of
+	<hp-timing.h>.
+	* include/libc-internal.h (__libc_multiple_libcs): New.
+	* misc/sbrk.c: Include <libc-internal.h>.
+	(__libc_multiple_libcs): Removed.
+
+2017-08-21  H.J. Lu  <hongjiu.lu@intel.com>
+
+	[BZ #18822]
+	* grp/initgroups.c (__nss_group_database): Removed.
+	(__nss_initgroups_database): Likewise.
+	* nscd/gai.c (__nss_hosts_database): Likewise.
+	* nss/XXX-lookup.c (DATABASE_NAME_SYMBOL): Likewise.
+	* posix/tst-rfc3484-2.c (__nss_hosts_database): Likewise.
+	* posix/tst-rfc3484-3.c (__nss_hosts_database): Likewise.
+	* posix/tst-rfc3484.c (__nss_hosts_database): Likewise.
+	* sysdeps/posix/getaddrinfo.c (__nss_hosts_database): Likewise.
+	* nss/getXXent.c (INTERNAL (REENTRANT_GETNAME)): Add
+	attribute_hidden.
+	* nss/nsswitch.c (__nss_database_custom): Define only if
+	USE_NSCD is defined.
+	(__nss_configure_lookup): Use __nss_database_custom only if
+	USE_NSCD is defined.
+	* nss/nsswitch.h (__nss_database_custom): Declare only if
+	USE_NSCD is defined.  Add attribute_hidden.
+	(__nss_setent): Add attribute_hidden.
+	(__nss_endent): Likewise.
+	(__nss_getent_r): Likewise.
+	(__nss_getent): Likewise.
+	(DEFINE_DATABASE): Declare __nss_##arg##_database.
+
+2017-08-20  H.J. Lu  <hongjiu.lu@intel.com>
+
+	[BZ #18822]
+	* sysdeps/unix/sysv/linux/i386/glob64.c (__old_glob64): Add
+	libc_hidden_proto and libc_hidden_def.
+
+2017-08-20  H.J. Lu  <hongjiu.lu@intel.com>
+
+	[BZ #18822]
+	* sysdeps/unix/sysv/linux/i386/olddirent.h (__old_readdir64):
+	Add libc_hidden_proto.
+	* sysdeps/unix/sysv/linux/i386/readdir64.c (__old_readdir64):
+	Add libc_hidden_def.
+
+2017-08-20  H.J. Lu  <hongjiu.lu@intel.com>
+
+	[BZ #21974]
+	* gmon/Makefile (routines): Remove bb_init_func and
+	bb_exit_func.
+	(elide-routines.os): Removed.
+	* gmon/bb_exit_func.c: Likewise.
+	* gmon/bb_init_func.c: Likewise.
+	* include/sys/gmon.h (__bb): Likewise.
+	(__bb_init_func): Likewise.
+	(__bb_exit_func): Likewise.
+	* sysdeps/alpha/bb_init_func.S: Likewise.
+
+2017-08-20  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* debug/longjmp_chk.c (____longjmp_chk): Moved to ...
+	* include/setjmp.h (____longjmp_chk): Here.  Add
+	attribute_hidden.
+
+2017-08-19  H.J. Lu  <hongjiu.lu@intel.com>
+
+	[BZ #18822]
+	* sysdeps/x86_64/multiarch/strcspn-c.c (STRCSPN_SSE2): Add
+	attribute_hidden.
+	(__strspn_sse2): Likewise.
+
+2017-08-18  Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+
+	* sysdeps/generic/not-cancel.h (close_not_cancel): Remove macro.
+	(close_not_cancel_no_status): Likewise.
+	(__close_nocancel): New macro.
+	(__close_nocancel_nostatus): Likewise.
+	* sysdeps/unix/sysv/linux/not-cancel.h (__close_nocancel): Remove
+	macro.
+	(close_not_cancel): Likewise.
+	(close_not_cancel_no_status): Likewise.
+	(__close_nocancel): New prototype.
+	(__close_nocancel_nostatus): New function.
+	* sysdeps/unix/sysv/linux/close.c (__close_nocancel): New function.
+	* catgets/open_catalog.c (__open_catalog): Replace
+	close_not_cancel{_no_status) with __close_nocancel{_nostatus}.
+	* gmon/gmon.c (write_gmon): Likewise.
+	* iconv/gconv_cache.c (__gconv_load_cache): Likewise.
+	* intl/loadmsgcat.c (close): Likewise.
+	* io/ftw.c (open_dir_stream): Likewise.
+	(ftw_startup): Likewise.
+	* libio/fileops.c (_IO_file_open): Likewise.
+	(_IO_file_close_mmap): Likewise.
+	(_IO_file_close): Likewise.
+	* libio/iopopen.c (_IO_dup2): Likewise.
+	* locale/loadarchive.c (_nl_load_locale_from_archive): Likewise.
+	* locale/loadlocale.c (_nl_load_locale): Likewise.
+	* login/utmp_file.c (pututline_file): Likewise.
+	(endutent_file): Likewise.
+	* misc/daemon.c (daemon): Likewise.
+	* nscd/nscd_getai.c (__nscd_getai): Likewise.
+	* nscd/nscd_getgr_r.c (nscd_getgr_r): Likewise.
+	* nscd/nscd_gethst_r.c (nscd_gethst_r): Likewise.
+	* nscd/nscd_getpw_r.c (nscd_getpw_r): Likewise.
+	* nscd/nscd_getserv_r.c (nscd_getserv_r): Likewise.
+	* nscd/nscd_helper.c (open_socket): Likewise.
+	(__nscd_open_socket): Likewise.
+	* nscd/nscd_initgroups.c (__nscd_getgrouplist): Likewise.
+	* nscd/nscd_netgroup.c (__nscd_setnetgrent): Likewise.
+	(__nscd_innetgr): Likewise.
+	* nss/nss_db/db-open.c (internal_setent): Likewise.
+	* resolv/res-close.c (__res_iclose): Likewise.
+	* sunrpc/pm_getmaps.c (pmap_getmaps): Likewise.
+	* sysdeps/posix/closedir.c (__closedir): Likewise.
+	* sysdeps/posix/getaddrinfo.c (getaddrinfo): Likewise.
+	* sysdeps/posix/getcwd.c (__getcwd): Likewise.
+	* sysdeps/posix/opendir.c (tryopen_o_directory): Likewise.
+	(opendir_tail): Likewise.
+	* sysdeps/posix/spawni.c (__spawni_child): Likewise.
+	* sysdeps/unix/sysv/linux/check_native.c (__check_native): Likewise.
+	* sysdeps/unix/sysv/linux/check_pf.c (__check_pf): Likewise.
+	* sysdeps/unix/sysv/linux/fips-private.h (fips_enabled_p): Likewise.
+	* sysdeps/unix/sysv/linux/gethostid.c (sethostid): Likewise.
+	(gethostid): Likewise.
+	* sysdeps/unix/sysv/linux/getloadavg.c (getloadavg): Likewise.
+	* sysdeps/unix/sysv/linux/getlogin_r.c (__getlogin_r_loginuid):
+	Likewise.
+	* sysdeps/unix/sysv/linux/getsysstats.c (__get_nprocs): Likewise.
+	* sysdeps/unix/sysv/linux/grantpt.c (close_all_fds): Likewise.
+	* sysdeps/unix/sysv/linux/i386/smp.h (is_smp_system): Likewise.
+	* sysdeps/unix/sysv/linux/ia64/has_cpuclock.c (has_cpuclock):
+	Likewise.
+	* sysdeps/unix/sysv/linux/if_index.c (__if_nametoindex): Likewise.
+	* sysdeps/unix/sysv/linux/libc_fatal.c (backtrace_and_maps): Likewise.
+	* sysdeps/unix/sysv/linux/malloc-sysdep.h (check_may_shrink_heap):
+	Likewise.
+	* sysdeps/unix/sysv/linux/mq_notify.c (init_mq_netlink): Likewise.
+	* sysdeps/unix/sysv/linux/pthread_getname.c (pthread_getname_np):
+	Likewise.
+	* sysdeps/unix/sysv/linux/pthread_setname.c (pthread_setname_np):
+	Likewise.
+	* sysdeps/unix/sysv/linux/spawni.c (__spawni_child): Likewise.
+	* sysdeps/unix/sysv/linux/sysconf.c (__sysconf): Likewise.
+	* sysdeps/unix/sysv/linux/Versions (libc) [GLIBC_PRIVATE]: Add
+	__close_nocancel.
+
+	* sysdeps/generic/not-cancel.h (openat_not_cancel): Remove macro.
+	(openat_not_cancel_3): Likewise.
+	(openat64_not_cancel_3): Likewise).
+	(openat_not_cancel_3): Likewise).
+	* sysdeps/unix/sysv/linux/not-cancel.h (openat_not_cancel): Remove
+	macro.
+	(openat_not_cancel_3): Likewise.
+	(openat64_not_cancel): Likewise.
+	(openat64_not_cancel_3): Likewise.
+	* sysdeps/unix/sysv/linux/openat.c (__openat_nocancel): New function.
+	* sysdeps/unix/sysv/linux/openat64.c (__openat64_nocancel): Likewise.
+	* io/ftw.c (open_dir_stream): Replace openat{64}_not_cancel{_3} with
+	__open{64}_nocancel.
+	* sysdeps/mach/hurd/opendir.c (__opendirat): Likewise.
+	* sysdeps/posix/getcwd.c (__getcwd): Likewise.
+	* sysdeps/posix/opendir.c (__opendirat): Likewise.
+
+2017-08-18  H.J. Lu  <hongjiu.lu@intel.com>
+
+	[BZ #18822]
+	* include/argz.h (__argz_create_sep): New function prototype.
+	(__argz_append): Likewise.
+	(__argz_add): Likewise.
+	(__argz_add_sep): Likewise.
+	(__argz_delete): Likewise.
+	(__argz_insert): Likewise.
+	(__argz_replace): Likewise.
+	* string/argz.h (__argz_create_sep): Removed.
+	(__argz_append): Likewise.
+	(__argz_add): Likewise.
+	(__argz_add_sep): Likewise.
+	(__argz_delete): Likewise.
+	(__argz_insert): Likewise.
+	(__argz_replace): Likewise.
+
+2017-08-18  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* elf/elf.h (NT_GNU_PROPERTY_TYPE_0): New.
+	(NOTE_GNU_PROPERTY_SECTION_NAME): Likewise.
+	(GNU_PROPERTY_STACK_SIZE): Likewie.
+	(GNU_PROPERTY_NO_COPY_ON_PROTECTED): Likewie.
+	(GNU_PROPERTY_LOPROC): Likewise.
+	(GNU_PROPERTY_HIPROC): Likewise.
+	(GNU_PROPERTY_LOUSER): Likewise.
+	(GNU_PROPERTY_HIUSER): Likewise.
+	(GNU_PROPERTY_X86_ISA_1_USED): Likwise.
+	(GNU_PROPERTY_X86_ISA_1_NEEDED): Likwise.
+	(GNU_PROPERTY_X86_FEATURE_1_AND): Likwise.
+	(GNU_PROPERTY_X86_ISA_1_486): Likwise.
+	(GNU_PROPERTY_X86_ISA_1_586): Likwise.
+	(GNU_PROPERTY_X86_ISA_1_686): Likwise.
+	(GNU_PROPERTY_X86_ISA_1_SSE): Likwise.
+	(GNU_PROPERTY_X86_ISA_1_SSE2): Likwise.
+	(GNU_PROPERTY_X86_ISA_1_SSE3): Likwise.
+	(GNU_PROPERTY_X86_ISA_1_SSSE3): Likwise.
+	(GNU_PROPERTY_X86_ISA_1_SSE4_1): Likwise.
+	(GNU_PROPERTY_X86_ISA_1_SSE4_2): Likwise.
+	(GNU_PROPERTY_X86_ISA_1_AVX): Likwise.
+	(GNU_PROPERTY_X86_ISA_1_AVX2): Likwise.
+	(GNU_PROPERTY_X86_ISA_1_AVX512F): Likwise.
+	(GNU_PROPERTY_X86_ISA_1_AVX512CD): Likwise.
+	(GNU_PROPERTY_X86_ISA_1_AVX512ER): Likwise.
+	(GNU_PROPERTY_X86_ISA_1_AVX512PF): Likwise.
+	(GNU_PROPERTY_X86_ISA_1_AVX512VL): Likwise.
+	(GNU_PROPERTY_X86_ISA_1_AVX512DQ): Likwise.
+	(GNU_PROPERTY_X86_ISA_1_AVX512BW): Likwise.
+	(GNU_PROPERTY_X86_FEATURE_1_IBT): Likwise.
+	(GNU_PROPERTY_X86_FEATURE_1_SHSTK): Likwise.
+
+2017-08-18  Gabriel F. T. Gomes  <gftg@linux.vnet.ibm.com>
+
+	* misc/sys/cdefs.h (__HAVE_GENERIC_SELECTION): Define to 0, if
+	in C++ mode.
+
+2017-08-18  Gabriel F. T. Gomes  <gftg@linux.vnet.ibm.com>
+
+	[BZ #21930]
+	* math/math.h (isinf): Check if in C or C++ mode before using
+	__builtin_types_compatible_p, since this is a C mode feature.
+
+2017-08-18  Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+
+	* sysdeps/generic/not-cancel.h (write_not_cancel): Remove macro.
+	(__write_nocancel): New macro.
+	* sysdeps/unix/sysv/linux/not-cancel.h (__write_nocancel):
+	Rewrite as a function prototype.
+	(write_not_cancel): Remove macro.
+	* sysdeps/unix/sysv/linux/write.c (__write_nocancel): New function.
+	* gmon/gmon.c (ERR): Replace write_not_cancel with __write_nocancel.
+	(write_gmon): Likewise.
+	* libio/fileops.c (_IO_new_file_write): Likewise.
+	* login/utmp_file.c (pututline_file): Likewise.
+	(updwtmp_file): Likewise.
+	* stdio-common/psiginfo.c (psiginfo): Likewise.
+	* sysdeps/posix/spawni.c (__spawni_child): Likewise.
+	* sysdeps/unix/sysv/linux/gethostid.c (sethostid): Likewise.
+	* sysdeps/unix/sysv/linux/libc_fatal.c (backtrace_and_maps):
+	Likewise.
+	* sysdeps/unix/sysv/linux/pthread_setname.c (pthread_setname_np):
+	Likewise.
+
+	* sysdeps/generic/not-cancel.h (read_not_cancel): Remove macro.
+	(__read_nocancel): New macro.
+	* sysdeps/unix/sysv/linux/Versions (libc) [GLIBC_PRIVATE]: Add
+	__read_nocancel.
+	* sysdeps/unix/sysv/linux/not-cancel.h (__read_nocancel): Remove
+	macro.
+	(__read_nocancel): New prototype.
+	* sysdeps/unix/sysv/linux/read.c (__read_nocancel): New function.
+	* catgets/open_catalog.c (__open_catalog): Replace read_not_cancel
+	with __read_nocancel.
+	* intl/loadmsgcat.c (read): Likewise.
+	* libio/fileops.c (_IO_file_read): Likewise.
+	* locale/loadlocale.c (_nl_load_locale): Likewise.
+	* login/utmp_file.c (getutent_r_file): Likewise.
+	(internal_getut_r): Likewise.
+	(getutline_r_file): Likewise.
+	* sysdeps/unix/sysv/linux/fips-private.h (fips_enable_p): Likewise.
+	* sysdeps/unix/sysv/linux/gethostid.c (gethostid): Likewise.
+	* sysdeps/unix/sysv/linux/getloadavg.c (getloadavg): Likewise.
+	* sysdeps/unix/sysv/linux/getlogin_r.c (__getlogin_r_loginuid):
+	Likewise.
+	* sysdeps/unix/sysv/linux/getsysstats.c (next_line): Likewise.
+	* sysdeps/unix/sysv/linux/i386/smp.h (is_smp_system): Likewise.
+	* sysdeps/unix/sysv/linux/ia64/has_cpuclock.c (has_cpuclock):
+	Likewise.
+	* sysdeps/unix/sysv/linux/libc_fatal.c (backtrace_and_maps):
+	Likewise.
+	* sysdeps/unix/sysv/linux/malloc-sysdep.h (check_may_shrink_heap):
+	Likewise.
+	* sysdeps/unix/sysv/linux/pthread_getname.c (pthread_getname_np):
+	Likewise.
+	* sysdeps/unix/sysv/linux/sysconf.c (__sysconf): Likewise.
+
+2017-08-18  H.J. Lu  <hongjiu.lu@intel.com>
+
+	[BZ #21966]
+	* sysdeps/x86_64/fpu/multiarch/ifunc-mathvec-avx2.h
+	(IFUNC_SELECTOR): Don't use the AVX2 version if FMA isn't
+	usable.
+
+2017-08-17  DJ Delorie  <dj@redhat.com>
+
+	* bug17079.c: Update to new test harness.
+	* test-digits-dots.c: Likewise.
+	* test-netdb.c: Likewise.
+	* tst-field.c: Likewise.
+	* tst-nss-getpwent.c: Likewise.
+	* tst-nss-static.c: Likewise.
+	* tst-nss-test1.c: Likewise.
+	* tst-nss-test2.c: Likewise.
+	* tst-nss-test3.c: Likewise.
+	* tst-nss-test4.c: Likewise.
+	* tst-nss-test5.c: Likewise.
+
+2017-08-17  Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+
+	* sysdeps/generic/not-cancel.h (open_not_cancel): Remove macro.
+	(open_not_cancel_2): Likewise.
+	(open_nocancel): New macro.
+	(open64_nocancel): Likewise.
+	* sysdeps/unix/sysv/linux/not-cancel.h (open_not_cancel): Remove macro.
+	(open_not_cancel_2): Likewise.
+	(__open_nocancel): New prototype.
+	(__open64_nocancel): Likewise.
+	* sysdeps/unix/sysv/linux/Versions (libc) [GLIBC_PRIVATE]: Add
+	__open_nocancel.
+	* sysdeps/unix/sysv/linux/open.c (__open_nocancel): New function.
+	* sysdeps/unix/sysv/linux/open64.c (__open64_nocancel): Likewise.
+	* catgets/open_catalog.c (__open_catalog): Replace open_not_cancel{_2}
+	with __open_nocancel.
+	* csu/check_fds.c (check_one_fd): Likewise.
+	* gmon/gmon.c (write_gmon): Likewise.
+	* iconv/gconv_cache.c (__gconv_load_cached): Likewise.
+	* intl/loadmsgcat.c (open): Likewise.
+	* libio/fileops.c (_IO_file_open): Likewise.
+	* locale/loadarchive.c (_nl_load_locale_from_archive): Likewise.
+	* locale/loadlocale.c (_nl_load_locale): Likewise.
+	* login/utmp_file.c (setutent_file): Likewise.
+	* misc/daemon.c (daemon): Likewise.
+	* nss/nss_db/db-open.c (internal_setent): Likewise.
+	* sysdeps/mach/hurd/opendir.c (__opendirat): Likewise.
+	* sysdeps/posix/libc_fatal.c (__libc_message): Likewise.
+	* sysdeps/posix/opendir.c (tryopen_o_directory): Likewise.
+	(__opendir): Likewise.
+	* sysdeps/posix/spawni.c (__spawni_child): Likewise.
+	* sysdeps/unix/sysv/linux/fips-private.h (fips_enable_p): Likewise.
+	* sysdeps/unix/sysv/linux/gethostid.c (sethostid): Likewise.
+	(gethostid): Likewise.
+	* sysdeps/unix/sysv/linux/getloadavg.c (getloadavg): Likewise.
+	* sysdeps/unix/sysv/linux/getlogin_r.c (__getlogin_r_loginuid):
+	Likewise.
+	* sysdeps/unix/sysv/linux/getsysstats.c (__get_nprocs): Likewise.
+	* sysdeps/unix/sysv/linux/grantpt.c (__close_all_fds): Likewise.
+	* sysdeps/unix/sysv/linux/i386/smp.h (is_smp_system): Likewise.
+	* sysdeps/unix/sysv/linux/ia64/has_cpuclock.c (has_cpuclock):
+	Likewise.
+	* sysdeps/unix/sysv/linux/libc_fatal.c (backtrace_and_maps):
+	Likewise.
+	* sysdeps/unix/sysv/linux/malloc-sysdep.h (check_may_shrink_heap):
+	Likewise.
+	* sysdeps/unix/sysv/linux/powerpc/get_clockfreq.c (__get_clockfreq):
+	Likewise.
+	* sysdeps/unix/sysv/linux/pthread_getname.c (pthread_getname_np):
+	Likewise.
+	* sysdeps/unix/sysv/linux/pthread_setname.c (pthread_setname_np):
+	Likewise.
+	* sysdeps/unix/sysv/linux/spawni.c (__spawni_child): Likewise.
+	* sysdeps/unix/sysv/linux/sysconf.c (__sysconf): Likewise.
+
+2017-08-17  Wilco Dijkstra  <wdijkstr@arm.com>
+
+	* benchtests/bench-skeleton.c (main): Add support for
+	latency benchmarking.
+	* benchtests/scripts/bench.py: Add support for latency benchmarking.
+
+2017-08-17  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* Makeconfig (+link-pie-before-libc): Add CRT-* hook to override
+	the startup object.
+
+2017-08-17  Florian Weimer  <fweimer@redhat.com>
+
+	* include/sys/socket.h (__opensock): Remove internal_function.
+	* socket/opensock.c (__opensock): Likewise.
+	* sysdeps/unix/sysv/linux/opensock.c (__opensock): Likewise.
+
 2017-08-16  Joseph Myers  <joseph@codesourcery.com>
 
 	[BZ #21944]

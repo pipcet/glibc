@@ -50,6 +50,6 @@ __closedir (DIR *dirp)
 
   free ((void *) dirp);
 
-  return close_not_cancel (fd);
+  return __close_nocancel (fd);
 }
 weak_alias (__closedir, closedir)

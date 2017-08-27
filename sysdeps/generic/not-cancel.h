@@ -18,37 +18,31 @@
    <http://www.gnu.org/licenses/>.  */
 
 /* By default we have none.  Map the name to the normal functions.  */
-#define open_not_cancel(name, flags, mode) \
-  __libc_open (name, flags, mode)
-#define open_not_cancel_2(name, flags) \
-  __libc_open (name, flags)
-#define openat_not_cancel(fd, name, flags, mode) \
-  __openat (fd, name, flags, mode)
-#define openat_not_cancel_3(fd, name, flags) \
-  __openat (fd, name, flags, 0)
-#define openat64_not_cancel(fd, name, flags, mode) \
-  __openat64 (fd, name, flags, mode)
-#define openat64_not_cancel_3(fd, name, flags) \
-  __openat64 (fd, name, flags, 0)
-#define close_not_cancel(fd) \
+#define __open_nocancel(...) \
+  __open (__VA_ARGS__)
+#define __open64_nocancel(...) \
+  __open64 (__VA_ARGS__)
+#define __openat_nocancel(...) \
+  __openat (__VA_ARGS__)
+#define __openat64_nocancel(...) \
+  __openat64 (__VA_ARGS__)
+#define __close_nocancel(fd) \
   __close (fd)
-#define close_not_cancel_no_status(fd) \
+#define __close_nocancel_nostatus(fd) \
   (void) __close (fd)
-#define read_not_cancel(fd, buf, n) \
+#define __read_nocancel(fd, buf, n) \
   __read (fd, buf, n)
-#define write_not_cancel(fd, buf, n) \
+#define __write_nocancel(fd, buf, n) \
   __write (fd, buf, n)
-#define writev_not_cancel_no_status(fd, iov, n) \
+#define __writev_nocancel_nostatus(fd, iov, n) \
   (void) __writev (fd, iov, n)
-#define fcntl_not_cancel(fd, cmd, val) \
-  __fcntl (fd, cmd, val)
-# define waitpid_not_cancel(pid, stat_loc, options) \
+# define __waitpid_nocancel(pid, stat_loc, options) \
   __waitpid (pid, stat_loc, options)
-#define pause_not_cancel() \
+#define __pause_nocancel() \
   __pause ()
-#define nanosleep_not_cancel(requested_time, remaining) \
+#define __nanosleep_nocancel(requested_time, remaining) \
   __nanosleep (requested_time, remaining)
-#define sigsuspend_not_cancel(set) \
-  __sigsuspend (set)
+#define __fcntl_nocancel(fd, cmd, ...) \
+  __fcntl (fd, cmd, __VA_ARGS__)
 
 #define NO_CANCELLATION 1

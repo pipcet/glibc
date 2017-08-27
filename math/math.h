@@ -442,8 +442,12 @@ enum
 
 /* Return nonzero value if X is positive or negative infinity.  */
 # if __HAVE_DISTINCT_FLOAT128 && !__GNUC_PREREQ (7,0) \
-     && !defined __SUPPORT_SNAN__
-   /* __builtin_isinf_sign is broken for float128 only before GCC 7.0.  */
+     && !defined __SUPPORT_SNAN__ && !defined __cplusplus
+   /* Since __builtin_isinf_sign is broken for float128 before GCC 7.0,
+      use the helper function, __isinff128, with older compilers.  This is
+      only provided for C mode, because in C++ mode, GCC has no support
+      for __builtin_types_compatible_p (and when in C++ mode, this macro is
+      not used anyway, because libstdc++ headers undefine it).  */
 #  define isinf(x) \
     (__builtin_types_compatible_p (__typeof (x), _Float128) \
      ? __isinff128 (x) : __builtin_isinf_sign (x))
@@ -470,7 +474,32 @@ enum
 # include <bits/iscanonical.h>
 
 /* Return nonzero value if X is a signaling NaN.  */
-# define issignaling(x) __MATH_TG ((x), __issignaling, (x))
+# ifndef __cplusplus
+#  define issignaling(x) __MATH_TG ((x), __issignaling, (x))
+# else
+   /* In C++ mode, __MATH_TG cannot be used, because it relies on
+      __builtin_types_compatible_p, which is a C-only builtin.  On the
+      other hand, overloading provides the means to distinguish between
+      the floating-point types.  The overloading resolution will match
+      the correct parameter (regardless of type qualifiers (i.e.: const
+      and volatile).  */
+extern "C++" {
+inline int issignaling (float __val) { return __issignalingf (__val); }
+inline int issignaling (double __val) { return __issignaling (__val); }
+inline int
+issignaling (long double __val)
+{
+#  ifdef __NO_LONG_DOUBLE_MATH
+  return __issignaling (__val);
+#  else
+  return __issignalingl (__val);
+#  endif
+}
+#  if __HAVE_DISTINCT_FLOAT128
+inline int issignaling (_Float128 __val) { return __issignalingf128 (__val); }
+#  endif
+} /* extern C++ */
+# endif
 
 /* Return nonzero value if X is subnormal.  */
 # define issubnormal(x) (fpclassify (x) == FP_SUBNORMAL)
@@ -497,70 +526,10 @@ iszero (__T __val)
 # endif	/* __cplusplus */
 #endif /* Use IEC_60559_BFP_EXT.  */
 
-#ifdef	__USE_MISC
-/* Support for various different standard error handling behaviors.  */
-typedef enum
-{
-  _IEEE_ = -1,	/* According to IEEE 754/IEEE 854.  */
-  _SVID_,	/* According to System V, release 4.  */
-  _XOPEN_,	/* Nowadays also Unix98.  */
-  _POSIX_,
-  _ISOC_	/* Actually this is ISO C99.  */
-} _LIB_VERSION_TYPE;
-
-/* This variable can be changed at run-time to any of the values above to
-   affect floating point error handling behavior (it may also be necessary
-   to change the hardware FPU exception settings).  */
-extern _LIB_VERSION_TYPE _LIB_VERSION;
-#endif
-
-
-#ifdef __USE_MISC
-/* In SVID error handling, `matherr' is called with this description
-   of the exceptional condition.
-
-   We have a problem when using C++ since `exception' is a reserved
-   name in C++.  */
-# ifdef __cplusplus
-struct __exception
-# else
-struct exception
-# endif
-  {
-    int type;
-    char *name;
-    double arg1;
-    double arg2;
-    double retval;
-  };
-
-# ifdef __cplusplus
-extern int matherr (struct __exception *__exc) throw ();
-# else
-extern int matherr (struct exception *__exc);
-# endif
-
-# define X_TLOSS	1.41484755040568800000e+16
-
-/* Types of exceptions in the `type' field.  */
-# define DOMAIN		1
-# define SING		2
-# define OVERFLOW	3
-# define UNDERFLOW	4
-# define TLOSS		5
-# define PLOSS		6
-
-/* SVID mode specifies returning this large value instead of infinity.  */
-# define HUGE		3.40282347e+38F
-
-#else	/* !Misc.  */
-
-# ifdef __USE_XOPEN
+#ifdef __USE_XOPEN
 /* X/Open wants another strange constant.  */
-#  define MAXFLOAT	3.40282347e+38F
-# endif
-
-#endif	/* Misc.  */
+# define MAXFLOAT	3.40282347e+38F
+#endif
 
 
 /* Some useful constants.  */
@@ -649,15 +618,15 @@ extern int matherr (struct exception *__exc);
 /* Include bits/math-finite.h for double.  */
 # define _Mdouble_ double
 # define __MATH_DECLARING_DOUBLE 1
-# define __MATH_DECLARING_LDOUBLE 0
 # define __MATH_DECLARING_FLOATN 0
 # define _MSUF_
+# define _MSUFTO_
 # include <bits/math-finite.h>
 # undef _Mdouble_
 # undef __MATH_DECLARING_DOUBLE
-# undef __MATH_DECLARING_LDOUBLE
 # undef __MATH_DECLARING_FLOATN
 # undef _MSUF_
+# undef _MSUFTO_
 
 /* When __USE_ISOC99 is defined, include math-finite for float and
    long double, as well.  */
@@ -666,29 +635,33 @@ extern int matherr (struct exception *__exc);
 /* Include bits/math-finite.h for float.  */
 #  define _Mdouble_ float
 #  define __MATH_DECLARING_DOUBLE 0
-#  define __MATH_DECLARING_LDOUBLE 0
 #  define __MATH_DECLARING_FLOATN 0
 #  define _MSUF_ f
+#  define _MSUFTO_ f
 #  include <bits/math-finite.h>
 #  undef _Mdouble_
 #  undef __MATH_DECLARING_DOUBLE
-#  undef __MATH_DECLARING_LDOUBLE
 #  undef __MATH_DECLARING_FLOATN
 #  undef _MSUF_
+#  undef _MSUFTO_
 
 /* Include bits/math-finite.h for long double.  */
 #  ifdef __MATH_DECLARE_LDOUBLE
 #   define _Mdouble_ long double
 #   define __MATH_DECLARING_DOUBLE 0
-#   define __MATH_DECLARING_LDOUBLE 1
 #   define __MATH_DECLARING_FLOATN 0
 #   define _MSUF_ l
+#   ifdef __NO_LONG_DOUBLE_MATH
+#    define _MSUFTO_
+#   else
+#    define _MSUFTO_ l
+#   endif
 #   include <bits/math-finite.h>
 #   undef _Mdouble_
 #   undef __MATH_DECLARING_DOUBLE
-#   undef __MATH_DECLARING_LDOUBLE
 #   undef __MATH_DECLARING_FLOATN
 #   undef _MSUF_
+#   undef _MSUFTO_
 #  endif
 
 # endif /* __USE_ISOC99.  */
@@ -698,15 +671,19 @@ extern int matherr (struct exception *__exc);
       && __GLIBC_USE (IEC_60559_TYPES_EXT)
 #  define _Mdouble_ _Float128
 #  define __MATH_DECLARING_DOUBLE 0
-#  define __MATH_DECLARING_LDOUBLE 0
 #  define __MATH_DECLARING_FLOATN 1
 #  define _MSUF_ f128
+#  if __HAVE_DISTINCT_FLOAT128
+#   define _MSUFTO_ f128
+#  else
+#   define _MSUFTO_ l
+#  endif
 #  include <bits/math-finite.h>
 #  undef _Mdouble_
 #  undef __MATH_DECLARING_DOUBLE
-#  undef __MATH_DECLARING_LDOUBLE
 #  undef __MATH_DECLARING_FLOATN
 #  undef _MSUF_
+#  undef _MSUFTO_
 # endif
 #endif /* __FINITE_MATH_ONLY__ > 0.  */
 

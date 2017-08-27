@@ -58,7 +58,7 @@ struct gmonparam _gmonparam attribute_hidden = { GMON_PROF_OFF };
 static int	s_scale;
 #define		SCALE_1_TO_1	0x10000L
 
-#define ERR(s) write_not_cancel (STDERR_FILENO, s, sizeof (s) - 1)
+#define ERR(s) __write_nocancel (STDERR_FILENO, s, sizeof (s) - 1)
 
 void moncontrol (int mode);
 void __moncontrol (int mode);
@@ -216,7 +216,7 @@ write_hist (int fd)
       strncpy (thdr.dimen, "seconds", sizeof (thdr.dimen));
       thdr.dimen_abbrev = 's';
 
-      writev_not_cancel_no_status (fd, iov, 3);
+      __writev_nocancel_nostatus (fd, iov, 3);
     }
 }
 
@@ -273,13 +273,13 @@ write_call_graph (int fd)
 
 	  if (++nfilled == NARCS_PER_WRITEV)
 	    {
-	      writev_not_cancel_no_status (fd, iov, 2 * nfilled);
+	      __writev_nocancel_nostatus (fd, iov, 2 * nfilled);
 	      nfilled = 0;
 	    }
 	}
     }
   if (nfilled > 0)
-    writev_not_cancel_no_status (fd, iov, 2 * nfilled);
+    __writev_nocancel_nostatus (fd, iov, 2 * nfilled);
 }
 
 
@@ -312,12 +312,12 @@ write_bb_counts (int fd)
   for (grp = __bb_head; grp; grp = grp->next)
     {
       ncounts = grp->ncounts;
-      writev_not_cancel_no_status (fd, bbhead, 2);
+      __writev_nocancel_nostatus (fd, bbhead, 2);
       for (nfilled = i = 0; i < ncounts; ++i)
 	{
 	  if (nfilled > (sizeof (bbbody) / sizeof (bbbody[0])) - 2)
 	    {
-	      writev_not_cancel_no_status (fd, bbbody, nfilled);
+	      __writev_nocancel_nostatus (fd, bbbody, nfilled);
 	      nfilled = 0;
 	    }
 
@@ -325,7 +325,7 @@ write_bb_counts (int fd)
 	  bbbody[nfilled++].iov_base = &grp->counts[i];
 	}
       if (nfilled > 0)
-	writev_not_cancel_no_status (fd, bbbody, nfilled);
+	__writev_nocancel_nostatus (fd, bbbody, nfilled);
     }
 }
 
@@ -342,12 +342,12 @@ write_gmon (void)
 	size_t len = strlen (env);
 	char buf[len + 20];
 	__snprintf (buf, sizeof (buf), "%s.%u", env, __getpid ());
-	fd = open_not_cancel (buf, O_CREAT|O_TRUNC|O_WRONLY|O_NOFOLLOW, 0666);
+	fd = __open_nocancel (buf, O_CREAT|O_TRUNC|O_WRONLY|O_NOFOLLOW, 0666);
       }
 
     if (fd == -1)
       {
-	fd = open_not_cancel ("gmon.out", O_CREAT|O_TRUNC|O_WRONLY|O_NOFOLLOW,
+	fd = __open_nocancel ("gmon.out", O_CREAT|O_TRUNC|O_WRONLY|O_NOFOLLOW,
 			      0666);
 	if (fd < 0)
 	  {
@@ -375,7 +375,7 @@ write_gmon (void)
     memcpy (&ghdr.cookie[0], GMON_MAGIC, sizeof (ghdr.cookie));
     ghdr.version = GMON_VERSION;
     memset (ghdr.spare, '\0', sizeof (ghdr.spare));
-    write_not_cancel (fd, &ghdr, sizeof (struct gmon_hdr));
+    __write_nocancel (fd, &ghdr, sizeof (struct gmon_hdr));
 
     /* write PC histogram: */
     write_hist (fd);
@@ -386,7 +386,7 @@ write_gmon (void)
     /* write basic-block execution counts: */
     write_bb_counts (fd);
 
-    close_not_cancel_no_status (fd);
+    __close_nocancel_nostatus (fd);
 }
 
 

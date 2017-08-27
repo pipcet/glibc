@@ -1,5 +1,5 @@
-/* sqrtf function.  sparc64 version.
-   Copyright (C) 2012-2017 Free Software Foundation, Inc.
+/* Tests for interactions between C++ and assert.  GNU C++11 version.
+   Copyright (C) 2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -16,33 +16,4 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <sysdep.h>
-
-ENTRY (__sqrtf)
-	fzeros	%f8
-	fcmps	%fcc2, %f1, %f8
-	fbl,pn	%fcc2, 1f
-	 nop
-8:	retl
-	 fsqrts	%f1, %f0
-1:
-#ifdef SHARED
-	SETUP_PIC_REG_LEAF(o5, g1)
-	sethi	%gdop_hix22(_LIB_VERSION), %g1
-	xor	%g1, %gdop_lox10(_LIB_VERSION), %g1
-	ldx	[%o5 + %g1], %g1, %gdop(_LIB_VERSION)
-#else
-	sethi	%hi(_LIB_VERSION), %g1
-	or	%g1, %lo(_LIB_VERSION), %g1
-#endif
-	ld	[%g1], %g1
-	cmp	%g1, -1
-	be,pt	%icc, 8b
-	 fmovs	%f1, %f3
-	mov	126, %o2
-	mov	%o7, %g1
-	call	__kernel_standard_f
-	 mov	%g1, %o7
-END (__sqrtf)
-
-weak_alias (__sqrtf, sqrtf)
+#include <tst-assert-c++.cc>

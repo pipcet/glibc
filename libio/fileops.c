@@ -224,7 +224,7 @@ _IO_file_open (_IO_FILE *fp, const char *filename, int posix_mode, int prot,
   int fdesc;
 #ifdef _LIBC
   if (__glibc_unlikely (fp->_flags2 & _IO_FLAGS2_NOTCANCEL))
-    fdesc = open_not_cancel (filename,
+    fdesc = __open_nocancel (filename,
 			     posix_mode | (is32not64 ? 0 : O_LARGEFILE), prot);
   else
     fdesc = open (filename, posix_mode | (is32not64 ? 0 : O_LARGEFILE), prot);
@@ -243,7 +243,7 @@ _IO_file_open (_IO_FILE *fp, const char *filename, int posix_mode, int prot,
       _IO_off64_t new_pos = _IO_SYSSEEK (fp, 0, _IO_seek_end);
       if (new_pos == _IO_pos_BAD && errno != ESPIPE)
 	{
-	  close_not_cancel (fdesc);
+	  __close_nocancel (fdesc);
 	  return NULL;
 	}
     }
@@ -1205,7 +1205,7 @@ _IO_ssize_t
 _IO_file_read (_IO_FILE *fp, void *buf, _IO_ssize_t size)
 {
   return (__builtin_expect (fp->_flags2 & _IO_FLAGS2_NOTCANCEL, 0)
-	  ? read_not_cancel (fp->_fileno, buf, size)
+	  ? __read_nocancel (fp->_fileno, buf, size)
 	  : read (fp->_fileno, buf, size));
 }
 libc_hidden_def (_IO_file_read)
@@ -1232,7 +1232,7 @@ _IO_file_close_mmap (_IO_FILE *fp)
   fp->_IO_buf_base = fp->_IO_buf_end = NULL;
   /* Cancelling close should be avoided if possible since it leaves an
      unrecoverable state behind.  */
-  return close_not_cancel (fp->_fileno);
+  return __close_nocancel (fp->_fileno);
 }
 
 int
@@ -1240,7 +1240,7 @@ _IO_file_close (_IO_FILE *fp)
 {
   /* Cancelling close should be avoided if possible since it leaves an
      unrecoverable state behind.  */
-  return close_not_cancel (fp->_fileno);
+  return __close_nocancel (fp->_fileno);
 }
 libc_hidden_def (_IO_file_close)
 
@@ -1252,7 +1252,7 @@ _IO_new_file_write (_IO_FILE *f, const void *data, _IO_ssize_t n)
     {
       _IO_ssize_t count = (__builtin_expect (f->_flags2
 					     & _IO_FLAGS2_NOTCANCEL, 0)
-			   ? write_not_cancel (f->_fileno, data, to_do)
+			   ? __write_nocancel (f->_fileno, data, to_do)
 			   : write (f->_fileno, data, to_do));
       if (count < 0)
 	{
