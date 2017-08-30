@@ -1,3 +1,289 @@
+2017-08-30  Steve Ellcey  <sellcey@cavium.com>
+
+	* sysdeps/unix/sysv/linux/aarch64/makecontext.c (__makecontext):
+	Use pointer to uint64_t instead of long int for sp.
+
+2017-08-30  Florian Weimer  <fweimer@redhat.com>
+
+	[BZ #21754]
+	* malloc/malloc.c (malloc_printerr): Always terminate the process,
+	without printing a backtrace.  Do not leak any information in the
+	error message.
+	* manual/memory.texi (Heap Consistency Checking): Update.
+	* manual/tunables.texi (Memory Allocation Tunables): Likewise.
+
+2017-08-30  Florian Weimer  <fweimer@redhat.com>
+
+	Do not scale NPTL tests with available number of CPUs.
+	* nptl/tst-cond16.c (count): Set to constant value of 8.
+	* nptl/tst-cond18.c (count): Likewise.
+
+2017-08-29  Joseph Myers  <joseph@codesourcery.com>
+
+	[BZ #22035]
+	* sysdeps/m68k/m680x0/fpu/bits/mathinline.h (__inline_functions):
+	Define to take a second argument that is a macro that
+	concatentates a suffix, not the suffix itself.
+	(__CONCAT_d): New macro.
+	(__CONCAT_f): Likewise.
+	(__CONCAT_l): Likewise.
+
+2017-08-29  Paul Pluzhnikov  <ppluzhnikov@google.com>
+
+	* stdlib/tst-atexit-common.c (do_test): Test handler inheritance
+	by child.
+
+2017-08-29  Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+	    Aurelien Jarno  <aurelien@aurel32.net>
+	    Maciej W. Rozycki  <macro@imgtec.com>
+
+	[BZ #21956]
+	* sysdeps/unix/sysv/linux/mips/mips32/mips16/Makefile
+	[subdir = misc] (sysdep_routines): Remove `mips16-syscall5',
+	`mips16-syscall6' and `mips16-syscall7'.
+	(CFLAGS-mips16-syscall5.c, CFLAGS-mips16-syscall6.c)
+	(CFLAGS-mips16-syscall7.c): Remove.
+	* sysdeps/unix/sysv/linux/mips/mips32/mips16/Versions (libc):
+	Remove `__mips16_syscall5', `__mips16_syscall6' and
+	`__mips16_syscall7'.
+	* sysdeps/unix/sysv/linux/mips/mips32/mips16/mips16-syscall0.c
+	(__mips16_syscall0): Rename `__mips16_syscall_return' to
+	`__mips_syscall_return'.
+	* sysdeps/unix/sysv/linux/mips/mips32/mips16/mips16-syscall1.c
+	(__mips16_syscall1): Likewise.
+	* sysdeps/unix/sysv/linux/mips/mips32/mips16/mips16-syscall2.c
+	(__mips16_syscall2): Likewise.
+	* sysdeps/unix/sysv/linux/mips/mips32/mips16/mips16-syscall3.c
+	(__mips16_syscall3): Likewise.
+	* sysdeps/unix/sysv/linux/mips/mips32/mips16/mips16-syscall4.c
+	(__mips16_syscall4): Likewise.
+	* sysdeps/unix/sysv/linux/mips/mips32/mips16/mips16-syscall5.c:
+	Remove.
+	* sysdeps/unix/sysv/linux/mips/mips32/mips16/mips16-syscall6.c:
+	Remove.
+	* sysdeps/unix/sysv/linux/mips/mips32/mips16/mips16-syscall7.c:
+	Remove.
+	* sysdeps/unix/sysv/linux/mips/mips32/mips16/mips16-syscall.h
+	(__mips16_syscall5): Expand to `__mips_syscall5' rather than
+	`__mips16_syscall5'.  Remove prototype.
+	(__mips16_syscall6): Expand to `__mips_syscall6' rather than
+	`__mips16_syscall6'.  Remove prototype.
+	(__mips16_syscall7): Expand to `__mips_syscall7' rather than
+	`__mips16_syscall7'.  Remove prototype.
+	(__nomips16, __mips16_syscall_return): Move to...
+	* sysdeps/unix/sysv/linux/mips/mips32/sysdep.h
+	(__nomips16, __mips_syscall_return): ... here.
+	[__mips16] (INTERNAL_SYSCALL_NCS): Rename
+	`__mips16_syscall_return' to `__mips_syscall_return'.
+	[__mips16] (INTERNAL_SYSCALL_MIPS16): Pass `number' to
+	`internal_syscall##nr'.
+	[!__mips16] (INTERNAL_SYSCALL): Pass `SYS_ify (name)' to
+	`internal_syscall##nr'.
+	(FORCE_FRAME_POINTER): Remove.
+	(__mips_syscall5): New prototype.
+	(internal_syscall5): Rewrite to call `__mips_syscall5'.
+	(__mips_syscall6): New prototype.
+	(internal_syscall6): Rewrite to call `__mips_syscall6'.
+	(__mips_syscall7): New prototype.
+	(internal_syscall7): Rewrite to call `__mips_syscall7'.
+	* sysdeps/unix/sysv/linux/mips/mips32/mips-syscall5.S: New file.
+	* sysdeps/unix/sysv/linux/mips/mips32/mips-syscall6.S: New file.
+	* sysdeps/unix/sysv/linux/mips/mips32/mips-syscall7.S: New file.
+	* sysdeps/unix/sysv/linux/mips/mips32/Makefile [subdir = misc]
+	(sysdep_routines): Add libc-do-syscall.
+	* sysdeps/unix/sysv/linux/mips/mips32/Versions (libc): Add
+	`__mips_syscall5', `__mips_syscall6' and `__mips_syscall7'.
+
+2017-08-29  Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+
+	[BZ #21672]
+	* nptl/allocatestack.c [_STACK_GROWS_DOWN] (setup_stack_prot):
+	Set to use !NEED_SEPARATE_REGISTER_STACK as well.
+	(advise_stack_range): New function.
+	* nptl/pthread_create.c (START_THREAD_DEFN): Move logic to mark
+	stack non required to advise_stack_range at allocatestack.c
+
+2017-08-29  Szabolcs Nagy  <szabolcs.nagy@arm.com>
+
+	* sysdeps/unix/sysv/linux/aarch64/sys/procfs.h: Use __uint64_t.
+
+2017-08-29  Florian Weimer  <fweimer@redhat.com>
+
+	[BZ #22026]
+	* iconv/gconv_db.c (gen_steps): Decrement step_cnt after resetting
+	__end_fct.  Mangle __end_fct after setting it to NULL.
+	* iconv/Makefile (tests): Add tst-gconv-init-failure.
+	(modules-names, modules-names-tests): Add
+	tst-gconv-init-failure-mod.
+	(gconv-modules): New target.
+	(tst-gconv-init-failure-mod.so): Link against libsupport.
+	(tst-gconv-init-failure): Depend on gconv-modules,
+	tst-gconv-init-failure-mod.so.
+	* iconv/tst-gconv-init-failure-mod.c: New file.
+	* iconv/tst-gconv-init-failure.c: Likewise.
+	* iconv/test-gconv-modules: Likewise.
+
+2017-08-29  Florian Weimer  <fweimer@redhat.com>
+
+	[BZ #22025]
+	* iconv/gconv_db.c (free_derivation): Remove redundant
+	parentheses.
+	(gen_steps): Unconditionally mangle __btowc_fct after
+	initialization.
+	(increment_counter): Likewise.  Do not call init_fct for internal
+	modules.
+
+2017-08-29  Joseph Myers  <joseph@codesourcery.com>
+
+	[BZ #22028]
+	* math/math.h [__FINITE_MATH_ONLY__ && __FINITE_MATH_ONLY__ > 0]
+	(_MSUF_): Remove macro.
+	[__FINITE_MATH_ONLY__ && __FINITE_MATH_ONLY__ > 0] (_MSUFTO_):
+	Likewise.
+	[__FINITE_MATH_ONLY__ && __FINITE_MATH_ONLY__ > 0]
+	(__REDIRFROM_X): New macro.
+	[__FINITE_MATH_ONLY__ && __FINITE_MATH_ONLY__ > 0] (__REDIRTO_X):
+	Likewise.
+	* math/bits/math-finite.h (__REDIRFROM_X): Remove macro.
+	(__REDIRTO_X): Likewise.
+	(__MATH_REDIRCALL): Do not pass _MSUF_ or _MSUFTO_ macro
+	arguments.
+	(__MATH_REDIRCALL_2): Likewise.
+	(__MATH_REDIRCALL_INTERNAL): Likewise.
+	(__REDIRFROM (lgamma, , _MSUF_)): Likewise.
+	(__REDIRFROM (gamma, , _MSUF_)): Likweise.
+	(__REDIRFROM (__gamma, _r_finite, _MSUF_)): Likewise.
+	(__REDIRFROM (tgamma, , _MSUF_)): Likewise.
+	* math/test-finite-macros.c: New file.
+	* math/Makefile (tests): Add test-finite-macros.
+	(CFLAGS-test-finite-macros.c): New variable.
+
+2017-08-29  Patsy Franklin  <pfrankli@redhat.com>
+	    Jeff Law  <law@redhat.com>
+
+	[BZ #22025]
+	Mangle NULL pointers in iconv/gconv.
+	* iconv/gconv_cache.c (find_module): Demangle init_fct before
+	checking for NULL. Mangle __btowc_fct if init_fct is non-NULL.
+	* iconv/gconv_db.c (free_derivation): Check that __shlib_handle
+	is non-NULL before demangling the end_fct.  Check for NULL
+	end_fct after demangling.
+	(__gconv_release_step): Demangle the end_fct before checking
+	it for NULL.   Remove assert on __shlibc_handle != NULL.
+	(gen_steps): Don't check btowc_fct for NULL before mangling.
+	Demangle init_fct before checking for NULL.
+	(increment_counter): Likewise.
+	* gconv_dl.c (__gconv_find_shlib): Don't check init_fct or
+	end_fct for NULL before mangling.
+	* wcsmbs/btowc.c (__btowc): Demangle btowc_fct before checking
+	for NULL.
+
+2017-08-29  Akhilesh Kumar <akhilesh.k@samsung.com>
+
+	[BZ #21971]
+	* locale/iso-639.def: add Morisyen.
+
+2017-08-28  Gabriel F. T. Gomes  <gftg@linux.vnet.ibm.com>
+
+	[BZ #21930]
+	* math/math.h [defined __cplusplus && defined __SUPPORT_SNAN__]
+	(iszero): New C++ implementation that does not use
+	fpclassify/__MATH_TG/__builtin_types_compatible_p, when
+	signaling nans are enabled, since __builtin_types_compatible_p
+	is a C-only feature.
+	* math/test-math-iszero.cc: When __HAVE_DISTINCT_FLOAT128 is
+	defined, include ieee754_float128.h for access to the union and
+	member ieee854_float128.ieee.
+	[__HAVE_DISTINCT_FLOAT128] (do_test): Call check_float128.
+	[__HAVE_DISTINCT_FLOAT128] (check_float128): New function.
+	* sysdeps/powerpc/powerpc64le/Makefile [subdir == math]
+	(CXXFLAGS-test-math-iszero.cc): Add -mfloat128 to the build
+	options of test-math-zero on powerpc64le.
+
+2017-08-28  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* sysdeps/x86_64/fpu/multiarch/e_expf.c (__redirect_ieee754_expf):
+	Change double to float.
+
+2017-08-28  Joseph Myers  <joseph@codesourcery.com>
+
+	* math/math-svid-compat.h [!__ASSEMBLER__]: Make code
+	unconditional.
+	* sysdeps/ieee754/s_lib_version.c [!defined SHARED]: Remove
+	conditional code; define contents only for [LIBM_SVID_COMPAT].
+
+2017-08-28  Florian Weimer  <fweimer@redhat.com>
+
+	* sysdeps/unix/sysv/linux/aarch64/Makefile (abi-lp64-options)
+	(abi-lp64_be-options): Remove.
+	* sysdeps/unix/sysv/linux/arm/Makefile (abi-soft-options)
+	(abi-hard-options): Likewise.
+	* sysdeps/unix/sysv/linux/mips/Makefile(abi-o32_soft-options)
+	(abi-o32_hard-options, abi-o32_soft_2008-options)
+	(abi-o32_hard_2008-options, abi-n32_soft-options)
+	(abi-n32_hard-options, abi-n32_soft_2008-options)
+	(abi-n32_hard_2008-options, abi-n64_soft-options)
+	(abi-n64_hard-options, abi-n64_soft_2008-options)
+	(abi-n64_hard_2008-options): Likewise.
+	* sysdeps/unix/sysv/linux/powerpc/Makefile (abi-32-options)
+	(abi-64-v1-options, abi-64-v2-options): Likewise.
+	* sysdeps/unix/sysv/linux/s390/Makefile (abi-32-options)
+	(abi-64-options): Likewise.
+	* sysdeps/unix/sysv/linux/sparc/Makefile (abi-32-options)
+	(abi-64-options): Likewise.
+	* sysdeps/unix/sysv/linux/tile/tilegx/Makefile (abi-32-options)
+	(abi-64-options): Likewise.
+	* sysdeps/unix/sysv/linux/x86/Makefile (abi-32-options)
+	(abi-64-options, abi-x32-options): Likewise.
+
+2017-08-28  Florian Weimer  <fweimer@redhat.com>
+
+	Store supported list of SYS_* system calls in the source tree.
+	* sysdeps/unix/sysv/linux/Makefile [$(subdir) = misc]
+	(bits/syscall.h): Generate from list file.
+	[$(subdir) = misc] (before-compile): Add bits/syscall.h.
+	[$(subdir) = misc] (tests): Add tst-syscall-list.
+	[$(subdir) = misc] (tests-special): Add tst-syscall-list.out
+	[$(subdir) = misc] (tst-syscall-list-macros.list)
+	[$(subdir) = misc] (tst-syscall-list-nr.list)
+	(tst-syscall-list-sys.list): Helper targets for new
+	tst-syscall-list test.
+	[$(subdir) = misc] (tst-syscall-list.out): Run test script
+	tst-syscall-list.sh.
+	[$(subdir) = misc] (bits/syscall%h, bits/syscall%d): Remove
+	target. Do not include bits/syscall.d.
+	[$(subdir) = misc] (generated): Do not update.
+	* sysdeps/unix/sysv/linux/syscall-names.list: New file.
+	* sysdeps/unix/sysv/linux/gen-syscall-h.awk: Likewise.
+	* sysdeps/unix/sysv/linux/filter-nr-syscalls.awk: Likewise.
+	* sysdeps/unix/sysv/linux/tst-syscall-list.sh: Likewise.
+
+2017-08-27  Paul Pluzhnikov  <ppluzhnikov@google.com>
+
+	* stdlib/Makefile (tst-atexit, tst-at_quick_exit): New tests.
+	(tst-cxa_atexit, tst-on_exit): Likewise.
+	* stdlib/Makefile (tests): Add tst-atexit, tst-at_quick_exit,
+	tst-cxa_atexit, and tst-on_exit.
+	* stdlib/tst-atexit-common.c: New file.
+	* stdlib/tst-atexit.c: New file.
+	* stdlib/tst-at_quick_exit.c: New file.
+	* stdlib/tst-cxa_atexit.c: New file.
+	* stdlib/tst-on_exit.c: New file.
+
+2017-08-27  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* sysdeps/mach/hurd/bits/sysmacros.h: New file.
+	* mach/stack_chk_fail_local.c: New file.
+	* hurd/stack_chk_fail_local.c: New file.
+	* mach/Machrules ($(interface-library)-routines): Add
+	stack_chk_fail_local.
+	* mach/Makefile (CFLAGS-mach_init.o, CFLAGS-RPC_vm_statistics.o,
+	CFLAGS-RPC_vm_map.o, CFLAGS-RPC_vm_protect.o,
+	CFLAGS-RPC_i386_set_gdt.o, CFLAGS-RPC_i386_set_ldt.o,
+	CFLAGS-RPC_task_get_special_port.o): Add $(no-stack-protector).
+	* hurd/Makefile (CFLAGS-hurdstartup.o,
+	CFLAGS-RPC_exec_startup_get_info.o): Add $(no-stack-protector).
+
 2017-08-25  H.J. Lu  <hongjiu.lu@intel.com>
 
 	* sysdeps/x86/cpu-features.h [__ASSEMBLER__]

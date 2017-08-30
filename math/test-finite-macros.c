@@ -1,5 +1,5 @@
-/* MIPS16 syscall wrappers.
-   Copyright (C) 2013-2017 Free Software Foundation, Inc.
+/* Test finite-math-only code does not conflict with user macros (bug 22028).
+   Copyright (C) 2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -16,18 +16,20 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <sysdep.h>
-#include <mips16-syscall.h>
+/* The main test is that the inclusion of <math.h> compiles.  */
+#define f first test macro
+#define l second test macro
+#define f128 third test macro
 
-#undef __mips16_syscall6
+#include <math.h>
 
-long long __nomips16
-__mips16_syscall6 (long a0, long a1, long a2, long a3,
-		   long a4, long a5,
-		   long number)
+volatile float a, b;
+
+static int
+do_test (void)
 {
-  union __mips16_syscall_return ret;
-  ret.reg.v0 = INTERNAL_SYSCALL_MIPS16 (number, ret.reg.v1, 6,
-					a0, a1, a2, a3, a4, a5);
-  return ret.val;
+  b = acosf (a);
+  return 0;
 }
+
+#include <support/test-driver.c>

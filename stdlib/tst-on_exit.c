@@ -1,5 +1,5 @@
-/* MIPS16 syscall wrappers.
-   Copyright (C) 2013-2017 Free Software Foundation, Inc.
+/* Verify functions registered via on_exit run in LIFO order.
+   Copyright (C) 2017 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -16,18 +16,7 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
-#include <sysdep.h>
-#include <mips16-syscall.h>
+#define ATEXIT(fn) on_exit ((void (*) (int, void *)) fn, (void *) 0)
+#define EXIT(x) exit (x)
 
-#undef __mips16_syscall7
-
-long long __nomips16
-__mips16_syscall7 (long a0, long a1, long a2, long a3,
-		   long a4, long a5, long a6,
-		   long number)
-{
-  union __mips16_syscall_return ret;
-  ret.reg.v0 = INTERNAL_SYSCALL_MIPS16 (number, ret.reg.v1, 7,
-					a0, a1, a2, a3, a4, a5, a6);
-  return ret.val;
-}
+#include <stdlib/tst-atexit-common.c>

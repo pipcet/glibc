@@ -513,15 +513,40 @@ inline int issignaling (_Float128 __val) { return __issignalingf128 (__val); }
 #  endif
 # else	/* __cplusplus */
 extern "C++" {
+#  ifdef __SUPPORT_SNAN__
+inline int
+iszero (float __val)
+{
+  return __fpclassifyf (__val) == FP_ZERO;
+}
+inline int
+iszero (double __val)
+{
+  return __fpclassify (__val) == FP_ZERO;
+}
+inline int
+iszero (long double __val)
+{
+#   ifdef __NO_LONG_DOUBLE_MATH
+  return __fpclassify (__val) == FP_ZERO;
+#   else
+  return __fpclassifyl (__val) == FP_ZERO;
+#   endif
+}
+#   if __HAVE_DISTINCT_FLOAT128
+inline int
+iszero (_Float128 __val)
+{
+  return __fpclassifyf128 (__val) == FP_ZERO;
+}
+#   endif
+#  else
 template <class __T> inline bool
 iszero (__T __val)
 {
-#  ifdef __SUPPORT_SNAN__
-  return fpclassify (__val) == FP_ZERO;
-#  else
   return __val == 0;
-#  endif
 }
+#  endif
 } /* extern C++ */
 # endif	/* __cplusplus */
 #endif /* Use IEC_60559_BFP_EXT.  */
@@ -619,14 +644,16 @@ iszero (__T __val)
 # define _Mdouble_ double
 # define __MATH_DECLARING_DOUBLE 1
 # define __MATH_DECLARING_FLOATN 0
-# define _MSUF_
-# define _MSUFTO_
+# define __REDIRFROM_X(function, reentrant) \
+  function ## reentrant
+# define __REDIRTO_X(function, reentrant) \
+   __ ## function ## reentrant ## _finite
 # include <bits/math-finite.h>
 # undef _Mdouble_
 # undef __MATH_DECLARING_DOUBLE
 # undef __MATH_DECLARING_FLOATN
-# undef _MSUF_
-# undef _MSUFTO_
+# undef __REDIRFROM_X
+# undef __REDIRTO_X
 
 /* When __USE_ISOC99 is defined, include math-finite for float and
    long double, as well.  */
@@ -636,32 +663,37 @@ iszero (__T __val)
 #  define _Mdouble_ float
 #  define __MATH_DECLARING_DOUBLE 0
 #  define __MATH_DECLARING_FLOATN 0
-#  define _MSUF_ f
-#  define _MSUFTO_ f
+#  define __REDIRFROM_X(function, reentrant) \
+  function ## f ## reentrant
+#  define __REDIRTO_X(function, reentrant) \
+   __ ## function ## f ## reentrant ## _finite
 #  include <bits/math-finite.h>
 #  undef _Mdouble_
 #  undef __MATH_DECLARING_DOUBLE
 #  undef __MATH_DECLARING_FLOATN
-#  undef _MSUF_
-#  undef _MSUFTO_
+#  undef __REDIRFROM_X
+#  undef __REDIRTO_X
 
 /* Include bits/math-finite.h for long double.  */
 #  ifdef __MATH_DECLARE_LDOUBLE
 #   define _Mdouble_ long double
 #   define __MATH_DECLARING_DOUBLE 0
 #   define __MATH_DECLARING_FLOATN 0
-#   define _MSUF_ l
+#   define __REDIRFROM_X(function, reentrant) \
+  function ## l ## reentrant
 #   ifdef __NO_LONG_DOUBLE_MATH
-#    define _MSUFTO_
+#    define __REDIRTO_X(function, reentrant) \
+   __ ## function ## reentrant ## _finite
 #   else
-#    define _MSUFTO_ l
+#    define __REDIRTO_X(function, reentrant) \
+   __ ## function ## l ## reentrant ## _finite
 #   endif
 #   include <bits/math-finite.h>
 #   undef _Mdouble_
 #   undef __MATH_DECLARING_DOUBLE
 #   undef __MATH_DECLARING_FLOATN
-#   undef _MSUF_
-#   undef _MSUFTO_
+#   undef __REDIRFROM_X
+#   undef __REDIRTO_X
 #  endif
 
 # endif /* __USE_ISOC99.  */
@@ -672,18 +704,21 @@ iszero (__T __val)
 #  define _Mdouble_ _Float128
 #  define __MATH_DECLARING_DOUBLE 0
 #  define __MATH_DECLARING_FLOATN 1
-#  define _MSUF_ f128
+#  define __REDIRFROM_X(function, reentrant) \
+  function ## f128 ## reentrant
 #  if __HAVE_DISTINCT_FLOAT128
-#   define _MSUFTO_ f128
+#   define __REDIRTO_X(function, reentrant) \
+   __ ## function ## f128 ## reentrant ## _finite
 #  else
-#   define _MSUFTO_ l
+#   define __REDIRTO_X(function, reentrant) \
+   __ ## function ## l ## reentrant ## _finite
 #  endif
 #  include <bits/math-finite.h>
 #  undef _Mdouble_
 #  undef __MATH_DECLARING_DOUBLE
 #  undef __MATH_DECLARING_FLOATN
-#  undef _MSUF_
-#  undef _MSUFTO_
+#  undef __REDIRFROM_X
+#  undef __REDIRTO_X
 # endif
 #endif /* __FINITE_MATH_ONLY__ > 0.  */
 
