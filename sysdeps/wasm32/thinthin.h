@@ -6,10 +6,21 @@
 
 #define __THINTHIN_SYSCALL(name, args...)                               \
   ({                                                                    \
-    unsigned long long resultvar = __thinthin_ ## name(args);            \
+    unsigned long long resultvar = __thinthin_ ## name(args);           \
     if (__glibc_unlikely (INTERNAL_SYSCALL_ERROR_P (resultvar)))        \
       {                                                                 \
         __set_errno (INTERNAL_SYSCALL_ERRNO (resultvar));               \
+        resultvar = (unsigned long long)-1;                             \
+      }                                                                 \
+                                                                        \
+    (long long)resultvar;                                               \
+  })
+
+#define __THINTHIN_SYSCALL_NOSTATUS(name, args...)                      \
+  ({                                                                    \
+    unsigned long long resultvar = __thinthin_ ## name(args);           \
+    if (__glibc_unlikely (INTERNAL_SYSCALL_ERROR_P (resultvar)))        \
+      {                                                                 \
         resultvar = (unsigned long long)-1;                             \
       }                                                                 \
                                                                         \

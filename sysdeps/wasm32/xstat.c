@@ -41,7 +41,7 @@ __fxstat (int vers, int fd, struct stat *buf)
 }
 
 hidden_def (__fxstat)
-weak_alias (__fxstat, _fxstat)
+weak_alias (__fxstat, fxstat)
 
 int
 __fxstat64 (int vers, int fd, struct stat64 *buf)
@@ -59,7 +59,7 @@ __xstat (int vers, const char *file, struct stat *buf)
   return __THINTHIN_SYSCALL (newfstatat, AT_FDCWD, file, buf, 0);
 }
 hidden_def (__xstat)
-weak_alias (__xstat, _xstat)
+weak_alias (__xstat, xstat)
 
 strong_alias (__xstat, __xstat64)
 hidden_ver (__xstat, __xstat64)

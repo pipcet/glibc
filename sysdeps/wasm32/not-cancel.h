@@ -1,6 +1,6 @@
-/* Uncancelable versions of cancelable interfaces.  Generic version.
-   Copyright (C) 2003-2016 Free Software Foundation, Inc.
-   This file is NOT part of the GNU C Library.
+/* Uncancelable versions of cancelable interfaces.  Linux/NPTL version.
+   Copyright (C) 2003-2017 Free Software Foundation, Inc.
+   This file is part of the GNU C Library.
    Contributed by Ulrich Drepper <drepper@redhat.com>, 2003.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -17,40 +17,64 @@
    License along with the GNU C Library; if not, see
    <http://www.gnu.org/licenses/>.  */
 
+#ifndef NOT_CANCEL_H
+# define NOT_CANCEL_H
+
+#include <fcntl.h>
+#include <sysdep.h>
+#include <errno.h>
 #include <unistd.h>
+#include <sys/syscall.h>
+#include <sys/wait.h>
+#include <time.h>
 
-/* By default we have none.  Map the name to the normal functions.  */
-#define open_not_cancel(name, flags, mode) \
-  __libc_open (name, flags, mode)
-#define open_not_cancel_2(name, flags) \
-  __libc_open (name, flags)
-#define openat_not_cancel(fd, name, flags, mode) \
-  __openat (fd, name, flags, mode)
-#define openat_not_cancel_3(fd, name, flags) \
-  __openat (fd, name, flags, 0)
-#define openat64_not_cancel(fd, name, flags, mode) \
-  __openat64 (fd, name, flags, mode)
-#define openat64_not_cancel_3(fd, name, flags) \
-  __openat64 (fd, name, flags, 0)
-#define close_not_cancel(fd) \
-  __close (fd)
-#define close_not_cancel_no_status(fd) \
-  (void) __close (fd)
-#define read_not_cancel(fd, buf, n) \
-  __read (fd, buf, n)
-#define write_not_cancel(fd, buf, n) \
-  __write (fd, buf, n)
-#define writev_not_cancel_no_status(fd, iov, n) \
-  (void) __writev (fd, iov, n)
-#define fcntl_not_cancel(fd, cmd, val) \
-  __fcntl (fd, cmd, val)
-# define waitpid_not_cancel(pid, stat_loc, options) \
-  __waitpid (pid, stat_loc, options)
-#define pause_not_cancel() \
-  __pause ()
-#define nanosleep_not_cancel(requested_time, remaining) \
-  __nanosleep (requested_time, remaining)
-#define sigsuspend_not_cancel(set) \
-  __sigsuspend (set)
+/* Non cancellable open syscall.  */
+__typeof (open) __open_nocancel;
+libc_hidden_proto (__open_nocancel)
 
-#define NO_CANCELLATION 1
+/* Non cancellable open syscall (LFS version).  */
+__typeof (open64) __open64_nocancel;
+libc_hidden_proto (__open64_nocancel)
+
+/* Non cancellable openat syscall.  */
+__typeof (openat) __openat_nocancel;
+libc_hidden_proto (__openat_nocancel)
+
+/* Non cacellable openat syscall (LFS version).  */
+__typeof (openat64) __openat64_nocancel;
+libc_hidden_proto (__openat64_nocancel)
+
+/* Non cancellable read syscall.  */
+__typeof (__read) __read_nocancel;
+libc_hidden_proto (__read_nocancel)
+
+/* Uncancelable write.  */
+__typeof (__write) __write_nocancel;
+libc_hidden_proto (__write_nocancel)
+
+#define __writev_nocancel_nostatus writev
+
+/* Uncancelable close.  */
+__typeof (__close) __close_nocancel;
+libc_hidden_proto (__close_nocancel)
+
+/* Uncancelable close.  */
+__typeof (__close) __close_nocancel_nostatus;
+libc_hidden_proto (__close_nocancel_nostatus)
+
+/* Uncancelable waitpid.  */
+__typeof (waitpid) __waitpid_nocancel;
+libc_hidden_proto (__waitpid_nocancel)
+
+/* Uncancelable pause.  */
+__typeof (pause) __pause_nocancel;
+libc_hidden_proto (__pause_nocancel)
+
+/* Uncancelable nanosleep.  */
+__typeof (__nanosleep) __nanosleep_nocancel;
+hidden_proto (__nanosleep_nocancel)
+
+/* Uncancelable fcntl.  */
+__typeof (__fcntl) __fcntl_nocancel attribute_hidden;
+
+#endif /* NOT_CANCEL_H  */

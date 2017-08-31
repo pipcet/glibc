@@ -49,3 +49,8 @@ libc_hidden_def (__libc_openat)
 weak_alias (__libc_openat, __openat)
 libc_hidden_weak (__openat)
 weak_alias (__libc_openat, openat)
+
+strong_alias (__libc_openat, __openat64_nocancel)
+libc_hidden_def (__openat64_nocancel)
+strong_alias (__libc_openat, __openat_nocancel)
+libc_hidden_def (__openat_nocancel)

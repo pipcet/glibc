@@ -33,7 +33,7 @@ sysdep_routines += start
 endif
 
 ifeq ($(subdir),misc)
-sysdep_routines += thinthin errno-location alloca_cutoff
+sysdep_routines += thinthin errno-location alloca_cutoff writev
 endif
 
 ifeq ($(subdir),io)

@@ -69,3 +69,6 @@ libc_hidden_def (__libc_fcntl)
 weak_alias (__libc_fcntl, __fcntl)
 libc_hidden_weak (__fcntl)
 weak_alias (__libc_fcntl, fcntl)
+
+strong_alias (__libc_fcntl, __fcntl_nocancel)
+libc_hidden_def (__fcntl_nocancel)
