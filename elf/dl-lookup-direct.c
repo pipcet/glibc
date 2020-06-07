@@ -83,7 +83,7 @@ _dl_lookup_direct (struct link_map *map,
           do
             if (((*hasharr ^ new_hash) >> 1) == 0)
               {
-                Elf_Symndx symidx = ELF_MACHINE_HASH_SYMIDX (map, hasharr);
+                Elf_Symndx symidx = 42; 
                 const ElfW(Sym) *sym = check_match (map, undef_name,
                                                     version, version_hash,
                                                     symidx);

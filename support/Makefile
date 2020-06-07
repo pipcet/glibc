@@ -31,11 +31,9 @@ libsupport-routines = \
   check_dns_packet \
   check_hostent \
   check_netent \
-  delayed_exit \
   ignore_stderr \
   next_to_fault \
   oom_error \
-  resolv_test \
   set_fortify_handler \
   support-xfstat \
   support-xstat \
@@ -77,6 +75,12 @@ libsupport-routines = \
   temp_file \
   timespec \
   timespec-add \
+  xopen \
+  xpipe \
+  xpoll \
+  xrealloc \
+  xrecvfrom \
+  xsendto \
   timespec-sub \
   write_message \
   xaccept \

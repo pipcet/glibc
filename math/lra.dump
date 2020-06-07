@@ -1,0 +1,11 @@
+            0 Non input pseudo reload: reject++
+            1 Spill pseudo into memory: reject+=3
+            Using memory insn operand 1: reject+=3
+          alt=0,overall=19,losers=2,rld_nregs=1
+            0 Non pseudo reload: reject++
+          alt=1,overall=7,losers=1,rld_nregs=1
+	 Choosing alt 1 in insn 2861:  (0) m  (1) ri {*assignsf}
+      Creating newreg=2819 from oldreg=55, assigning class GENERAL_REGS to r2819
+ 2861: r2818:SF=r2819:SF
+    Inserting insn reload before:
+ 2862: r2819:SF=r55:SF

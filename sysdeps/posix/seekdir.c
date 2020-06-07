@@ -20,6 +20,7 @@
 #include <dirent.h>
 #include <unistd.h>
 #include <dirstream.h>
+#include <libc-lock.h>
 
 /* Seek to position POS in DIRP.  */
 /* XXX should be __seekdir ? */

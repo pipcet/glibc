@@ -27,6 +27,6 @@ scandir64 (const char *dir, struct dirent64 ***namelist,
   return __scandir64_tail (__opendir (dir), namelist, select, cmp);
 }
 
-#if _DIRENT_MATCHES_DIRENT64
+#if defined (_DIRENT_MATCHES_DIRENT64) && _DIRENT_MATCHES_DIRENT64
 weak_alias (scandir64, scandir)
 #endif

@@ -108,21 +108,12 @@ add_to_global_resize (struct link_map *new)
      in an realloc() call.  Therefore we allocate a completely new
      array the first time we have to add something to the locale scope.  */
 
-  if (__builtin_add_overflow (ns->_ns_global_scope_pending_adds, to_add,
-			      &ns->_ns_global_scope_pending_adds))
-    add_to_global_resize_failure (new);
-
   unsigned int new_size = 0; /* 0 means no new allocation.  */
   void *old_global = NULL; /* Old allocation if free-able.  */
 
   /* Minimum required element count for resizing.  Adjusted below for
      an exponential resizing policy.  */
-  size_t required_new_size;
-  if (__builtin_add_overflow (ns->_ns_main_searchlist->r_nlist,
-			      ns->_ns_global_scope_pending_adds,
-			      &required_new_size))
-    add_to_global_resize_failure (new);
-
+  size_t required_new_size = 0;
   if (ns->_ns_global_scope_alloc == 0)
     {
       if (__builtin_add_overflow (required_new_size, 8, &new_size))
@@ -193,10 +184,6 @@ add_to_global_update (struct link_map *new)
 
   /* Some of the pending adds have been performed by the loop above.
      Adjust the counter accordingly.  */
-  unsigned int added = new_nlist - ns->_ns_main_searchlist->r_nlist;
-  assert (added <= ns->_ns_global_scope_pending_adds);
-  ns->_ns_global_scope_pending_adds -= added;
-
   atomic_write_barrier ();
   ns->_ns_main_searchlist->r_nlist = new_nlist;
 }
@@ -508,15 +495,7 @@ dl_open_worker (void *a)
 	args->nsid = call_map->l_ns;
     }
 
-  /* The namespace ID is now known.  Keep track of whether libc.so was
-     already loaded, to determine whether it is necessary to call the
-     early initialization routine (or clear libc_map on error).  */
-  args->libc_already_loaded = GL(dl_ns)[args->nsid].libc_map != NULL;
-
   /* Retain the old value, so that it can be restored.  */
-  args->original_global_scope_pending_adds
-    = GL (dl_ns)[args->nsid]._ns_global_scope_pending_adds;
-
   /* One might be tempted to assert that we are RT_CONSISTENT at this point, but that
      may not be true if this is a recursive call to dlopen.  */
   _dl_debug_initialize (0, args->nsid);
@@ -753,16 +732,6 @@ dl_open_worker (void *a)
      namespace.  */
   if (!args->libc_already_loaded)
     {
-      struct link_map *libc_map = GL(dl_ns)[args->nsid].libc_map;
-#ifdef SHARED
-      bool initial = libc_map->l_ns == LM_ID_BASE;
-#else
-      /* In the static case, there is only one namespace, but it
-	 contains a secondary libc (the primary libc is statically
-	 linked).  */
-      bool initial = false;
-#endif
-      _dl_call_libc_early_init (libc_map, initial);
     }
 
 #ifndef SHARED
@@ -877,18 +846,10 @@ no more namespaces available for dlmopen()"));
      old pending adds value is larger than absolutely necessary.
      Since it is just a conservative upper bound, this is harmless.
      The top-level dlopen call will restore the field to zero.  */
-  if (args.nsid >= 0)
-    GL (dl_ns)[args.nsid]._ns_global_scope_pending_adds
-      = args.original_global_scope_pending_adds;
 
   /* See if an error occurred during loading.  */
   if (__glibc_unlikely (exception.errstring != NULL))
     {
-      /* Avoid keeping around a dangling reference to the libc.so link
-	 map in case it has been cached in libc_map.  */
-      if (!args.libc_already_loaded)
-	GL(dl_ns)[nsid].libc_map = NULL;
-
       /* Remove the object from memory.  It may be in an inconsistent
 	 state if relocation failed, for example.  */
       if (args.map)

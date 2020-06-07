@@ -101,7 +101,7 @@ try_file_lock (int fd, int type)
     .l_whence = SEEK_SET,
    };
 
- bool status = __fcntl64_nocancel (fd, F_SETLKW, &fl) < 0;
+ bool status = __fcntl_nocancel (fd, F_SETLKW, &fl) < 0;
  int saved_errno = errno;
 
  /* Reset the signal handler and alarm.  We must reset the alarm
@@ -126,6 +126,7 @@ file_unlock (int fd)
     {
       .l_type = F_UNLCK,
     };
+#define __fcntl64_nocancel __fcntl_nocancel
   __fcntl64_nocancel (fd, F_SETLKW, &fl);
 }
 
@@ -170,8 +171,8 @@ static ssize_t
 read_last_entry (void)
 {
   struct utmp buffer;
-  ssize_t nbytes = __pread64_nocancel (file_fd, &buffer, sizeof (buffer),
-				       file_offset);
+  ssize_t nbytes = pread64 (file_fd, &buffer, sizeof (buffer),
+			    file_offset);
   if (nbytes < 0)
     return -1;
   else if (nbytes != sizeof (buffer))

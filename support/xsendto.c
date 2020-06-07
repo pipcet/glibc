@@ -18,6 +18,7 @@
 
 #include <support/xsocket.h>
 
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <support/check.h>
@@ -31,5 +32,5 @@ xsendto (int fd, const void *buf, size_t buflen, int flags,
     FAIL_EXIT1 ("sendto (%d), %zu bytes, family %d: %m",
                 fd, buflen, sa->sa_family);
   if (ret != buflen)
-    FAIL_EXIT1 ("sendto (%d) sent %zd bytes instead of %zu", fd, ret, buflen);
+    FAIL_EXIT1 ("sendto (%d) sent %ld bytes instead of %zu", fd, (long)ret, buflen);
 }

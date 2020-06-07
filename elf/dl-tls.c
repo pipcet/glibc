@@ -40,6 +40,7 @@ __attribute__ ((__noreturn__))
 oom (void)
 {
   _dl_fatal_printf ("cannot allocate memory for thread-local data: ABORT\n");
+  while (1);
 }
 
 

@@ -26,4 +26,7 @@
 #define ADD_VARIABLES	gid
 #define BUFLEN		NSS_BUFLEN_GROUP
 
-#include "../nss/getXXbyYY.c"
+struct group *getgrgid(gid_t gid)
+{
+  return 0;
+}

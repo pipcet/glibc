@@ -223,6 +223,7 @@ typedef int __sig_atomic_t;
 __STD_TYPE __TIME64_T_TYPE __time64_t;
 #endif
 
+#  define _dl_relocate_static_pie()
 #undef __STD_TYPE
 
 #endif /* bits/types.h */

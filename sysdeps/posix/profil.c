@@ -23,6 +23,7 @@
 #include <sys/time.h>
 #include <stdint.h>
 #include <libc-internal.h>
+#include <sigcontextinfo.h>
 #include <sigsetops.h>
 
 #ifndef SIGPROF
@@ -109,7 +110,7 @@ __profil (u_short *sample_buffer, size_t size, size_t offset, u_int scale)
   act.sa_sigaction = __profil_counter;
   act.sa_flags = SA_SIGINFO;
 #else
-  act.sa_handler = __profil_counter;
+  act.sa_handler = (void (*)(int))__profil_counter;
   act.sa_flags = 0;
 #endif
   act.sa_flags |= SA_RESTART;

@@ -184,13 +184,13 @@ __malloc_fork_unlock_child (void)
 
   /* Push all arenas to the free list, except thread_arena, which is
      attached to the current thread.  */
-  __libc_lock_init (free_list_lock);
+  (void)__libc_lock_init (free_list_lock);
   if (thread_arena != NULL)
     thread_arena->attached_threads = 1;
   free_list = NULL;
   for (mstate ar_ptr = &main_arena;; )
     {
-      __libc_lock_init (ar_ptr->mutex);
+      (void)__libc_lock_init (ar_ptr->mutex);
       if (ar_ptr != thread_arena)
         {
 	  /* This arena is no longer attached to any thread.  */
@@ -203,7 +203,7 @@ __malloc_fork_unlock_child (void)
         break;
     }
 
-  __libc_lock_init (list_lock);
+  (void)__libc_lock_init (list_lock);
 }
 
 #if HAVE_TUNABLES
@@ -718,7 +718,7 @@ _int_new_arena (size_t size)
   LIBC_PROBE (memory_arena_new, 2, a, size);
   mstate replaced_arena = thread_arena;
   thread_arena = a;
-  __libc_lock_init (a->mutex);
+  (void)__libc_lock_init (a->mutex);
 
   __libc_lock_lock (list_lock);
 

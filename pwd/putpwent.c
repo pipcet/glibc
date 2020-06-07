@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <pwd.h>
 #include <nss.h>
+#include <stdlib.h>
 
 #define _S(x)	x ?: ""
 

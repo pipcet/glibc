@@ -62,7 +62,7 @@ _IO_gets (char *buf)
     }
   buf[count] = 0;
   retval = buf;
-unlock_return:
+  {unlock_return:;}
   _IO_release_lock (stdin);
   return retval;
 }

@@ -18,6 +18,7 @@
 
 #include <assert.h>
 #include <signal.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -30,6 +31,7 @@
 # include <gmon/sprofil.c>
 #else
 
+#include <sigcontextinfo.h>
 #include <libc-internal.h>
 
 struct region

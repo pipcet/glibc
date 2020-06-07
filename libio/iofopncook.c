@@ -29,6 +29,9 @@
 #include <stdlib.h>
 #include <shlib-compat.h>
 
+/* Prototyped for local functions.  */
+static ssize_t _IO_cookie_read (__FILE* fp, void* buf,
+				    __ssize_t size);
 static ssize_t
 _IO_cookie_read (FILE *fp, void *buf, ssize_t size)
 {

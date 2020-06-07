@@ -37,7 +37,7 @@
   }))
 
 # define __sigisemptyset(set)			\
-  (*(set) == (__sigset_t) 0)
+  ((set) == (__sigset_t) 0)
 
 # define __sigandset(dest, left, right)		\
   (__extension__ ({				\

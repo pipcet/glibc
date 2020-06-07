@@ -16,6 +16,8 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
+#include <signal.h>
+
 extern __typeof (__access) __access_noerrno attribute_hidden;
 
 extern __typeof (__kill) __kill_noerrno attribute_hidden;

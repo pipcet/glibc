@@ -26,6 +26,7 @@
 #include <sys/stat.h>
 #include <sys/sysmacros.h>
 #include <xunistd.h>
+#include <limits.h>
 
 struct procfs_descriptor
 {

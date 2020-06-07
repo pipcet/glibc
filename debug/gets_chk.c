@@ -67,7 +67,7 @@ __gets_chk (char *buf, size_t size)
     __chk_fail ();
   buf[count] = 0;
   retval = buf;
-unlock_return:
+  {unlock_return:;}
   _IO_release_lock (stdin);
   return retval;
 }

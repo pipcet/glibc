@@ -19,6 +19,7 @@
 #include <signal.h>
 #include <sigsetops.h>
 #include <internal-signals.h>
+#include <stdio.h> /* for NULL */
 
 /* Add SIGNO to SET.  */
 int

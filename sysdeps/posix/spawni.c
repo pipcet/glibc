@@ -28,10 +28,10 @@
 #include <not-cancel.h>
 #include <local-setxid.h>
 #include <shlib-compat.h>
-#include <nptl/pthreadP.h>
 #include <dl-sysdep.h>
 #include <libc-pointer-arith.h>
 #include <ldsodefs.h>
+#include <signal.h>
 #include "spawn_int.h"
 
 
@@ -107,7 +107,7 @@ __spawni_child (void *arguments)
       sa.sa_handler = SIG_DFL;
 
       for (sig = 1; sig <= _NSIG; ++sig)
-	if (__sigismember (&attr->__sd, sig) != 0
+	if (sigismember (&attr->__sd, sig) != 0
 	    && __sigaction (sig, &sa, NULL) != 0)
 	  goto fail;
     }
@@ -277,7 +277,7 @@ __spawnix (pid_t *pid, const char *file,
     return errno;
 
   /* Disable asynchronous cancellation.  */
-  int state;
+#define __libc_ptf_call(FUNC, ARGS, WHATEVER) (void)0
   __libc_ptf_call (__pthread_setcancelstate,
                    (PTHREAD_CANCEL_DISABLE, &state), 0);
 

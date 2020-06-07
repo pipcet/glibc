@@ -17,7 +17,11 @@
 
 #include <setjmpP.h>
 
-#define __longjmp ____longjmp_chk
-#define __libc_siglongjmp __longjmp_chk
+// XXX Should move to include/setjmp.h
+extern void ____longjmp_chk (__jmp_buf __env, int __val)
+     __attribute__ ((__noreturn__));
+
+//#define __longjmp ____longjmp_chk
+//#define __libc_siglongjmp __longjmp_chk
 
 #include <setjmp/longjmp.c>

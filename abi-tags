@@ -28,5 +28,9 @@
 
 .*-.*-syllable.*	5	2.0.0	# just an arbitrary value
 
+asmjs-.*        7       0.0.0
+wasm32-.*      10       0.0.0
+wasm64-.*       9       0.0.0
+
 # There is no catch-all default here because every supported OS that uses
 # ELF must have its own unique ABI tag.

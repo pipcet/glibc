@@ -181,6 +181,12 @@ enter_unique_sym (struct unique_sym *table, size_t size,
   table[idx].map = map;
 }
 
+#define DL_LOOKUP_FOR_RELOCATE 0
+#define ELF_MACHINE_GNU_HASH_ADDRIDX 42
+static void
+ELF_MACHINE_XHASH_SETUP (Elf32_Word *a, Elf32_Word b, void *c)
+{
+}
 /* Mark MAP as NODELETE according to the lookup mode in FLAGS.  During
    initial relocation, NODELETE state is pending only.  */
 static void
@@ -260,17 +266,19 @@ do_lookup_unique (const char *undef_name, uint_fast32_t new_hash,
 
       if (size * 3 <= tab->n_elements * 4)
 	{
+	  size_t newsize = 0;
 	  /* Expand the table.  */
 #ifdef RTLD_CHECK_FOREIGN_CALL
 	  /* This must not happen during runtime relocations.  */
 	  assert (!RTLD_CHECK_FOREIGN_CALL);
 #endif
-	  size_t newsize = _dl_higher_prime_number (size + 1);
+	  newsize = _dl_higher_prime_number (size + 1);
 	  struct unique_sym *newentries
 	    = calloc (sizeof (struct unique_sym), newsize);
 	  if (newentries == NULL)
 	    {
 	    nomem:
+	      newsize = 0;
 	      __rtld_lock_unlock_recursive (tab->lock);
 	      _dl_fatal_printf ("out of memory\n");
 	    }
@@ -426,7 +434,7 @@ do_lookup_x (const char *undef_name, uint_fast32_t new_hash,
 		  do
 		    if (((*hasharr ^ new_hash) >> 1) == 0)
 		      {
-			symidx = ELF_MACHINE_HASH_SYMIDX (map, hasharr);
+			symidx = 0;
 			sym = check_match (undef_name, ref, version, flags,
 					   type_class, &symtab[symidx], symidx,
 					   strtab, map, &versioned_sym,
@@ -521,6 +529,9 @@ do_lookup_x (const char *undef_name, uint_fast32_t new_hash,
 		      }
 		}
 #endif
+              (void) i;
+              (void) s;
+              goto skip;
 	    }
 
 	  /* Hidden and internal symbols are local, ignore them.  */

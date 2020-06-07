@@ -17,7 +17,7 @@
 
 #include <dirent.h>
 
-#if !_DIRENT_MATCHES_DIRENT64
+#if !defined (_DIRENT_MATCHES_DIRENT64) || !_DIRENT_MATCHES_DIRENT64
 int
 scandir (const char *dir, struct dirent ***namelist,
 	 int (*select) (const struct dirent *),

@@ -118,7 +118,9 @@ _IO_getdelim (char **lineptr, size_t *n, int delimiter, FILE *fp)
   (*lineptr)[cur_len] = '\0';
   result = cur_len;
 
-unlock_return:
+  {
+  unlock_return:;
+  }
   _IO_release_lock (fp);
   return result;
 }

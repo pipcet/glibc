@@ -61,6 +61,7 @@ __getifaddrs (struct ifaddrs **ifap)
       {
 	struct ifaddrs ia;
 	struct sockaddr addr, netmask, broadaddr;
+#define IF_NAMESIZE 16
 	char name[IF_NAMESIZE];
       } *storage;
       struct ifreq *ifr;

@@ -211,7 +211,7 @@
    warning message MSG.  */
 /* We want the .gnu.warning.SYMBOL section to be unallocated.  */
 #define __make_section_unallocated(section_string)	\
-  asm (".section " section_string "\n\t.previous");
+  asm (".pushsection " section_string "\n\t.popsection");
 
 /* Tacking on "\n\t#" to the section name makes gcc put it's bogus
    section attributes on what looks like a comment to the assembler.  */
@@ -737,7 +737,7 @@ for linking")
 # define libresolv_hidden_data_ver(local, name)
 #endif
 
-#if IS_IN (libpthread)
+#if defined (MODULE_libpthread) && IS_IN (libpthread)
 # define libpthread_hidden_proto(name, attrs...) hidden_proto (name, ##attrs)
 # define libpthread_hidden_tls_proto(name, attrs...) \
   hidden_tls_proto (name, ##attrs)

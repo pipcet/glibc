@@ -21,6 +21,7 @@
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <_itoa.h>
@@ -46,6 +47,7 @@ length_mismatch (void)
 {
   _dl_fatal_printf ("Fatal error: "
                     "length accounting in _dl_exception_create_format\n");
+  while (1);
 }
 
 /* Adjust the message buffer to indicate whether it is possible to

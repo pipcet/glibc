@@ -34,6 +34,8 @@
 # error "This is C code, use a C compiler"
 #endif
 
+#include <libc-lock.h>
+
 #ifdef _LIBC
 /* We have to keep the namespace clean.  */
 # define regfree(preg) __regfree (preg)

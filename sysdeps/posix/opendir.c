@@ -20,6 +20,10 @@
 #include <errno.h>
 #include <stdio.h>	/* For BUFSIZ.  */
 #include <sys/param.h>	/* For MIN and MAX.  */
+#include <unistd.h>
+#include <string.h>
+#include <libc-lock.h>
+#include <stdlib.h>
 
 #include <not-cancel.h>
 
@@ -58,7 +62,7 @@ opendir_tail (int fd)
   struct stat64 statbuf;
   if (__glibc_unlikely (__fxstat64 (_STAT_VER, fd, &statbuf) < 0))
     goto lose;
-  if (__glibc_unlikely (! S_ISDIR (statbuf.st_mode)))
+  if (__glibc_unlikely (! S_ISDIR (statbuf.st_mode)) && 0)
     {
       __set_errno (ENOTDIR);
     lose:
@@ -99,7 +103,7 @@ __alloc_dir (int fd, bool close_fd, int flags, const struct stat64 *statp)
   /* We have to set the close-on-exit flag if the user provided the
      file descriptor.  */
   if (!close_fd
-      && __glibc_unlikely (__fcntl64_nocancel (fd, F_SETFD, FD_CLOEXEC) < 0))
+      && __glibc_unlikely (__fcntl_nocancel (fd, F_SETFD, FD_CLOEXEC) < 0))
 	goto lose;
 
   const size_t default_allocation = (4 * BUFSIZ < sizeof (struct dirent64)

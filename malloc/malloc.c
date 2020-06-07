@@ -990,7 +990,7 @@ int      __posix_memalign(void **, size_t, size_t);
 #define M_MMAP_MAX             -4
 
 #ifndef DEFAULT_MMAP_MAX
-#define DEFAULT_MMAP_MAX       (65536)
+#define DEFAULT_MMAP_MAX       (0)
 #endif
 
 #include <malloc.h>
@@ -1753,7 +1753,9 @@ struct malloc_par
 
 static struct malloc_state main_arena =
 {
+#if 0
   .mutex = _LIBC_LOCK_INITIALIZER,
+#endif
   .next = &main_arena,
   .attached_threads = 1
 };
@@ -2289,6 +2291,7 @@ sysmalloc (INTERNAL_SIZE_T nb, mstate av)
 
   size_t pagesize = GLRO (dl_pagesize);
   bool tried_mmap = false;
+  pagesize = 4096;
 
 
   /*
@@ -2764,6 +2767,7 @@ systrim (size_t pad, mstate av)
   long top_area;
 
   pagesize = GLRO (dl_pagesize);
+  pagesize = 4096;
   top_size = chunksize (av->top);
 
   top_area = top_size - MINSIZE - 1;
@@ -2862,6 +2866,8 @@ mremap_chunk (mchunkptr p, size_t new_size)
   INTERNAL_SIZE_T offset = prev_size (p);
   INTERNAL_SIZE_T size = chunksize (p);
   char *cp;
+
+  pagesize = 4096;
 
   assert (chunk_is_mmapped (p));
 
@@ -3356,6 +3362,7 @@ __libc_valloc (size_t bytes)
 
   void *address = RETURN_ADDRESS (0);
   size_t pagesize = GLRO (dl_pagesize);
+  pagesize = 4096;
   return _mid_memalign (pagesize, bytes, address);
 }
 
@@ -3367,6 +3374,7 @@ __libc_pvalloc (size_t bytes)
 
   void *address = RETURN_ADDRESS (0);
   size_t pagesize = GLRO (dl_pagesize);
+  pagesize = 4096;
   size_t rounded_bytes;
   /* ALIGN_UP with overflow check.  */
   if (__glibc_unlikely (__builtin_add_overflow (bytes,
@@ -4793,7 +4801,8 @@ mtrim (mstate av, size_t pad)
   /* Ensure all blocks are consolidated.  */
   malloc_consolidate (av);
 
-  const size_t ps = GLRO (dl_pagesize);
+  size_t ps = GLRO (dl_pagesize);
+  ps = 4096;
   int psindex = bin_index (ps);
   const size_t psm1 = ps - 1;
 

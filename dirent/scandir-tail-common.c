@@ -18,6 +18,7 @@
 
 #include <string.h>
 #include <errno.h>
+#include <stdlib.h>
 
 int
 SCANDIR_TAIL (DIR *dp,

@@ -175,6 +175,7 @@ LIBC_START_MAIN (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
          So we can set up _dl_phdr and _dl_phnum even without any
          information from auxv.  */
 
+      if (0) {
       extern const ElfW(Ehdr) __ehdr_start
 	__attribute__ ((weak, visibility ("hidden")));
       if (&__ehdr_start != NULL)
@@ -183,6 +184,7 @@ LIBC_START_MAIN (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
           GL(dl_phdr) = (const void *) &__ehdr_start + __ehdr_start.e_phoff;
           GL(dl_phnum) = __ehdr_start.e_phnum;
         }
+      }
     }
 
   /* Initialize very early so that tunables can use it.  */
@@ -220,9 +222,11 @@ LIBC_START_MAIN (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
     }
 # endif
 
+#if 0
   /* Initialize libpthread if linked in.  */
   if (__pthread_initialize_minimal != NULL)
     __pthread_initialize_minimal ();
+#endif
 
   /* Set up the pointer guard value.  */
   uintptr_t pointer_chk_guard = _dl_setup_pointer_guard (_dl_random,
@@ -235,9 +239,11 @@ LIBC_START_MAIN (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
 
 #endif /* !SHARED  */
 
+#if 0
   /* Register the destructor of the dynamic linker if there is any.  */
   if (__glibc_likely (rtld_fini != NULL))
     __cxa_atexit ((void (*) (void *)) rtld_fini, NULL, NULL);
+#endif
 
 #ifndef SHARED
   /* Perform early initialization.  In the shared case, this function
@@ -291,7 +297,7 @@ LIBC_START_MAIN (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
 #endif
 
 #ifndef SHARED
-  _dl_debug_initialize (0, LM_ID_BASE);
+  //_dl_debug_initialize (0, LM_ID_BASE);
 #endif
 #ifdef HAVE_CLEANUP_JMP_BUF
   /* Memory for the cancellation buffer.  */

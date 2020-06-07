@@ -106,8 +106,6 @@ typedef __uintmax_t		uintmax_t;
 #  define __INT64_C(c)	c ## L
 #  define __UINT64_C(c)	c ## UL
 # else
-#  define __INT64_C(c)	c ## LL
-#  define __UINT64_C(c)	c ## ULL
 # endif
 
 /* Limits of integral types.  */

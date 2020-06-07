@@ -22,6 +22,7 @@
 #include <unistd.h>
 #include <dirstream.h>
 #include <not-cancel.h>
+#include <libc-lock.h>
 
 
 /* Close the directory stream DIRP.

@@ -25,6 +25,8 @@
    Writing to the storage causes undefined behavior.  */
 libc_freeres_ptr (static char *buf);
 
+#include <stdlib.h>
+
 char *
 strerror (int errnum)
 {

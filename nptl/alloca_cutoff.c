@@ -25,12 +25,6 @@
 int
 __libc_alloca_cutoff (size_t size)
 {
-  return size <= (MIN (__MAX_ALLOCA_CUTOFF,
-		       THREAD_GETMEM (THREAD_SELF, stackblock_size) / 4
-		       /* The main thread, before the thread library is
-			  initialized, has zero in the stackblock_size
-			  element.  Since it is the main thread we can
-			  assume the maximum available stack space.  */
-		       ?: __MAX_ALLOCA_CUTOFF * 4));
+  return size <= __MAX_ALLOCA_CUTOFF;
 }
 libc_hidden_def (__libc_alloca_cutoff)

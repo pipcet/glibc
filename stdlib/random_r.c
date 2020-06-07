@@ -55,6 +55,7 @@
 #include <limits.h>
 #include <stddef.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 
 /* An improved random number generation package.  In addition to the standard

@@ -29,11 +29,7 @@ _dl_call_libc_early_init (struct link_map *libc_map, _Bool initial)
   if (libc_map == NULL)
     return;
 
-  const ElfW(Sym) *sym
-    = _dl_lookup_direct (libc_map, "__libc_early_init",
-                         0x069682ac, /* dl_new_hash output.  */
-                         "GLIBC_PRIVATE",
-                         0x0963cf85); /* _dl_elf_hash output.  */
+  const ElfW(Sym) *sym = NULL;
   assert (sym != NULL);
   __typeof (__libc_early_init) *early_init
     = DL_SYMBOL_ADDRESS (libc_map, sym);

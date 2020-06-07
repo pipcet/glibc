@@ -1483,7 +1483,7 @@ TRANS error; @pxref{Cancel AIO Operations}. */
 
 #define NERR \
   (sizeof _sys_errlist_internal / sizeof _sys_errlist_internal [0])
-const int _sys_nerr_internal = NERR;
+int _sys_nerr_internal = NERR;
 
 #if IS_IN (libc) && !defined ERRLIST_NO_COMPAT
 # include <errlist-compat.c>

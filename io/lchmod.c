@@ -20,6 +20,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <sys/stat.h>
 
 /* Change the protections of FILE to MODE.  */
 int

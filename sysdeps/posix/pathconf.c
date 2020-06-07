@@ -23,6 +23,7 @@
 #include <sys/stat.h>
 #include <sys/statfs.h>
 #include <sys/statvfs.h>
+#include <posix_opt.h>
 
 
 /* Get file-specific information about PATH.  */

@@ -28,7 +28,7 @@ const char *const __new_sys_siglist[NSIG] =
 #include <siglist.h>
 #undef init_sig
 };
-libc_hidden_ver (__new_sys_siglist, _sys_siglist)
+//libc_hidden_ver (__new_sys_siglist, _sys_siglist)
 
 const char *const __new_sys_sigabbrev[NSIG] =
 {
@@ -72,7 +72,7 @@ versioned_symbol (libc, _new_sys_siglist, sys_siglist, GLIBC_2_3_3);
 versioned_symbol (libc, __new_sys_sigabbrev, sys_sigabbrev, GLIBC_2_3_3);
 #else
 strong_alias (__new_sys_siglist, _new_sys_siglist)
-versioned_symbol (libc, __new_sys_siglist, _sys_siglist, GLIBC_2_1);
-versioned_symbol (libc, _new_sys_siglist, sys_siglist, GLIBC_2_1);
+//versioned_symbol (libc, __new_sys_siglist, _sys_siglist, GLIBC_2_1);
+//versioned_symbol (libc, _new_sys_siglist, sys_siglist, GLIBC_2_1);
 versioned_symbol (libc, __new_sys_sigabbrev, sys_sigabbrev, GLIBC_2_1);
 #endif

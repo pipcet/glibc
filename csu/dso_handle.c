@@ -17,5 +17,5 @@
 
 /* We have to define __dso_handle ourselves since we do not use gcc's
    crtbegin files.  */
-const void *const __dso_handle __attribute__ ((__visibility__ ("hidden")))
+const void *const __dso_handle
   = &__dso_handle;

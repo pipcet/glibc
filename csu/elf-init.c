@@ -36,6 +36,7 @@
 #include <stddef.h>
 #include <elf-initfini.h>
 
+#include <unistd.h>
 
 /* These magic symbols are provided by the linker.  */
 extern void (*__preinit_array_start []) (int, char **, char **)
@@ -49,6 +50,62 @@ extern void (*__init_array_end []) (int, char **, char **)
 extern void (*__fini_array_start []) (void) attribute_hidden;
 extern void (*__fini_array_end []) (void) attribute_hidden;
 
+#if defined(__ASMJS__) || defined(__WASM32__)
+#define MULTIFILE
+#endif
+#ifdef MULTIFILE
+struct multifile_header {
+  unsigned long long data_start;
+  unsigned long long terminator;
+  unsigned long long preinit_array_start;
+  unsigned long long preinit_array_end;
+  unsigned long long init_array_start;
+  unsigned long long init_array_end;
+  unsigned long long fini_array_start;
+  unsigned long long fini_array_end;
+};
+
+void
+__libc_csu_init_multifile (int argc, char **argv, char **envp)
+{
+  struct multifile_header *mfh = (struct multifile_header *)16384;
+  do {
+    void (**array_start)(int, char **, char **) = (void (**)(int, char **, char **))(long)mfh->preinit_array_start;
+    void (**array_end)(int, char **, char **) = (void (**)(int, char **, char **))(long)mfh->preinit_array_end;
+    while (array_start < array_end) {
+      (**array_start)(argc, argv, envp);
+      array_start++;
+    }
+    mfh = (struct multifile_header *)(long)(mfh->terminator);
+  } while (mfh->terminator);
+
+  mfh = (struct multifile_header *)16384;
+  do {
+    void (**array_start)(int, char **, char **) = (void (**)(int, char **, char **))(long)mfh->init_array_start;
+    void (**array_end)(int, char **, char **) = (void (**)(int, char **, char **))(long)mfh->init_array_end;
+    while (array_start < array_end) {
+      (**array_start)(argc, argv, envp);
+      array_start++;
+    }
+    mfh = (struct multifile_header *)(long)(mfh->terminator);
+  } while (mfh->terminator);
+}
+
+void
+__libc_csu_fini_multifile (void)
+{
+  struct multifile_header *mfh = (struct multifile_header *)16384;
+  while (mfh->terminator) {
+    void (**array_start)(void) = (void (**)(void))(long)mfh->fini_array_start;
+    void (**array_end)(void) = (void (**)(void))(long)mfh->fini_array_end;
+    while (array_start < array_end) {
+      array_end--;
+      (**array_end)();
+    }
+    mfh = (struct multifile_header *)(long)(mfh->terminator);
+  }
+}
+#endif
 
 #if ELF_INITFINI
 /* These function symbols are provided for the .init/.fini section entry
@@ -87,6 +144,10 @@ __libc_csu_init (int argc, char **argv, char **envp)
   const size_t size = __init_array_end - __init_array_start;
   for (size_t i = 0; i < size; i++)
       (*__init_array_start [i]) (argc, argv, envp);
+
+#ifdef MULTIFILE
+  __libc_csu_init_multifile (argc, argv, envp);
+#endif
 }
 
 /* This function should not be used anymore.  We run the executable's
@@ -96,6 +157,10 @@ void
 __libc_csu_fini (void)
 {
 #ifndef LIBC_NONSHARED
+#ifdef MULTIFILE
+  __libc_csu_fini_multifile ();
+#endif
+
   size_t i = __fini_array_end - __fini_array_start;
   while (i-- > 0)
     (*__fini_array_start [i]) ();

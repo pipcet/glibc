@@ -26,6 +26,7 @@
 
 #include <stdlib.h>
 #include "libioP.h"
+#include <stdbool.h>
 #include <fcntl.h>
 
 #include <shlib-compat.h>

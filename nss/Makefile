@@ -44,8 +44,8 @@ have-sunrpc		:= 0
 endif
 CPPFLAGS-getent.c	= -DHAVE_SUNRPC=$(have-sunrpc)
 
-others                  := getent makedb
-install-bin             := getent makedb
+others                  := 
+install-bin             := 
 makedb-modules = xmalloc hash-string
 others-extras		= $(makedb-modules)
 extra-objs		+= $(makedb-modules:=.o)

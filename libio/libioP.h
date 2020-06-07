@@ -46,6 +46,11 @@
 #include <libio/libio.h>
 #include "iolibio.h"
 
+#include <bits/atomic.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include <shlib-compat.h>
 
 /* For historical reasons this is the name of the sysdeps header that

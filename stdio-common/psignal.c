@@ -27,13 +27,14 @@
 void
 psignal (int sig, const char *s)
 {
-  const char *colon, *desc;
+  const char *colon;//, *desc;
 
   if (s == NULL || *s == '\0')
     s = colon = "";
   else
     colon = ": ";
 
+#if 0
   if (sig >= 0 && sig < NSIG && (desc = _sys_siglist[sig]) != NULL)
     (void) __fxprintf (NULL, "%s%s%s\n", s, colon, _(desc));
   else
@@ -49,4 +50,5 @@ psignal (int sig, const char *s)
 	  free (buf);
 	}
     }
+#endif
 }

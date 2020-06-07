@@ -113,7 +113,7 @@ do_system (const char *line)
 
   sa.sa_handler = SIG_IGN;
   sa.sa_flags = 0;
-  __sigemptyset (&sa.sa_mask);
+  sigemptyset (&sa.sa_mask);
 
   DO_LOCK ();
   if (ADD_REF () == 0)

@@ -18,6 +18,8 @@
 
 #include <unistd.h>
 
+#include <posix_opt.h>
+
 #if ! _POSIX_MAPPED_FILES
 
 # include <rt/shm_open.c>
@@ -38,8 +40,10 @@ shm_open (const char *name, int oflag, mode_t mode)
   oflag |= O_NOFOLLOW | O_CLOEXEC;
 
   /* Disable asynchronous cancellation.  */
+#if 0
   int state;
   pthread_setcancelstate (PTHREAD_CANCEL_DISABLE, &state);
+#endif
 
   int fd = open (shm_name, oflag, mode);
   if (fd == -1 && __glibc_unlikely (errno == EISDIR))
@@ -48,7 +52,32 @@ shm_open (const char *name, int oflag, mode_t mode)
        object names and the standard does not mention EISDIR.  */
     __set_errno (EINVAL);
 
+# ifndef O_CLOEXEC
+  if (fd != -1)
+    {
+      /* We got a descriptor.  Now set the FD_CLOEXEC bit.  */
+      int flags = fcntl (fd, F_GETFD, 0);
+
+      if (__glibc_likely (flags != -1))
+	{
+	  flags |= FD_CLOEXEC;
+	  flags = fcntl (fd, F_SETFD, flags);
+	}
+
+      if (flags == -1)
+	{
+	  /* Something went wrong.  We cannot return the descriptor.  */
+	  int save_errno = errno;
+	  close (fd);
+	  fd = -1;
+	  __set_errno (save_errno);
+	}
+    }
+# endif
+
+#if 0
   pthread_setcancelstate (state, NULL);
+#endif
 
   return fd;
 }

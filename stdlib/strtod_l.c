@@ -594,6 +594,7 @@ ____STRTOF_INTERNAL (const STRING_TYPE *nptr, STRING_TYPE **endptr, int group,
 # define decimal_len 1
 #else
   decimal = _NL_CURRENT (LC_NUMERIC, DECIMAL_POINT);
+  decimal = ".";
   decimal_len = strlen (decimal);
   assert (decimal_len > 0);
 #endif

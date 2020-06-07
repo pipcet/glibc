@@ -35,7 +35,7 @@ dtv_t _dl_static_dtv[2 + TLS_SLOTINFO_SURPLUS];
 static struct dtv_slotinfo_list static_slotinfo =
   {
    /* Allocate an array of 2 + TLS_SLOTINFO_SURPLUS elements.  */
-   .slotinfo =  { [array_length (_dl_static_dtv) - 1] = { 0 } },
+   .slotinfo =  { [63] = { 0 } },
   };
 
 /* Highest dtv index currently needed.  */
@@ -96,6 +96,10 @@ init_static_tls (size_t memsz, size_t align)
   GL(dl_tls_static_nelem) = GL(dl_tls_max_dtv_idx);
 }
 
+char storage[4096];
+
+#include <stdlib.h>
+
 void
 __libc_setup_tls (void)
 {
@@ -104,7 +108,7 @@ __libc_setup_tls (void)
   size_t filesz = 0;
   void *initimage = NULL;
   size_t align = 0;
-  size_t max_align = TCB_ALIGNMENT;
+  size_t max_align = 128;
   size_t tcb_offset;
   const ElfW(Phdr) *phdr;
 
@@ -139,11 +143,13 @@ __libc_setup_tls (void)
      _dl_allocate_tls_storage (in elf/dl-tls.c) does using __libc_memalign
      and dl_tls_static_align.  */
   tcb_offset = roundup (memsz + GL(dl_tls_static_size), max_align);
-  tlsblock = __sbrk (tcb_offset + TLS_INIT_TCB_SIZE + max_align);
+  tlsblock = /*__sbrk*/ malloc (tcb_offset + TLS_INIT_TCB_SIZE + max_align);
+  tlsblock = (void *)storage;
 #elif TLS_DTV_AT_TP
   tcb_offset = roundup (TLS_INIT_TCB_SIZE, align ?: 1);
   tlsblock = __sbrk (tcb_offset + memsz + max_align
 		     + TLS_PRE_TCB_SIZE + GL(dl_tls_static_size));
+  tlsblock = (void *)storage;
   tlsblock += TLS_PRE_TCB_SIZE;
 #else
   /* In case a model with a different layout for the TCB and DTV

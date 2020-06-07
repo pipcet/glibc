@@ -66,7 +66,6 @@ static struct catch *catch_hook;
    we do not care about multi-threaded programs here.  We keep this as a
    global variable.  */
 static receiver_fct receiver;
-#endif /* DL_ERROR_BOOTSTRAP */
 
 /* Lossage while resolving the program's own symbols is always fatal.  */
 static void
@@ -83,6 +82,7 @@ fatal_error (int errcode, const char *objname, const char *occasion,
 		    (errcode
 		     ? __strerror_r (errcode, buffer, sizeof buffer)
 		     : ""));
+  while(1);
 }
 
 void
@@ -126,7 +126,6 @@ _dl_signal_error (int errcode, const char *objname, const char *occation,
 libc_hidden_def (_dl_signal_error)
 
 
-#if DL_ERROR_BOOTSTRAP
 void
 _dl_signal_cexception (int errcode, struct dl_exception *exception,
 		       const char *occasion)

@@ -35,12 +35,12 @@ siginterrupt (int sig, int interrupt)
 
   if (interrupt)
     {
-      __sigaddset (&_sigintr, sig);
+      sigaddset (&_sigintr, sig);
       action.sa_flags &= ~SA_RESTART;
     }
   else
     {
-      __sigdelset (&_sigintr, sig);
+      sigdelset (&_sigintr, sig);
       action.sa_flags |= SA_RESTART;
     }
 

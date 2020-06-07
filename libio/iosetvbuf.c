@@ -89,7 +89,7 @@ _IO_setvbuf (FILE *fp, char *buf, int mode, size_t size)
     }
   result = _IO_SETBUF (fp, buf, size) == NULL ? EOF : 0;
 
-unlock_return:
+  {unlock_return:;}
   _IO_release_lock (fp);
   return result;
 }

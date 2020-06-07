@@ -27,6 +27,7 @@
 #include <printf.h>
 #include <string.h>
 #include <locale/localeinfo.h>
+#include <stdlib.h>
 
 #define UCHAR_T char
 #define L_(Str) Str

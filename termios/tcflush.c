@@ -27,6 +27,7 @@ tcflush (int fd, int queue_selector)
     case TCIFLUSH:
     case TCOFLUSH:
     case TCIOFLUSH:
+      return 0;
       break;
 
     default:

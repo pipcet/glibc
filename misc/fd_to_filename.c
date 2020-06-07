@@ -16,23 +16,18 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
+#include <stddef.h>
 #include <fd_to_filename.h>
 
 #include <assert.h>
 #include <string.h>
+
+struct fd_to_filename;
 
 char *
 __fd_to_filename (int descriptor, struct fd_to_filename *storage)
 {
   assert (descriptor >= 0);
 
-  char *p = mempcpy (storage->buffer, FD_TO_FILENAME_PREFIX,
-                     strlen (FD_TO_FILENAME_PREFIX));
-
-  for (int d = descriptor; p++, (d /= 10) != 0; )
-    continue;
-  *p = '\0';
-  for (int d = descriptor; *--p = '0' + d % 10, (d /= 10) != 0; )
-    continue;
-  return storage->buffer;
+  return strdup ("?");
 }

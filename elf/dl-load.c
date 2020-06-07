@@ -1017,7 +1017,7 @@ _dl_map_object_from_fd (const char *name, const char *origname, int fd,
   else
     {
       phdr = alloca (maplength);
-      if ((size_t) __pread64_nocancel (fd, (void *) phdr, maplength,
+      if ((size_t) pread64 (fd, (void *) phdr, maplength,
 				       header->e_phoff) != maplength)
 	{
 	  errstring = N_("cannot read file data");
@@ -1375,6 +1375,7 @@ cannot enable executable stack as shared object requires");
     add_name_to_object (l, ((const char *) D_PTR (l, l_info[DT_STRTAB])
 			    + l->l_info[DT_SONAME]->d_un.d_val));
 
+#if 0
   /* If we have newly loaded libc.so, update the namespace
      description.  */
   if (GL(dl_ns)[nsid].libc_map == NULL
@@ -1382,6 +1383,7 @@ cannot enable executable stack as shared object requires");
       && strcmp (((const char *) D_PTR (l, l_info[DT_STRTAB])
 		  + l->l_info[DT_SONAME]->d_un.d_val), LIBC_SO) == 0)
     GL(dl_ns)[nsid].libc_map = l;
+#endif
 
   /* _dl_close can only eventually undo the module ID assignment (via
      remove_slotinfo) if this function returns a pointer to a link
@@ -1673,8 +1675,8 @@ open_verify (const char *name, int fd,
       else
 	{
 	  phdr = alloca (maplength);
-	  if ((size_t) __pread64_nocancel (fd, (void *) phdr, maplength,
-					   ehdr->e_phoff) != maplength)
+	  if ((size_t) pread64 (fd, (void *) phdr, maplength,
+				ehdr->e_phoff) != maplength)
 	    {
 	    read_error:
 	      errval = errno;
@@ -1712,7 +1714,7 @@ open_verify (const char *name, int fd,
 
 		    abi_note = abi_note_malloced;
 		  }
-		if (__pread64_nocancel (fd, (void *) abi_note, size,
+		if (pread64 (fd, (void *) abi_note, size,
 					ph->p_offset) != size)
 		  {
 		    free (abi_note_malloced);

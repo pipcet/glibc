@@ -21,6 +21,7 @@
 #include <string.h>
 #include <grp.h>
 #include <grp-merge.h>
+#include <inttypes.h>
 
 #define BUFCHECK(size)			\
   ({					\

@@ -26,4 +26,9 @@
 #define ADD_VARIABLES	name
 #define BUFLEN		NSS_BUFLEN_PASSWD
 
-#include "../nss/getXXbyYY.c"
+//#include "../nss/getXXbyYY.c"
+
+struct passwd *getpwnam(const char *name)
+{
+  return 0;
+}

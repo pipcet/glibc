@@ -18,6 +18,7 @@
 #include <errno.h>
 #include <stdint.h>
 #include <unistd.h>
+#include <string.h>
 #include <libc-internal.h>
 
 /* Defined in brk.c.  */
@@ -55,6 +56,9 @@ __sbrk (intptr_t increment)
 
   if (__brk (oldbrk + increment) < 0)
     return (void *) -1;
+
+  if (increment > 0)
+    memset(oldbrk, 0, increment);
 
   return oldbrk;
 }

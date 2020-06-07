@@ -611,7 +611,7 @@ Filters not supported with LD_TRACE_PRELINKING"));
     memcpy (l_initfini, map->l_searchlist.r_list,
 	    nlist * sizeof (struct link_map *));
 
-  _dl_sort_maps (&l_initfini[1], nlist - 1, NULL, false);
+  //_dl_sort_maps (&l_initfini[1], nlist - 1, NULL, false);
 
   /* Terminate the list of dependencies.  */
   l_initfini[nlist] = NULL;

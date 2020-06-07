@@ -120,14 +120,13 @@ _dl_fixup (
       /* Currently result contains the base load address (or link map)
 	 of the object that defines sym.  Now add in the symbol
 	 offset.  */
-      value = DL_FIXUP_MAKE_VALUE (result,
-				   SYMBOL_ADDRESS (result, sym, false));
+      value = 0;
     }
   else
     {
       /* We already found the symbol.  The module (and therefore its load
 	 address) is also known.  */
-      value = DL_FIXUP_MAKE_VALUE (l, SYMBOL_ADDRESS (l, sym, true));
+      value = 0;
       result = l;
     }
 
@@ -210,7 +209,7 @@ _dl_profile_fixup (
   before previous writes to reloc_result complete as they could
   end-up with an incomplete struct.  */
   DL_FIXUP_VALUE_TYPE value;
-  unsigned int init = atomic_load_acquire (&reloc_result->init);
+  unsigned int init = reloc_result->init;
 
   if (init == 0)
     {
@@ -227,6 +226,7 @@ _dl_profile_fixup (
       const ElfW(Sym) *refsym = &symtab[ELFW(R_SYM) (reloc->r_info)];
       const ElfW(Sym) *defsym = refsym;
       lookup_t result;
+      (void) result;
 
       /* Sanity check that we're really looking at a PLT relocation.  */
       assert (ELFW(R_TYPE)(reloc->r_info) == ELF_MACHINE_JMP_SLOT);
@@ -268,14 +268,14 @@ _dl_profile_fixup (
 	  /* Currently result contains the base load address (or link map)
 	     of the object that defines sym.  Now add in the symbol
 	     offset.  */
-	  value = DL_FIXUP_MAKE_VALUE (result,
-				       SYMBOL_ADDRESS (result, defsym, false));
+	  value = 0;
 
 	  if (defsym != NULL
 	      && __builtin_expect (ELFW(ST_TYPE) (defsym->st_info)
 				   == STT_GNU_IFUNC, 0))
 	    value = elf_ifunc_invoke (DL_FIXUP_VALUE_ADDR (value));
 	}
+#define SYMBOL_ADDRESS(a,b,c) 0
       else
 	{
 	  /* We already found the symbol.  The module (and therefore its load
@@ -382,7 +382,7 @@ _dl_profile_fixup (
 	  reloc_result->addr = value;
 	  /* Guarantee all previous writes complete before
 	     init is updated.  See CONCURRENCY NOTES earlier  */
-	  atomic_store_release (&reloc_result->init, 1);
+	  reloc_result->init = 1;
 	}
       init = 1;
     }

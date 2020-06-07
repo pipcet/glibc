@@ -186,9 +186,6 @@ int (*_dl_make_stack_executable_hook) (void **) = _dl_make_stack_executable;
 /* Function in libpthread to wait for termination of lookups.  */
 void (*_dl_wait_lookup_done) (void);
 
-#if !THREAD_GSCOPE_IN_TCB
-int _dl_thread_gscope_count;
-#endif
 struct dl_scope_free_list *_dl_scope_free_list;
 
 #ifdef NEED_DL_SYSINFO
@@ -355,10 +352,8 @@ _dl_non_dynamic_init (void)
 	  cp = (const char *) __rawmemchr (cp, '\0') + 1;
 	}
 
-#if !HAVE_TUNABLES
-      if (__access ("/etc/suid-debug", F_OK) != 0)
-	__unsetenv ("MALLOC_CHECK_");
-#endif
+      //if (__access ("/etc/suid-debug", F_OK) != 0)
+	//__unsetenv ("MALLOC_CHECK_");
     }
 
 #ifdef DL_PLATFORM_INIT

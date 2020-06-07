@@ -42,7 +42,7 @@ determine_info (const ElfW(Addr) addr, struct link_map *match, Dl_info *info,
   ElfW(Word) strtabsize = match->l_info[DT_STRSZ]->d_un.d_val;
 
   const ElfW(Sym) *matchsym = NULL;
-  if (match->l_info[ELF_MACHINE_GNU_HASH_ADDRIDX] != NULL)
+  if (match->l_info[42] != NULL)
     {
       /* We look at all symbol table entries referenced by the hash
 	 table.  */
@@ -57,7 +57,7 @@ determine_info (const ElfW(Addr) addr, struct link_map *match, Dl_info *info,
 		{
 		  /* The hash table never references local symbols so
 		     we can omit that test here.  */
-		  symndx = ELF_MACHINE_HASH_SYMIDX (match, hasharr);
+		  symndx = 0;
 		  if ((symtab[symndx].st_shndx != SHN_UNDEF
 		       || symtab[symndx].st_value != 0)
 		      && symtab[symndx].st_shndx != SHN_ABS

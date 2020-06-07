@@ -25,6 +25,7 @@
 #include <assert.h>
 
 #include <dirstream.h>
+#include <libc-lock.h>
 
 #ifndef __READDIR_R
 # define __READDIR_R __readdir_r
