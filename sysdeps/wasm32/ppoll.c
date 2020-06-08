@@ -28,6 +28,12 @@
 
 int
 __ppoll(struct pollfd *fds, nfds_t nfds,
+        const struct timespec *ts, const sigset_t *sigmask);
+
+libc_hidden_proto (__ppoll)
+
+int
+__ppoll(struct pollfd *fds, nfds_t nfds,
         const struct timespec *ts, const sigset_t *sigmask)
 {
   int ret = __THINTHIN_SYSCALL(ppoll, fds, nfds, ts, sigmask);

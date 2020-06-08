@@ -39,4 +39,5 @@ __access (const char *file, int type)
 {
   return __THINTHIN_SYSCALL(access, file, type);
 }
+libc_hidden_def (__access)
 weak_alias (__access, access)

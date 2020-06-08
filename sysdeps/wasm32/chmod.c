@@ -36,4 +36,5 @@ __chmod (const char *file, mode_t mode)
   return __THINTHIN_SYSCALL(fchmodat, AT_FDCWD, file, mode, 0);
 }
 
+libc_hidden_def (__chmod)
 weak_alias (__chmod, chmod)

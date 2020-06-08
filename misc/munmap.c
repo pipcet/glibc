@@ -29,5 +29,6 @@ __munmap (void *addr, size_t len)
   return -1;
 }
 
+libc_hidden_def (__munmap)
 stub_warning (munmap)
 weak_alias (__munmap, munmap)

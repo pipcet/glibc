@@ -36,4 +36,5 @@ __mkdir (const char *path, mode_t mode)
   return __THINTHIN_SYSCALL(mkdirat, AT_FDCWD, path, mode);
 }
 
+libc_hidden_def (__mkdir)
 weak_alias (__mkdir, mkdir)

@@ -133,7 +133,7 @@ elf_machine_runtime_setup (struct link_map *l,
    The C function `_dl_start' is the real entry point;
    its return value is the user program's entry point.  */
 
-#define RTLD_START #error need some startup code
+#define RTLD_START
 
 #define ELF_MACHINE_NO_REL 1
 #define ELF_MACHINE_NO_RELA 1
@@ -160,4 +160,8 @@ elf_machine_rela_relative (ElfW(Addr) l_addr, const ElfW(Rela) *reloc,
 			   void *const reloc_addr)
 {
 }
+
+#define ARCH_LA_PLTENTER wasm32_gnu_pltenter
+#define ARCH_LA_PLTEXIT wasm32_gnu_pltexit
+
 #endif

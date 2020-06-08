@@ -24,20 +24,19 @@
 
 /* Seek to OFFSET on FD, starting from WHENCE.  */
 off_t
-__libc_lseek (int fd, off_t offset, int whence)
+__lseek (int fd, off_t offset, int whence)
 {
   return __THINTHIN_SYSCALL(lseek, fd, offset, whence);
 }
 libc_hidden_def (__lseek)
-weak_alias (__libc_lseek, __lseek)
-weak_alias (__libc_lseek, lseek)
+weak_alias (__lseek, lseek)
 
+libc_hidden_proto (__lseek64)
 /* Seek to OFFSET on FD, starting from WHENCE.  */
 off64_t
-__libc_lseek64 (int fd, off64_t offset, int whence)
+__lseek64 (int fd, off64_t offset, int whence)
 {
   return __THINTHIN_SYSCALL(lseek, fd, offset, whence);
 }
 libc_hidden_def (__lseek64)
-weak_alias (__libc_lseek64, __lseek64)
-weak_alias (__libc_lseek64, lseek64)
+weak_alias (__lseek64, lseek64)

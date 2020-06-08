@@ -420,7 +420,7 @@ SINGLE(LOOPFCT) (struct __gconv_step *step,
 #  else
       /* We don't have enough input for another complete input
 	 character.  */
-      while (inptr < inend)
+      while (inptr < inend && inlen < 4)
 	state->__value.__wchb[inlen++] = *inptr++;
 #  endif
 
@@ -486,7 +486,7 @@ SINGLE(LOOPFCT) (struct __gconv_step *step,
       assert (inend - inptr <= sizeof (state->__value));
       state->__count = (state->__count & ~7) | (inend - inptr);
       inlen = 0;
-      while (inptr < inend)
+      while (inptr < inend && inlen < 4)
 	state->__value.__wchb[inlen++] = *inptr++;
 #  endif
     }

@@ -26,5 +26,6 @@ __readdir64 (DIR *dirp)
   __set_errno (ENOSYS);
   return NULL;
 }
+libc_hidden_def (__readdir64);
 weak_alias (__readdir64, readdir64)
 stub_warning (readdir64)

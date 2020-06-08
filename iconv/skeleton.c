@@ -798,7 +798,7 @@ FUNCTION_NAME (struct __gconv_step *step, struct __gconv_step_data *data,
 	  assert (inend - *inptrp < 4);
 
 	  size_t cnt;
-	  for (cnt = 0; *inptrp < inend; ++cnt)
+	  for (cnt = 0; *inptrp < inend && cnt < 4; ++cnt)
 	    data->__statep->__value.__wchb[cnt] = *(*inptrp)++;
 	  data->__statep->__count &= ~7;
 	  data->__statep->__count |= cnt;

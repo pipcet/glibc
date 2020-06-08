@@ -27,4 +27,5 @@ __wait4 (__pid_t pid, int *stat_loc, int options, struct rusage *usage)
   return __THINTHIN_SYSCALL (wait4, pid, stat_loc, options, usage);
 }
 
+libc_hidden_def (__wait4)
 weak_alias (__wait4, wait4)

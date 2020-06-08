@@ -28,7 +28,7 @@ int
 attribute_compat_text_section
 __sigismember_compat (const __sigset_t *set, int sig)
 {
-  return __sigismember (*set, sig);
+  return __sigismember (set, sig);
 }
 compat_symbol (libc, __sigismember_compat, __sigismember, GLIBC_2_0);
 
@@ -36,7 +36,7 @@ int
 attribute_compat_text_section
 __sigaddset_compat (__sigset_t *set, int sig)
 {
-  __sigaddset (*set, sig);
+  __sigaddset (set, sig);
   return 0;
 }
 compat_symbol (libc, __sigaddset_compat, __sigaddset, GLIBC_2_0);
@@ -45,7 +45,7 @@ int
 attribute_compat_text_section
 __sigdelset_compat (__sigset_t *set, int sig)
 {
-  __sigdelset (*set, sig);
+  __sigdelset (set, sig);
   return 0;
 }
 compat_symbol (libc, __sigdelset_compat, __sigdelset, GLIBC_2_0);

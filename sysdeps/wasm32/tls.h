@@ -99,10 +99,12 @@ typedef struct {
     char *to_free;
     int is_static;
   } pointer;
-} dtv_t;
+} dtv_t2;
+#include <dl-dtv.h>
 
 typedef dtv_t tcbhead_t;
 #endif
+
 
 /* Return dtv of given thread descriptor.  */
 # define GET_DTV(tcbp) \
@@ -138,6 +140,12 @@ typedef dtv_t tcbhead_t;
 #define INSTALL_DTV(tcb, init_dtv)              \
   ({                                            \
     *(void **)(tcb) = init_dtv; \
+    if(0) fprintf(stderr, "INSTALL_DTV() from %p\n", __builtin_return_address(0)); \
+    NULL;                                       \
+  })
+
+#define INSTALL_NEW_DTV(init_dtv)              \
+  ({                                            \
     if(0) fprintf(stderr, "INSTALL_DTV() from %p\n", __builtin_return_address(0)); \
     NULL;                                       \
   })

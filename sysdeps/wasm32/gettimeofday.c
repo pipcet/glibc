@@ -29,6 +29,4 @@ __gettimeofday (struct timeval *tv, void *tz)
 {
   return __THINTHIN_SYSCALL(gettimeofday, tv, tz);
 }
-libc_hidden_def (__gettimeofday)
 weak_alias (__gettimeofday, gettimeofday)
-libc_hidden_weak (gettimeofday)

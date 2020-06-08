@@ -36,4 +36,3 @@ time (time_t *timer)
 
   return tv.tv_sec;
 }
-libc_hidden_def (time)

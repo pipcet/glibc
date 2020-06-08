@@ -37,6 +37,12 @@ int
 __pselect(int maxfds, fd_set *readfds,
           fd_set *writefds, fd_set *exceptfds,
           const struct timespec *timeout,
+          const sigset_t *sigmask);
+libc_hidden_proto (__pselect)
+int
+__pselect(int maxfds, fd_set *readfds,
+          fd_set *writefds, fd_set *exceptfds,
+          const struct timespec *timeout,
           const sigset_t *sigmask)
 {
   struct pollfd pfd[maxfds];

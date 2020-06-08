@@ -53,8 +53,6 @@ weak_alias (__libc_open, open)
 /* open64 is just an alias.  */
 strong_alias (__libc_open, __libc_open64)
 strong_alias (__libc_open64, __open64)
-libc_hidden_def (__open64)
 weak_alias (__libc_open64, open64)
 
 strong_alias (__libc_open, __open_nocancel)
-libc_hidden_def (__open_nocancel)

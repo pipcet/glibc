@@ -30,4 +30,3 @@ libc_hidden_def (__waitpid)
 weak_alias (__waitpid, waitpid)
 
 strong_alias (__waitpid, __waitpid_nocancel)
-libc_hidden_def (__waitpid_nocancel)

@@ -35,6 +35,7 @@
 #include <link.h>
 #include <dl-lookupcfg.h>
 #include <dl-sysdep.h>
+#include <dl-dtv.h>
 #include <libc-lock.h>
 #include <hp-timing.h>
 #include <tls.h>
@@ -66,14 +67,14 @@ __BEGIN_DECLS
 /* Result of the lookup functions and how to retrieve the base address.  */
 typedef struct link_map *lookup_t;
 #define LOOKUP_VALUE(map) map
-#define LOOKUP_VALUE_ADDRESS(map) ((map) ? (map)->l_addr : 0)
+#define LOOKUP_VALUE_ADDRESS(map,bool) ((map) ? (map)->l_addr : 0)
 
 /* On some architectures a pointer to a function is not just a pointer
    to the actual code of the function but rather an architecture
    specific descriptor. */
 #ifndef ELF_FUNCTION_PTR_IS_SPECIAL
 # define DL_SYMBOL_ADDRESS(map, ref) \
- (void *) (LOOKUP_VALUE_ADDRESS (map) + ref->st_value)
+  (void *) (LOOKUP_VALUE_ADDRESS (map,false) + ref->st_value)
 # define DL_LOOKUP_ADDRESS(addr) ((ElfW(Addr)) (addr))
 # define DL_CALL_DT_INIT(map, start, argc, argv, env) \
  ((init_t) (start)) (argc, argv, env)
@@ -227,6 +228,8 @@ struct audit_ifaces
     uintptr_t (*symbind64) (Elf64_Sym *, unsigned int, uintptr_t *,
 			    uintptr_t *, unsigned int *, const char *);
   };
+  uintptr_t (*wasm32_gnu_pltenter)(void *, ...);
+  uintptr_t (*wasm32_gnu_pltexit)(void *, ...);
   union
   {
 #ifdef ARCH_PLTENTER_MEMBERS
@@ -297,6 +300,7 @@ struct rtld_global
   {
     /* A pointer to the map for the main map.  */
     struct link_map *_ns_loaded;
+    struct link_map *libc_map;
     /* Number of object in the _dl_loaded list.  */
     unsigned int _ns_nloaded;
     /* Direct pointer to the searchlist of the main object.  */
@@ -345,10 +349,8 @@ struct rtld_global
   /* The object to be initialized first.  */
   EXTERN struct link_map *_dl_initfirst;
 
-#if HP_SMALL_TIMING_AVAIL
   /* Start time on CPU clock.  */
   EXTERN hp_timing_t _dl_cpuclock_offset;
-#endif
 
   /* Map of shared object to be profiled.  */
   EXTERN struct link_map *_dl_profile_map;
@@ -368,7 +370,7 @@ struct rtld_global
      reserve memory for the data the audit libraries need.  */
   EXTERN struct link_map _dl_rtld_map;
 #ifdef SHARED
-  struct auditstate audit_data[DL_NNS];
+  struct auditstate _dl_rtld_auditstate[DL_NNS];
 #endif
 
 #if defined SHARED && defined _LIBC_REENTRANT \
@@ -695,23 +697,27 @@ extern int _dl_sysdep_open_zero_fill (void); /* dl-sysdep.c */
    interpreted as for a `printf' call.  All the lines start with a
    tag showing the PID.  */
 extern void _dl_debug_printf (const char *fmt, ...)
-     __attribute__ ((__format__ (__printf__, 1, 2))) attribute_hidden;
+  __attribute__ ((__format__ (__printf__, 1, 2))) attribute_hidden;
 
 /* Write message on the debug file descriptor.  The parameters are
    interpreted as for a `printf' call.  All the lines buf the first
    start with a tag showing the PID.  */
 extern void _dl_debug_printf_c (const char *fmt, ...)
-     __attribute__ ((__format__ (__printf__, 1, 2))) attribute_hidden;
+  __attribute__ ((__format__ (__printf__, 1, 2))) attribute_hidden;
 
 
 /* Write a message on the specified descriptor FD.  The parameters are
    interpreted as for a `printf' call.  */
 extern void _dl_dprintf (int fd, const char *fmt, ...)
-     __attribute__ ((__format__ (__printf__, 2, 3)))
-     attribute_hidden;
+  __attribute__ ((__format__ (__printf__, 2, 3)))
+  attribute_hidden;
+
+extern void _dl_printf (const char *fmt, ...)
+  __attribute__ ((__format__ (__printf__, 1, 2))) attribute_hidden;
 
 extern void _dl_error_printf (const char *fmt, ...);
-extern void _dl_fatal_printf (const char *fmt, ...);
+extern void _dl_fatal_printf (const char *fmt, ...)
+  __attribute__ ((noreturn));
 
 /* An exception raised by the _dl_signal_error function family and
    caught by _dl_catch_error function family.  Exceptions themselves
@@ -1119,7 +1125,38 @@ extern void _dl_non_dynamic_init (void) ;
 /* Used by static binaries to check the auxiliary vector.  */
 extern void _dl_aux_init (ElfW(auxv_t) *av) ;
 
+/* Return true if the ld.so copy in this namespace is actually active
+   and working.  If false, the dl_open/dlfcn hooks have to be used to
+   call into the outer dynamic linker (which happens after static
+   dlopen).  */
+#ifdef SHARED
+static inline bool
+rtld_active (void)
+{
+  /* The default-initialized variable does not have a non-zero
+     dl_init_all_dirs member, so this allows us to recognize an
+     initialized and active ld.so copy.  */
+  return GLRO(dl_init_all_dirs) != NULL;
+}
+
+static inline struct auditstate *
+link_map_audit_state (struct link_map *l, size_t index)
+{
+  if (l == &GL (dl_rtld_map))
+    /* The auditstate array is stored separately.  */
+    return &GL (dl_rtld_auditstate) [index];
+  else
+    {
+      /* The auditstate array follows the link map in memory.  */
+      struct auditstate *base = (struct auditstate *) (l + 1);
+      return &base[index];
+    }
+}
+#endif /* SHARED */
 
 __END_DECLS
+
+#define ARCH_LA_PLTENTER wasm32_gnu_pltenter
+#define ARCH_LA_PLTEXIT wasm32_gnu_pltexit
 
 #endif /* ldsodefs.h */

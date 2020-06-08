@@ -36,6 +36,7 @@
 #define _LIBIOP_H 1
 
 #include <stddef.h>
+#include <stdbool.h>
 
 #include <errno.h>
 #include <libc-lock.h>

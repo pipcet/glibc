@@ -18,6 +18,7 @@
 
 #include <errno.h>
 #include <malloc.h>
+#include <stdlib.h>
 
 void *
 __libc_reallocarray (void *optr, size_t nmemb, size_t elem_size)

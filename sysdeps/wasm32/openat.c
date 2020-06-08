@@ -28,7 +28,7 @@
 /* Open FILE with access OFLAG.  If OFLAG includes O_CREAT,
    a third argument is the file protection.  */
 int
-__libc_openat (int fd, const char *file, int oflag, ...)
+__openat (int fd, const char *file, int oflag, ...)
 {
   mode_t mode = 0;
 
@@ -45,12 +45,8 @@ __libc_openat (int fd, const char *file, int oflag, ...)
       return __THINTHIN_SYSCALL(openat, fd, file, oflag, 0);
     }
 }
-libc_hidden_def (__libc_openat)
-weak_alias (__libc_openat, __openat)
-libc_hidden_weak (__openat)
-weak_alias (__libc_openat, openat)
+libc_hidden_def (__openat)
+weak_alias (__openat, openat)
 
-strong_alias (__libc_openat, __openat64_nocancel)
-libc_hidden_def (__openat64_nocancel)
-strong_alias (__libc_openat, __openat_nocancel)
-libc_hidden_def (__openat_nocancel)
+strong_alias (__openat, __openat64_nocancel)
+strong_alias (__openat, __openat_nocancel)

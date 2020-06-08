@@ -37,6 +37,10 @@ const char *const __new_sys_sigabbrev[NSIG] =
 #undef init_sig
 };
 
+#ifndef OLD_SIGLIST_SIZE
+#define OLD_SIGLIST_SIZE 1
+#endif
+
 #if SHLIB_COMPAT (libc, GLIBC_2_0, GLIBC_2_1)
 declare_symbol_alias (__old_sys_siglist, __new_sys_siglist, object,
 		      OLD_SIGLIST_SIZE * __WORDSIZE / 8)
