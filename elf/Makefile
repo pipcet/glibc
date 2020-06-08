@@ -508,7 +508,7 @@ ifeq ($(have-ssp),yes)
 rtld-stubbed-symbols += __stack_chk_fail __stack_chk_fail_local
 endif
 
-$(objpfx)librtld.map: $(objpfx)dl-allobjs.os $(common-objpfx)libc_pic.a
+$(objpfx)librtld.map: $(common-objpfx)libc_pic.a
 	@-rm -f $@T
 	$(reloc-link) -o $@.o $(rtld-stubbed-symbols-args) \
 		'-Wl,-(' $^ -lgcc '-Wl,-)' -Wl,-Map,$@T
@@ -561,10 +561,8 @@ $(objpfx)ld.so: $(objpfx)librtld.os $(ld-map)
 	  | $(AWK) '($$7 ~ /^UND(|EF)$$/ && $$1 != "0:" && $$4 != "REGISTER") { print; p=1 } END { exit p != 0 }'
 	mv -f $@.new $@
 
-ifeq (yes,$(build-shared))
 # interp.c exists just to get the runtime linker path into libc.so.
 $(objpfx)interp.os: $(common-objpfx)runtime-linker.h
-endif
 
 ifneq (ld.so,$(rtld-installed-name))
 # Make sure ld.so.1 exists in the build directory so we can link

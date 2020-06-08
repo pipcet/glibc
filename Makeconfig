@@ -940,7 +940,7 @@ libio-include = -I$(..)libio
 built-modules = iconvprogs iconvdata ldconfig lddlibc4 libmemusage \
 		libSegFault libpcprofile librpcsvc locale-programs \
 		memusagestat nonlib nscd extramodules libnldbl libsupport \
-		libc libm testsuite
+		testsuite libc libm
 
 in-module = $(subst -,_,$(firstword $(libof-$(basename $(@F))) \
 				    $(libof-$(<F)) \
@@ -1089,8 +1089,6 @@ subdir-srcdirs = $(foreach dir,$(subdirs),\
 	sed '/^[ 	]*#/d;/^[ 	]*$$/d' $< > $@T
 	mv -f $@T $@
 
-ifeq (yes, $(build-shared))
-
 # To generate a header to support more than one ABI for different
 # architecture variants, the CPU/Makefile defines abi-variants to be a
 # list of names for those variants (e.g. 32 64), and, for each variant,
@@ -1152,8 +1150,6 @@ $(common-objpfx)libc-modules.stmp: $(..)scripts/gen-libc-modules.awk \
 	$(move-if-change) ${@:stmp=T} ${@:stmp=h}
 	touch $@
 
-endif
-
 # Build the tunables list header early since it could be used by any module in
 # glibc.
 ifneq (no,$(have-tunables))
@@ -1173,7 +1169,6 @@ endif
 
 # Generate version maps, but wait until sysdep-subdirs is known
 ifeq ($(sysd-sorted-done),t)
-ifeq ($(build-shared),yes)
 -include $(common-objpfx)sysd-versions
 -include $(common-objpfx)Versions.mk
 $(addprefix $(common-objpfx),$(version-maps)): $(common-objpfx)sysd-versions
@@ -1223,7 +1218,6 @@ $(common-objpfx)versions.stmp: $(common-objpfx)Versions.all \
 	mv -f $(common-objpfx)sysd-versionsT $(common-objpfx)sysd-versions
 	touch $@
 endif # avoid-generated
-endif # $(build-shared) = yes
 endif # sysd-sorted-done
 
 # The name under which the run-time dynamic linker is installed.
@@ -1272,7 +1266,7 @@ all-subdirs = csu assert ctype locale intl catgets math setjmp signal	    \
 	      grp pwd posix io termios resource misc socket sysvipc gmon    \
 	      gnulib iconv iconvdata wctype manual shadow gshadow po argp   \
 	      localedata timezone rt conform debug mathvec support	    \
-	      dlfcn elf
+	      dlfcn
 
 ifeq ($(build-crypt),yes)
 all-subdirs += crypt

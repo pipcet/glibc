@@ -158,7 +158,6 @@ $(common-objpfx)libc-abis.stamp: $(..)scripts/gen-libc-abis \
 common-generated += $(common-objpfx)libc-abis.h
 endif # avoid-generated
 
-ifeq (yes,$(build-shared))
 $(common-objpfx)runtime-linker.h: $(common-objpfx)runtime-linker.stamp; @:
 $(common-objpfx)runtime-linker.stamp: $(common-objpfx)config.make
 	$(make-target-directory)
@@ -166,7 +165,6 @@ $(common-objpfx)runtime-linker.stamp: $(common-objpfx)config.make
 		> ${@:stamp=T}
 	$(move-if-change) ${@:stamp=T} ${@:stamp=h}
 	touch $@
-endif
 
 # Make sure the subdirectory for object files gets created.
 ifdef objpfx
@@ -289,7 +287,6 @@ $(objpfx)test-as-const-%.c: $(..)scripts/gen-as-const.py $(..)Makerules \
 	mv -f $@T $@
 endif
 
-ifeq (yes,$(build-shared))
 # Generate the header containing the names of all shared libraries.
 # We use a stamp file to avoid unnecessary recompilations.
 before-compile += $(common-objpfx)gnu/lib-names.h
@@ -350,7 +347,6 @@ $(common-objpfx)$(lib-names-stmp-abi): $(..)scripts/lib-names.awk \
 	touch $@
 endif
 common-generated += $(lib-names-h-abi) $(lib-names-stmp-abi)
-endif
 
 ###############################################################################
 # NOTE!  Everything adding to before-compile needs to come before this point! #

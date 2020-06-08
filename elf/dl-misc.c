@@ -296,6 +296,9 @@ _dl_error_printf (const char *fmt, ...)
 }
 
 void
+_dl_fatal_printf (const char *fmt, ...);
+rtld_hidden_proto(_dl_fatal_printf)
+void
 _dl_fatal_printf (const char *fmt, ...)
 {
   va_list arg;
