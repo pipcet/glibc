@@ -1,0 +1,6 @@
+GLIBC_PROVIDES
+
+case "$machine" in
+wasm32)
+  elf=no
+esac
