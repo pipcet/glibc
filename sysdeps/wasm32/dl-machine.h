@@ -144,7 +144,7 @@ elf_machine_runtime_setup (struct link_map *l,
 #define elf_machine_type_class(type)                            \
   (R_ASMJS_HEX16R4)
 
-#define elf_machine_plt_value(l,reloc,value) 0xdeadbeef
+#define elf_machine_plt_value(l,reloc,value) 0
 #endif
 
 #ifdef RESOLVE_MAP
