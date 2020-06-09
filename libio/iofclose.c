@@ -24,6 +24,7 @@
    This exception applies to code released by its copyright holders
    in files containing the exception.  */
 
+#include <stdio-lock.h>
 #include "libioP.h"
 #include <stdlib.h>
 #include "../iconv/gconv_int.h"

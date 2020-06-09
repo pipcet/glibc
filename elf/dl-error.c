@@ -23,5 +23,5 @@
    The signal/catch mechanism is used by the audit framework, which
    means that even in ld.so, not all errors are fatal.  */
 
-#define DL_ERROR_BOOTSTRAP 1
+#define DL_ERROR_BOOTSTRAP 0
 #include "dl-error-skeleton.c"

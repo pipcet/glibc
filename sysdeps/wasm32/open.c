@@ -56,3 +56,4 @@ strong_alias (__libc_open64, __open64)
 weak_alias (__libc_open64, open64)
 
 strong_alias (__libc_open, __open_nocancel)
+strong_alias (__libc_open, __open64_nocancel)

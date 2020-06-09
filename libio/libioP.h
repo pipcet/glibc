@@ -891,7 +891,7 @@ _IO_acquire_lock_fct (FILE **p)
     _IO_funlockfile (fp);
 }
 
-#if !defined _IO_MTSAFE_IO && IS_IN (libc)
+#if !defined _IO_MTSAFE_IO && IS_IN (libc) && !defined (_IO_acquire_lock)
 # define _IO_acquire_lock(_fp)						      \
   do {
 # define _IO_release_lock(_fp)						      \

@@ -93,16 +93,12 @@ before-compile  += $(objpfx)trusted-dirs.h
 generated	+= trusted-dirs.h trusted-dirs.st for-renamed/renamed.so
 generated-dirs	+= for-renamed
 
-ifeq ($(build-shared),yes)
 ld-map		= $(common-objpfx)ld.map
-endif
 
-ifeq (yes,$(build-shared))
 extra-objs	= $(all-rtld-routines:%=%.os) sofini.os interp.os
 generated	+= librtld.os dl-allobjs.os ld.so ldd
 install-others	= $(inst_rtlddir)/$(rtld-installed-name)
 install-bin-script = ldd
-endif
 
 others		= sprof sln
 install-bin	= sprof
@@ -508,11 +504,10 @@ ifeq ($(have-ssp),yes)
 rtld-stubbed-symbols += __stack_chk_fail __stack_chk_fail_local
 endif
 
-$(objpfx)librtld.map: $(common-objpfx)libc_pic.a
+$(objpfx)librtld.map: $(objpfx)dl-allobjs.os $(common-objpfx)libc_pic.a
 	@-rm -f $@T
 	$(reloc-link) -o $@.o $(rtld-stubbed-symbols-args) \
 		'-Wl,-(' $^ -lgcc '-Wl,-)' -Wl,-Map,$@T
-	rm -f $@.o
 	mv -f $@T $@
 
 # For lld, skip preceding addresses and values before matching the archive and the member.

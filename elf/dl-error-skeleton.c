@@ -82,7 +82,6 @@ fatal_error (int errcode, const char *objname, const char *occasion,
 		    (errcode
 		     ? __strerror_r (errcode, buffer, sizeof buffer)
 		     : ""));
-  while(1);
 }
 
 void
@@ -218,6 +217,7 @@ _dl_catch_exception (struct dl_exception *exception,
 }
 libc_hidden_def (_dl_catch_exception)
 
+#if DL_ERROR_BOOTSTRAP
 int
 _dl_catch_error (const char **objname, const char **errstring,
 		 bool *mallocedp, void (*operate) (void *), void *args)
@@ -231,7 +231,6 @@ _dl_catch_error (const char **objname, const char **errstring,
 }
 libc_hidden_def (_dl_catch_error)
 
-#if DL_ERROR_BOOTSTRAP
 void
 _dl_receive_error (receiver_fct fct, void (*operate) (void *), void *args)
 {

@@ -14,8 +14,6 @@ extern int (__isctype) (int __c, int __mask);
 libc_hidden_proto (tolower)
 libc_hidden_proto (toupper)
 
-# if IS_IN (libc)
-
 /* These accessors are used by the optimized macros to find the
    thread-local cache of ctype information from the current thread's
    locale.  For inside libc, define them as inlines using the _NL_CURRENT
@@ -34,6 +32,8 @@ __libc_tsd_define (extern, const uint16_t *, CTYPE_B)
 __libc_tsd_define (extern, const int32_t *, CTYPE_TOUPPER)
 __libc_tsd_define (extern, const int32_t *, CTYPE_TOLOWER)
 
+
+# if IS_IN (libc)
 
 CTYPE_EXTERN_INLINE const uint16_t ** __attribute__ ((const))
 __ctype_b_loc (void)

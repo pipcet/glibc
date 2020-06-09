@@ -27,6 +27,7 @@
    in files containing the exception.  */
 
 #include <assert.h>
+#include <stdio-lock.h>
 #include <libioP.h>
 #include <wchar.h>
 #include <gconv.h>

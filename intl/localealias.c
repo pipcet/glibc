@@ -57,6 +57,7 @@ char *alloca ();
 
 #include <stdlib.h>
 #include <string.h>
+#include <locale.h>
 
 #include "gettextP.h"
 

@@ -182,7 +182,6 @@ enter_unique_sym (struct unique_sym *table, size_t size,
 }
 
 #define DL_LOOKUP_FOR_RELOCATE 0
-#define ELF_MACHINE_GNU_HASH_ADDRIDX 42
 static void
 ELF_MACHINE_XHASH_SETUP (Elf32_Word *a, Elf32_Word b, void *c)
 {

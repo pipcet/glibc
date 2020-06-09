@@ -301,6 +301,7 @@ Inconsistency detected by ld.so: %s: %u: %s%sUnexpected error: %s.\n",
 rtld_hidden_weak (__assert_perror_fail)
 #endif
 
+#if 0
 #undef _itoa
 /* We always use _itoa instead of _itoa_word in ld.so since the former
    also has to be present and it is never about speed when these
@@ -317,6 +318,7 @@ _itoa (unsigned long long int value, char *buflim, unsigned int base,
 
   return buflim;
 }
+#endif
 
 /* The '_itoa_lower_digits' variable in libc.so is able to handle bases
    up to 36.  We don't need this here.  */

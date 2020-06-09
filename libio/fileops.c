@@ -26,6 +26,7 @@
    in files containing the exception.  */
 
 
+#include <stdio-lock.h>
 #include "libioP.h"
 #include <assert.h>
 #include <fcntl.h>

@@ -33,6 +33,7 @@
 #include <ctype.h>
 #include <sys/types.h>
 #include <stdlib.h>
+#include <locale.h>
 
 #include "loadinfo.h"
 

@@ -21,14 +21,13 @@
 
 #include <libc-lock.h>
 
+typedef int _IO_lock_t;
 __libc_lock_define_recursive (typedef, _IO_lock_t)
 #define _IO_lock_t_defined 1
 
 /* We need recursive (counting) mutexes.  */
 #ifdef _LIBC_LOCK_RECURSIVE_INITIALIZER
 # define _IO_lock_initializer _LIBC_LOCK_RECURSIVE_INITIALIZER
-#elif _IO_MTSAFE_IO
- #error libio needs recursive mutexes for _IO_MTSAFE_IO
 #endif
 
 #define _IO_lock_init(_name)	__libc_lock_init_recursive (_name)
@@ -37,15 +36,12 @@ __libc_lock_define_recursive (typedef, _IO_lock_t)
 #define _IO_lock_trylock(_name)	__libc_lock_trylock_recursive (_name)
 #define _IO_lock_unlock(_name)	__libc_lock_unlock_recursive (_name)
 
-
 #define _IO_cleanup_region_start(_fct, _fp) \
   __libc_cleanup_region_start (((_fp)->_flags & _IO_USER_LOCK) == 0, _fct, _fp)
 #define _IO_cleanup_region_start_noarg(_fct) \
   __libc_cleanup_region_start (1, _fct, NULL)
 #define _IO_cleanup_region_end(_doit) \
   __libc_cleanup_region_end (_doit)
-
-#if defined _LIBC && IS_IN (libc)
 
 # ifdef __EXCEPTIONS
 # define _IO_acquire_lock(_fp) \
@@ -58,7 +54,5 @@ __libc_lock_define_recursive (typedef, _IO_lock_t)
 #  define _IO_acquire_lock(_fp) _IO_acquire_lock_needs_exceptions_enabled
 # endif
 # define _IO_release_lock(_fp) ; } while (0)
-
-#endif
 
 #endif /* stdio-lock.h */

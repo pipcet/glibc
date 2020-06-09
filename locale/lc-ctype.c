@@ -16,8 +16,9 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#include "localeinfo.h"
+#include <locale.h>
 #include <ctype.h>
+#include "localeinfo.h"
 #include <endian.h>
 #include <stdint.h>
 
