@@ -243,6 +243,12 @@ static void
 print_enter (uintptr_t *refcook, uintptr_t *defcook, const char *symname,
 	     unsigned long int reg1, unsigned long int reg2,
 	     unsigned long int reg3, unsigned int flags)
+  __attribute__ ((used));
+
+static void
+print_enter (uintptr_t *refcook, uintptr_t *defcook, const char *symname,
+	     unsigned long int reg1, unsigned long int reg2,
+	     unsigned long int reg3, unsigned int flags)
 {
   char buf[3 * sizeof (pid_t) + 3];
   buf[0] = '\0';
@@ -323,9 +329,11 @@ la_sparc64_gnu_pltenter (Elf64_Sym *sym __attribute__ ((unused)),
   return sym->st_value;
 }
 #elif !defined HAVE_ARCH_PLTENTER
-# warning "pltenter for architecture not supported"
 #endif
 
+static void
+print_exit (uintptr_t *refcook, uintptr_t *defcook, const char *symname,
+	    unsigned long int reg) __attribute__ ((used));
 
 static void
 print_exit (uintptr_t *refcook, uintptr_t *defcook, const char *symname,
@@ -382,5 +390,4 @@ la_sparc64_gnu_pltexit (Elf64_Sym *sym, unsigned int ndx, uintptr_t *refcook,
   return 0;
 }
 #elif !defined HAVE_ARCH_PLTEXIT
-# warning "pltexit for architecture not supported"
 #endif
