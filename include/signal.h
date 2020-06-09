@@ -2,6 +2,7 @@
 # include <signal/signal.h>
 
 # ifndef _ISOMAC
+extern const char *const _sys_siglist[NSIG];
 libc_hidden_proto (sigemptyset)
 libc_hidden_proto (sigfillset)
 libc_hidden_proto (sigaddset)
@@ -12,7 +13,7 @@ libc_hidden_proto (__sigpause)
 libc_hidden_proto (raise)
 libc_hidden_proto (__libc_current_sigrtmin)
 libc_hidden_proto (__libc_current_sigrtmax)
-//libc_hidden_proto (_sys_siglist)
+libc_hidden_proto (_sys_siglist)
 
 /* Now define the internal interfaces.  */
 extern __sighandler_t __bsd_signal (int __sig, __sighandler_t __handler);

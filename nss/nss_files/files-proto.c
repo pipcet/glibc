@@ -41,7 +41,7 @@ DB_LOOKUP (protobyname, '.', 0, ("%s", name),
 	   LOOKUP_NAME (p_name, p_aliases),
 	   const char *name)
 
-DB_LOOKUP (protobynumber, '=', 20, ("%zd", (ssize_t) proto),
+DB_LOOKUP (protobynumber, '=', 20, ("%ld", (long) proto),
 	   {
 	     if (result->p_proto == proto)
 	       break;

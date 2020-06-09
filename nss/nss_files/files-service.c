@@ -55,7 +55,7 @@ DB_LOOKUP (servbyname, ':',
 	   const char *name, const char *proto)
 
 DB_LOOKUP (servbyport, '=', 21 + (proto ? strlen (proto) : 0),
-	   ("%zd/%s", (ssize_t) ntohs (port), proto ?: ""),
+	   ("%ld/%s", (long) ntohs (port), proto ?: ""),
 	   {
 	     /* Must match both port and protocol.  */
 	     if (result->s_port == port

@@ -463,7 +463,7 @@ gconv_end (struct __gconv_step *data)
 
 /* Next, define the other direction.  */
 
-enum conversion { none = 0, european, japanese, chinese, korean, other };
+enum conversion { conversion_none = 0, european, japanese, chinese, korean, other };
 
 /* A datatype for conversion lists.  */
 typedef unsigned int cvlist_t;

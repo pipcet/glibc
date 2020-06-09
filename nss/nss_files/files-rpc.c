@@ -41,7 +41,7 @@ DB_LOOKUP (rpcbyname, '.', 0, ("%s", name),
 	   LOOKUP_NAME (r_name, r_aliases),
 	   const char *name)
 
-DB_LOOKUP (rpcbynumber, '=', 20, ("%zd", (ssize_t) number),
+DB_LOOKUP (rpcbynumber, '=', 20, ("%ld", (long) number),
 	   {
 	     if (result->r_number == number)
 	       break;

@@ -547,13 +547,11 @@ $(objpfx)ld.so: $(objpfx)librtld.os $(ld-map)
 # Link into a temporary file so that we don't touch $@ at all
 # if the sanity check below fails.
 	$(LINK.o) -nostdlib -nostartfiles -shared -o $@.new		\
-		  $(LDFLAGS-rtld) -Wl,-z,defs $(z-now-$(bind-now))	\
+		  $(LDFLAGS-rtld) $(z-now-$(bind-now))	\
 		  $(filter-out $(map-file),$^) $(load-map-file)		\
 		  -Wl,-soname=$(rtld-installed-name)			\
 		  -Wl,-defsym=_begin=0
 	$(call after-link,$@.new)
-	$(READELF) -s $@.new \
-	  | $(AWK) '($$7 ~ /^UND(|EF)$$/ && $$1 != "0:" && $$4 != "REGISTER") { print; p=1 } END { exit p != 0 }'
 	mv -f $@.new $@
 
 # interp.c exists just to get the runtime linker path into libc.so.
@@ -588,7 +586,7 @@ $(inst_slibdir)/$(rtld-version-installed-name): $(objpfx)ld.so $(+force)
 
 $(inst_rtlddir)/$(rtld-installed-name): \
   $(inst_slibdir)/$(rtld-version-installed-name) \
-  $(inst_slibdir)/libc-$(version).so
+  $(inst_slibdir)/libc.so
 	$(make-target-directory)
 	$(make-shlib-link)
 

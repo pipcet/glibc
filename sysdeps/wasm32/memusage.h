@@ -21,8 +21,7 @@
 #include <stdint.h>
 
 #ifndef GETSP
-# warning "GETSP is not defined for this architecture."
-# define GETSP 0
+# define GETSP() 0
 #endif
 
 #ifndef GETTIME
@@ -38,14 +37,16 @@
 #endif
 
 #if LONG_BIT == 32
-# define memusage_cntr_t uatomic32_t
+# define memusage_cntr_t uint32_t
 #else
-# define memusage_cntr_t uatomic64_t
+# define memusage_cntr_t uint64_t
 #endif
 #ifndef memusage_size_t
 # if LONG_BIT == 32
-#  define memusage_size_t uatomic32_t
+#  define memusage_size_t uint32_t
 # else
-#  define memusage_size_t uatomic64_t
+#  define memusage_size_t uint64_t
 # endif
 #endif
+
+#define uatomic32_t uint32_t

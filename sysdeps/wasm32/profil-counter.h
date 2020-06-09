@@ -21,6 +21,8 @@
 
 #include <stdint.h>
 
+#define GET_PC(scp) 0
+
 static void
 __profil_counter (int signr, int code, struct sigcontext *scp)
 {
