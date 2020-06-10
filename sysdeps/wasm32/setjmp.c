@@ -1,6 +1,8 @@
 #include <setjmp.h>
 #include <stdio.h>
 
+#undef __sigsetjmp
+
 int __sigsetjmp_fp (struct __jmp_buf_tag env[1], int __savemask,
                     void *__fp)
 {
@@ -114,4 +116,6 @@ __libc_sigsetjmp (jmp_buf env, int savemask)
   return 0;
 }
 
+libc_hidden_proto (__sigsetjmp)
 weak_alias (__libc_sigsetjmp, __sigsetjmp)
+libc_hidden_def (__sigsetjmp)
