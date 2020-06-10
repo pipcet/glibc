@@ -32,7 +32,10 @@ __close (int fd)
 libc_hidden_def (__close)
 strong_alias (__close, __libc_close)
 weak_alias (__close, close)
-strong_alias (__close, __close_nocancel)
+extern __typeof (__close) __close_nocancel;
+libc_hidden_proto (__close_nocancel)
+strong_alias (__libc_close, __close_nocancel)
+libc_hidden_def (__close_nocancel)
 
 int __close_nostatus (int fd);
 libc_hidden_proto (__close_nostatus)
@@ -43,4 +46,8 @@ __close_nostatus (int fd)
   return __THINTHIN_SYSCALL_NOSTATUS(close, fd);
 }
 libc_hidden_def (__close_nostatus)
+extern __typeof (__close_nostatus) __close_nocancel_nostatus;
+libc_hidden_proto (__close_nocancel_nostatus)
 strong_alias (__close_nostatus, __close_nocancel_nostatus)
+libc_hidden_def (__close_nocancel_nostatus)
+

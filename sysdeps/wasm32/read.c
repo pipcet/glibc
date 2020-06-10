@@ -34,5 +34,7 @@ weak_alias (__libc_read, __read)
 libc_hidden_def (read)
 weak_alias (__libc_read, read)
 
+extern __typeof (__read) __read_nocancel;
+libc_hidden_proto (__read_nocancel)
 strong_alias (__libc_read, __read_nocancel)
-
+libc_hidden_def (__read_nocancel)

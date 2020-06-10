@@ -25,7 +25,8 @@ int __sigsetjmp_fp (struct __jmp_buf_tag env[1], int __savemask,
   return 0;
 }
 
-int __sigsetjmp (jmp_buf env, int savemask)
+int
+__libc_sigsetjmp (jmp_buf env, int savemask)
 {
   /* TODO get rid of this .flush. Except it's needed in the special
    * case where a SIGFPE/SIGSEGV handler calls longjmp... */
@@ -112,3 +113,5 @@ int __sigsetjmp (jmp_buf env, int savemask)
                : : "r" (0), "r" (env));
   return 0;
 }
+
+weak_alias (__libc_sigsetjmp, __sigsetjmp)

@@ -27,5 +27,13 @@ getpeername (int fd, __SOCKADDR_ARG addr, socklen_t *len)
   return -1;
 }
 
-
 stub_warning (getpeername)
+
+int
+__getpeername (int fd, __SOCKADDR_ARG addr, socklen_t *len)
+{
+  __set_errno (ENOSYS);
+  return -1;
+}
+
+stub_warning (__getpeername)

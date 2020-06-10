@@ -550,7 +550,7 @@ $(objpfx)ld.so: $(objpfx)librtld.os $(ld-map)
 		  $(LDFLAGS-rtld) $(z-now-$(bind-now))	\
 		  $(filter-out $(map-file),$^) $(load-map-file)		\
 		  -Wl,-soname=$(rtld-installed-name)			\
-		  -Wl,-defsym=_begin=0
+		  -Wl,-defsym=_begin=0 -Wl,-defsym=_end=0xffffffff
 	$(call after-link,$@.new)
 	mv -f $@.new $@
 

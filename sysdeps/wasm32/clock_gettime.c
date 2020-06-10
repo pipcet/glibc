@@ -20,6 +20,10 @@
 #include <errno.h>
 #include "thinthin.h"
 
+int
+__clock_gettime (clockid_t clock_id, struct timespec *tp);
+libc_hidden_proto (__clock_gettime)
+
 /* Get current value of CLOCK and store it in TP.  */
 int
 __clock_gettime (clockid_t clock_id, struct timespec *tp)
@@ -28,3 +32,16 @@ __clock_gettime (clockid_t clock_id, struct timespec *tp)
 }
 libc_hidden_def (__clock_gettime)
 weak_alias (__clock_gettime, clock_gettime)
+
+int
+__clock_gettime64 (clockid_t clock_id, struct __timespec64 *tp);
+libc_hidden_proto (__clock_gettime64)
+
+/* Get current value of CLOCK and store it in TP.  */
+int
+__clock_gettime64 (clockid_t clock_id, struct __timespec64 *tp)
+{
+  return __THINTHIN_SYSCALL (clock_gettime, clock_id, (void *)tp);
+}
+libc_hidden_def (__clock_gettime64)
+weak_alias (__clock_gettime64, clock_gettime64)
