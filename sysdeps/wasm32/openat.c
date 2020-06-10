@@ -45,8 +45,8 @@ __openat (int fd, const char *file, int oflag, ...)
       return __THINTHIN_SYSCALL(openat, fd, file, oflag, 0);
     }
 }
+strong_alias (__openat, __openat64_nocancel)
+strong_alias (__openat, __openat_nocancel)
 libc_hidden_def (__openat)
 weak_alias (__openat, openat)
 
-strong_alias (__openat, __openat64_nocancel)
-strong_alias (__openat, __openat_nocancel)

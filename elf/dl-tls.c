@@ -573,6 +573,7 @@ rtld_hidden_def (_dl_deallocate_tls)
 #  define GET_ADDR_OFFSET ti->ti_offset
 # endif
 
+#if 0
 /* Allocate one DTV entry.  */
 static struct dtv_pointer
 allocate_dtv_entry (size_t alignment, size_t size)
@@ -617,6 +618,7 @@ allocate_and_init (struct link_map *map)
 
   return result;
 }
+#endif
 
 
 struct link_map *
@@ -731,6 +733,7 @@ _dl_update_slotinfo (unsigned long int req_modid)
   return the_map;
 }
 
+#if 0
 
 static void *
 __attribute_noinline__
@@ -807,6 +810,7 @@ update_get_addr (GET_ADDR_ARGS)
 
   return (void *) p + GET_ADDR_OFFSET;
 }
+#endif
 
 /* For all machines that have a non-macro version of __tls_get_addr, we
    want to use rtld_hidden_proto/rtld_hidden_def in order to call the
@@ -821,6 +825,7 @@ rtld_hidden_def (__tls_get_addr)
 
 /* The generic dynamic and local dynamic model cannot be used in
    statically linked applications.  */
+#if 0
 void *
 __tls_get_addr (GET_ADDR_ARGS)
 {
@@ -836,6 +841,7 @@ __tls_get_addr (GET_ADDR_ARGS)
 
   return (char *) p + GET_ADDR_OFFSET;
 }
+#endif
 #endif
 
 

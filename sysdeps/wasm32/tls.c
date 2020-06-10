@@ -1,7 +1,6 @@
-/* Adapt! */
-/* Thread-local storage handling in the ELF dynamic linker.  i386 version.
-   Copyright (C) 2002-2016 Free Software Foundation, Inc.
-   This file is NOT part of the GNU C Library.
+/* Thread-local storage handling in the ELF dynamic linker.  SH version.
+   Copyright (C) 2009-2020 Free Software Foundation, Inc.
+   This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -15,17 +14,19 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with the GNU C Library; if not, see
-   <http://www.gnu.org/licenses/>.  */
+   <https://www.gnu.org/licenses/>.  */
 
+#include <csu/libc-tls.c>
+#include <dl-tls.h>
 
-/* Type used for the representation of TLS information in the GOT.  */
-typedef struct dl_tls_index
+/* On SH, linker optimizations are not required, so __tls_get_addr
+   can be called even in statically linked binaries.  In this case module
+   must be always 1 and PT_TLS segment exist in the binary, otherwise it
+   would not link.  */
+
+void *
+___tls_get_addr (tls_index *ti)
 {
-  unsigned long int ti_module;
-  unsigned long int ti_offset;
-} tls_index;
-
-#define __tls_get_addr(x) ((void)x,NULL)
-
-/* Value used for dtv entries for which the allocation is delayed.  */
-#define TLS_DTV_UNALLOCATED	((void *) -1l)
+  dtv_t *dtv = THREAD_DTV ();
+  return (char *) dtv[1].pointer.val + ti->ti_offset;
+}

@@ -38,11 +38,11 @@ libc_hidden_proto (__open64_nocancel)
 
 /* Non cancellable openat syscall.  */
 __typeof (openat) __openat_nocancel;
-libc_hidden_proto (__openat_nocancel)
+//libc_hidden_proto (__openat_nocancel)
 
 /* Non cacellable openat syscall (LFS version).  */
 __typeof (openat64) __openat64_nocancel;
-libc_hidden_proto (__openat64_nocancel)
+//libc_hidden_proto (__openat64_nocancel)
 
 /* Non cancellable read syscall.  */
 __typeof (__read) __read_nocancel;
@@ -50,7 +50,7 @@ libc_hidden_proto (__read_nocancel)
 
 /* Uncancelable write.  */
 __typeof (__write) __write_nocancel;
-libc_hidden_proto (__write_nocancel)
+//libc_hidden_proto (__write_nocancel)
 
 #define __writev_nocancel_nostatus writev
 
