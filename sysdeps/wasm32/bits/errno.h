@@ -205,11 +205,18 @@
 # endif
 
 # ifndef __ASSEMBLER__
+#  ifdef __CPLUSPLUS
+extern "C"
+{
+#  endif
 /* Function to get address of global `errno' variable.  */
 extern int *__errno_location (void) __THROW __attribute__ ((__const__));
 
 /* When using threads, errno is a per-thread value.  */
 #   define errno (*__errno_location ())
+#  ifdef __CPLUSPLUS
+}
+#  endif
 # endif /* !__ASSEMBLER__ */
 #endif /* _ERRNO_H */
 

@@ -126,7 +126,6 @@ file_unlock (int fd)
     {
       .l_type = F_UNLCK,
     };
-#define __fcntl64_nocancel __fcntl_nocancel
   __fcntl64_nocancel (fd, F_SETLKW, &fl);
 }
 

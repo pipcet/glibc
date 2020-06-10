@@ -17,6 +17,7 @@
    <https://www.gnu.org/licenses/>.  */
 
 #include <spawn.h>
+#include <errno.h>
 #include <assert.h>
 #include <fcntl.h>
 #include <paths.h>

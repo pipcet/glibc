@@ -48,4 +48,3 @@ struct dirent64
 #define _DIRENT_HAVE_D_OFF
 #define _DIRENT_HAVE_D_TYPE
 #define _DIRENT_MATCHES_DIRENT64 1
-#define __fcntl64_nocancel __fcntl_nocancel

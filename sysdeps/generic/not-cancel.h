@@ -47,7 +47,9 @@
   __write (fd, buf, n)
 #define __writev_nocancel_nostatus(fd, iov, n) \
   (void) __writev (fd, iov, n)
-#define __fcntl64_nocancel(fd, cmd, ...) \
-  __fcntl64 (fd, cmd, __VA_ARGS__)
+#define __fcntl_nocancel(fd, ...) \
+  __fcntl (fd, __VA_ARGS__)
+#define __fcntl64_nocancel(fd, ...) \
+  __fcntl64 (fd, __VA_ARGS__)
 
 #endif /* NOT_CANCEL_H  */
