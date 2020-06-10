@@ -205,7 +205,7 @@
 # endif
 
 # ifndef __ASSEMBLER__
-#  ifdef __CPLUSPLUS
+#  ifdef __cplusplus
 extern "C"
 {
 #  endif
@@ -214,7 +214,7 @@ extern int *__errno_location (void) __THROW __attribute__ ((__const__));
 
 /* When using threads, errno is a per-thread value.  */
 #   define errno (*__errno_location ())
-#  ifdef __CPLUSPLUS
+#  ifdef __cplusplus
 }
 #  endif
 # endif /* !__ASSEMBLER__ */

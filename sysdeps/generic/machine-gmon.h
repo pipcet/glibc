@@ -43,5 +43,5 @@ static inline void mcount_internal (u_long frompc, u_long selfpc)
 #define MCOUNT \
 void _mcount (void)							      \
 {									      \
-  mcount_internal ((u_long) RETURN_ADDRESS (1), (u_long) RETURN_ADDRESS (0)); \
+  mcount_internal ((u_long) RETURN_ADDRESS (0), (u_long) RETURN_ADDRESS (0)); \
 }
