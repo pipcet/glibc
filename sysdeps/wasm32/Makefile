@@ -29,7 +29,7 @@ endif
 endif
 
 ifeq ($(subdir),csu)
-sysdep_routines += start
+sysdep_routines += start errno
 endif
 
 ifeq ($(subdir),misc)

@@ -1,6 +1,3 @@
-# This is a placeholder file.  This configuration needs its own
-# sysdeps/.../c++-types.data file to make the test pass.
-
 blkcnt64_t:x
 blkcnt_t:x
 blksize_t:x
