@@ -471,7 +471,7 @@ struct rtld_global
 #   define __rtld_local_attribute__ \
 	    __attribute__ ((visibility ("hidden"), section (".sdata")))
 #   undef __rtld_global_attribute__
-#   define __rtld_global_attribute__ __attribute__ ((section (".sdata")))
+#   define __rtld_global_attribute__
 #  else
 #   define __rtld_local_attribute__ __attribute__ ((visibility ("hidden")))
 #  endif
@@ -810,7 +810,6 @@ libc_hidden_proto (_dl_signal_exception)
 extern void _dl_signal_error (int errcode, const char *object,
 			      const char *occasion, const char *errstring)
      __attribute__ ((__noreturn__));
-libc_hidden_proto (_dl_signal_error)
 
 /* Like _dl_signal_exception, but may return when called in the
    context of _dl_receive_error.  This is only used during ld.so
@@ -843,7 +842,6 @@ extern void _dl_receive_error (receiver_fct fct, void (*operate) (void *),
 extern int _dl_catch_error (const char **objname, const char **errstring,
 			    bool *mallocedp, void (*operate) (void *),
 			    void *args);
-libc_hidden_proto (_dl_catch_error)
 
 /* Call OPERATE (ARGS).  If no error occurs, set *EXCEPTION to zero.
    Otherwise, store a copy of the raised exception in *EXCEPTION,
