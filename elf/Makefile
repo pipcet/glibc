@@ -528,6 +528,7 @@ $(objpfx)librtld.mk: $(objpfx)librtld.map Makefile
 	  *) echo "Wasn't expecting $$lib($$file)" >&2; exit 1 ;; \
 	  esac; \
 	done > $@T
+	echo "rtld-csu +=errno.os" >> $@T
 	echo rtld-subdirs = `LC_ALL=C sed 's/^rtld-\([^ ]*\).*$$/\1/' $@T \
 			     | LC_ALL=C sort -u` >> $@T
 	mv -f $@T $@
