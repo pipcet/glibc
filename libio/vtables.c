@@ -39,6 +39,7 @@ libc_hidden_proto (_dl_open_hook);
 void attribute_hidden
 _IO_vtable_check (void)
 {
+  return;
 #ifdef SHARED
   /* Honor the compatibility flag.  */
   void (*flag) (void) = atomic_load_relaxed (&IO_accept_foreign_vtables);

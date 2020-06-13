@@ -1129,6 +1129,7 @@ dl_main (const ElfW(Phdr) *phdr,
 	 ElfW(Addr) *user_entry,
 	 ElfW(auxv_t) *auxv)
 {
+  return;
   const ElfW(Phdr) *ph;
   enum mode mode;
   struct link_map *main_map;

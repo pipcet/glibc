@@ -1439,7 +1439,7 @@ const struct _IO_jump_t _IO_file_jumps libio_vtable =
   JUMP_INIT(underflow, _IO_file_underflow),
   JUMP_INIT(uflow, _IO_default_uflow),
   JUMP_INIT(pbackfail, _IO_default_pbackfail),
-  JUMP_INIT(xsputn, _IO_file_xsputn),
+  JUMP_INIT(xsputn, _IO_new_file_xsputn),
   JUMP_INIT(xsgetn, _IO_file_xsgetn),
   JUMP_INIT(seekoff, _IO_new_file_seekoff),
   JUMP_INIT(seekpos, _IO_default_seekpos),

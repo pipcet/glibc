@@ -184,6 +184,7 @@ static struct dl_open_hook _dl_open_hook =
 void *
 __libc_dlopen_mode (const char *name, int mode)
 {
+  return NULL;
   struct do_dlopen_args args;
   args.name = name;
   args.mode = mode;

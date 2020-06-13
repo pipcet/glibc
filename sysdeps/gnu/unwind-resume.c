@@ -32,6 +32,7 @@ static _Unwind_Reason_Code (*libgcc_s_personality) PERSONALITY_PROTO;
 void attribute_hidden __attribute__ ((cold))
 __libgcc_s_init (void)
 {
+  return;
   void *resume, *personality;
   void *handle;
 
