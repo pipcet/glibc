@@ -23,6 +23,7 @@
 int *
 __errno_location (void)
 {
-  return &errno;
+  static int my_errno;
+  return &my_errno;
 }
 libc_hidden_def (__errno_location)

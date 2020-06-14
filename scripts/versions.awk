@@ -73,7 +73,6 @@ BEGIN {
 
 function closeversion(name, oldname) {
   if (firstinfile) {
-    printf("  local:\n    *;\n") > outfile;
     firstinfile = 0;
   }
   # This version inherits from the last one only if they

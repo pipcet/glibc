@@ -29,11 +29,11 @@ endif
 endif
 
 ifeq ($(subdir),csu)
-sysdep_routines += start errno
+sysdep_routines += start errno-loc
 endif
 
 ifeq ($(subdir),misc)
-sysdep_routines += thinthin errno-location alloca_cutoff writev
+sysdep_routines += thinthin alloca_cutoff writev
 endif
 
 ifeq ($(subdir),io)

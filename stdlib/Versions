@@ -15,7 +15,7 @@ libc {
     __secure_getenv;
 
     # a*
-    a64l; abort; abs; atexit; atof; atoi; atol; atoll;
+    a64l; abort; abs; atof; atoi; atol; atoll;
 
     # b*
     bsearch;
