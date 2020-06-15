@@ -832,7 +832,7 @@ extern void _dl_receive_error (receiver_fct fct, void (*operate) (void *),
    the returned string is allocated using the libc's malloc.  */
 
 #define _dl_catch_error(objname, errstring, mallocedp, operate, args) \
-  do {} while (0)
+  0
 
 /* Call OPERATE (ARGS).  If no error occurs, set *EXCEPTION to zero.
    Otherwise, store a copy of the raised exception in *EXCEPTION,
