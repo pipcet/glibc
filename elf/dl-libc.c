@@ -209,7 +209,7 @@ libc_hidden_def (__libc_dlopen_mode)
 void *
 __libc_dlsym_private (struct link_map *map, const char *name)
 {
-  struct do_dlsym_args sargs;
+  struct do_dlsym_args sargs = { 0, };
   sargs.map = map;
   sargs.name = name;
 
@@ -237,7 +237,7 @@ __libc_register_dl_open_hook (struct link_map *map)
 void *
 __libc_dlsym (void *map, const char *name)
 {
-  struct do_dlsym_args args;
+  struct do_dlsym_args args = { 0, };
   args.map = map;
   args.name = name;
 
@@ -267,7 +267,7 @@ __libc_dlvsym (void *map, const char *name, const char *version)
     }
 #endif
 
-  struct do_dlvsym_args args;
+  struct do_dlvsym_args args = { 0, };
   args.dlsym.map = map;
   args.dlsym.name = name;
 

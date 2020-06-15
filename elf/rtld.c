@@ -645,39 +645,6 @@ relocate_doit (void *a)
 }
 
 static void
-map_doit (void *a)
-{
-  struct map_args *args = (struct map_args *) a;
-  int type = (args->mode == __RTLD_OPENEXEC) ? lt_executable : lt_library;
-  args->map = _dl_map_object (args->loader, args->str, type, 0,
-			      args->mode, LM_ID_BASE);
-}
-
-static void
-dlmopen_doit (void *a)
-{
-  struct dlmopen_args *args = (struct dlmopen_args *) a;
-  args->map = _dl_open (args->fname,
-			(RTLD_LAZY | __RTLD_DLOPEN | __RTLD_AUDIT
-			 | __RTLD_SECURE),
-			dl_main, LM_ID_NEWLM, _dl_argc, _dl_argv,
-			__environ);
-}
-
-static void
-lookup_doit (void *a)
-{
-  struct lookup_args *args = (struct lookup_args *) a;
-  const ElfW(Sym) *ref = NULL;
-  args->result = NULL;
-  lookup_t l = _dl_lookup_symbol_x (args->name, args->map, &ref,
-				    args->map->l_local_scope, NULL, 0,
-				    DL_LOOKUP_RETURN_NEWEST, NULL);
-  if (ref != NULL)
-    args->result = DL_SYMBOL_ADDRESS (l, ref);
-}
-
-static void
 version_check_doit (void *a)
 {
   struct version_check_args *args = (struct version_check_args *) a;

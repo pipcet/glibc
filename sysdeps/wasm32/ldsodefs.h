@@ -806,8 +806,15 @@ void _dl_signal_exception (int errcode, struct dl_exception *,
   __attribute__ ((__noreturn__));
 libc_hidden_proto (_dl_signal_exception)
 
-#define _dl_signal_error(errcode, object, occasion, string) while (1) {}
-#define _dl_signal_cexception(errcode, object, occasion) while (1) {}
+#define _dl_signal_error(errcode, object, occasion, string) do	      \
+    {								      \
+      (void) (string);						      \
+    } while (1)
+
+#define _dl_signal_cexception(errcode, object, occasion) do	      \
+    {								      \
+      (void) (object);						      \
+    } while (1)
 
 /* See _dl_signal_cexception above.  */
 extern void _dl_signal_cerror (int errcode, const char *object,
@@ -832,7 +839,7 @@ extern void _dl_receive_error (receiver_fct fct, void (*operate) (void *),
    the returned string is allocated using the libc's malloc.  */
 
 #define _dl_catch_error(objname, errstring, mallocedp, operate, args) \
-  0
+  ({ volatile int dummy = 1; (void) (objname); (void) (mallocedp); (void) (args); while (dummy); memset ((args), 0, sizeof (*(args))); 0; })
 
 /* Call OPERATE (ARGS).  If no error occurs, set *EXCEPTION to zero.
    Otherwise, store a copy of the raised exception in *EXCEPTION,

@@ -103,50 +103,6 @@ _dl_signal_exception (int errcode, struct dl_exception *exception,
 libc_hidden_def (_dl_signal_exception)
 
 void
-_dl_signal_error (int errcode, const char *objname, const char *occation,
-		  const char *errstring)
-{
-  struct catch *lcatch = catch_hook;
-
-  if (! errstring)
-    errstring = N_("DYNAMIC LINKER BUG!!!");
-
-  if (lcatch != NULL)
-    {
-      _dl_exception_create (lcatch->exception, objname, errstring);
-      *lcatch->errcode = errcode;
-
-      /* We do not restore the signal mask because none was saved.  */
-      __longjmp (lcatch->env[0].__jmpbuf, 1);
-    }
-  else
-    fatal_error (errcode, objname, occation, errstring);
-}
-libc_hidden_def (_dl_signal_error)
-
-
-void
-_dl_signal_cexception (int errcode, struct dl_exception *exception,
-		       const char *occasion)
-{
-  if (__builtin_expect (GLRO(dl_debug_mask)
-			& ~(DL_DEBUG_STATISTICS|DL_DEBUG_PRELINK), 0))
-    _dl_debug_printf ("%s: error: %s: %s (%s)\n",
-		      exception->objname, occasion,
-		      exception->errstring, receiver ? "continued" : "fatal");
-
-  if (receiver)
-    {
-      /* We are inside _dl_receive_error.  Call the user supplied
-	 handler and resume the work.  The receiver will still be
-	 installed.  */
-      (*receiver) (errcode, exception->objname, exception->errstring);
-    }
-  else
-    _dl_signal_exception (errcode, exception, occasion);
-}
-
-void
 _dl_signal_cerror (int errcode, const char *objname, const char *occation,
 		   const char *errstring)
 {
@@ -218,19 +174,6 @@ _dl_catch_exception (struct dl_exception *exception,
 libc_hidden_def (_dl_catch_exception)
 
 #if DL_ERROR_BOOTSTRAP
-int
-_dl_catch_error (const char **objname, const char **errstring,
-		 bool *mallocedp, void (*operate) (void *), void *args)
-{
-  struct dl_exception exception;
-  int errorcode = _dl_catch_exception (&exception, operate, args);
-  *objname = exception.objname;
-  *errstring = exception.errstring;
-  *mallocedp = exception.message_buffer == exception.errstring;
-  return errorcode;
-}
-libc_hidden_def (_dl_catch_error)
-
 void
 _dl_receive_error (receiver_fct fct, void (*operate) (void *), void *args)
 {
