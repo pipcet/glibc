@@ -806,17 +806,8 @@ void _dl_signal_exception (int errcode, struct dl_exception *,
   __attribute__ ((__noreturn__));
 libc_hidden_proto (_dl_signal_exception)
 
-/* Like _dl_signal_exception, but creates the exception first.  */
-extern void _dl_signal_error (int errcode, const char *object,
-			      const char *occasion, const char *errstring)
-     __attribute__ ((__noreturn__));
-
-/* Like _dl_signal_exception, but may return when called in the
-   context of _dl_receive_error.  This is only used during ld.so
-   bootstrap.  In static and profiled builds, this is equivalent to
-   _dl_signal_exception.  */
-extern void _dl_signal_cexception (int errcode, struct dl_exception *,
-				   const char *occasion) attribute_hidden;
+#define _dl_signal_error(errcode, object, occasion, string) while (1) {}
+#define _dl_signal_cexception(errcode, object, occasion) while (1) {}
 
 /* See _dl_signal_cexception above.  */
 extern void _dl_signal_cerror (int errcode, const char *object,
@@ -839,9 +830,9 @@ extern void _dl_receive_error (receiver_fct fct, void (*operate) (void *),
    malloc'ed string which the caller has to free after use.  ARGS is
    passed as argument to OPERATE.  MALLOCEDP is set to true only if
    the returned string is allocated using the libc's malloc.  */
-extern int _dl_catch_error (const char **objname, const char **errstring,
-			    bool *mallocedp, void (*operate) (void *),
-			    void *args);
+
+#define _dl_catch_error(objname, errstring, mallocedp, operate, args) \
+  do {} while (0)
 
 /* Call OPERATE (ARGS).  If no error occurs, set *EXCEPTION to zero.
    Otherwise, store a copy of the raised exception in *EXCEPTION,
