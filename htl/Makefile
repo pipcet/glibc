@@ -173,6 +173,7 @@ static-only-routines = pt-atfork
 extra-libs := libpthread
 extra-libs-others := $(extra-libs)
 install-lib := libpthread.so
+install-lib-ldscripts := libpthread_syms.a
 
 include ../Makeconfig
 
@@ -180,7 +181,7 @@ CFLAGS-lockfile.c = -D_IO_MTSAFE_IO
 
 all: # Make this the default target; it will be defined in Rules.
 
-subdir_install: $(inst_libdir)/libpthread2.a
+subdir_install: $(inst_libdir)/libpthread2.a $(inst_libdir)/libpthread_syms.a
 
 # XXX: If $(inst_libdir)/libpthread2.a is installed and
 # $(inst_libdir)/libpthread is not, we can have some issues.
@@ -198,17 +199,30 @@ $(inst_libdir)/libpthread2_pic.a: $(inst_libdir)/libpthread_pic.a
 	mv $< $@
 	$(INSTALL_DATA) $(srcdir)/libpthread_pic.a $<
 
+$(inst_libdir)/libpthread_syms.a: $(srcdir)/libpthread_syms.a $(+force)
+	$(do-install)
+
 libc-link.so = $(common-objpfx)libc.so
 
 extra-B-pthread.so = -B$(common-objpfx)htl/
+LDFLAGS-pthread.so = -Wl,--enable-new-dtags,-z,nodelete,-z,initfirst
 
 include ../Rules
 
-ifeq (yes,$(build-shared))
+# Make sure we link with the thread library.
+ifeq ($(build-shared),yes)
 $(addprefix $(objpfx), \
   $(filter-out $(tests-static) $(xtests-static) $(tests-reverse) \
     $(tests-nolibpthread), \
-    $(tests) $(tests-internal) $(xtests) $(test-srcs))): $(objpfx)libpthread.so
+    $(tests) $(tests-internal) $(xtests) $(test-srcs) $(tests-container))): \
+	$(objpfx)libpthread.so
+$(objpfx)tst-unload: $(libdl)
+# $(objpfx)../libc.so is used instead of $(common-objpfx)libc.so,
+# since otherwise libpthread.so comes before libc.so when linking.
+$(addprefix $(objpfx), $(tests-reverse)): \
+  $(objpfx)../libc.so $(objpfx)libpthread.so
+$(objpfx)../libc.so: $(common-objpfx)libc.so ;
+$(addprefix $(objpfx),$(tests-static) $(xtests-static)): $(srcdir)/libpthread_syms.a $(objpfx)libpthread.a
+else
+$(addprefix $(objpfx),$(tests) $(test-srcs)): $(srcdir)/libpthread_syms.a $(objpfx)libpthread.a
 endif
-
-$(addprefix $(objpfx),$(tests-static) $(xtests-static)): $(objpfx)libpthread.a
