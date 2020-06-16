@@ -116,7 +116,7 @@ endif # avoid-generated
 endif # $(build-shared) = yes
 
 ifndef avoid-generated
-ifneq (,$(CXX))
+ifeq (cxxreally,$(CXX))
 # If C++ headers <cstdlib> or <cmath> are used, GCC 6 will include
 # /usr/include/stdlib.h or /usr/include/math.h from "#include_next"
 # (instead of stdlib/stdlib.h or math/math.h in the glibc source
