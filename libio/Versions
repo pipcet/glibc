@@ -44,25 +44,25 @@ libc {
     stderr; stdin; stdout;
 
     # c*
-    clearerr; clearerr_unlocked;
+    clearerr;
 
     # f*
-    fclose; fcloseall; fdopen; feof; feof_locked; feof_unlocked; ferror;
-    ferror_locked; ferror_unlocked; fflush; fflush_locked; fflush_unlocked;
-    fgetc; fgetpos; fgets; fileno; fileno_locked; fileno_unlocked;
-    fopen; fopencookie; fputc; fputc_locked; fputc_unlocked; fputs;
+    fclose; fcloseall; fdopen; feof; feof_locked; ferror;
+    ferror_locked; fflush; fflush_locked;
+    fgetc; fgetpos; fgets; fileno; fileno_locked;
+    fopen; fopencookie; fputc; fputc_locked; fputs;
     fread; freopen; fseek; fsetpos; ftell; fwrite;
 
     # g*
-    getc; getc_locked; getc_unlocked; getchar; getchar_unlocked; getdelim;
+    getc; getc_locked; getchar; getdelim;
     gets;
 
     # o*
     open_memstream; obstack_printf; obstack_vprintf;
 
     # p*
-    pclose; popen; putc; putc_locked; putc_unlocked; putchar;
-    putchar_unlocked; puts;
+    pclose; popen; putc; putc_locked; putchar;
+    puts;
 
     # r*
     rewind;
@@ -94,8 +94,7 @@ libc {
 
     # f*
     fgetpos64; fopen64; freopen64; fseeko; fseeko64; fsetpos64; ftello;
-    ftello64; fopen; fclose; fdopen; fread_unlocked; fwrite_unlocked;
-    fgets_unlocked; fputs_unlocked; fgetc_unlocked;
+    ftello64; fopen; fclose; fdopen;
 
     # p*
     pclose; popen;
