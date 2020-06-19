@@ -164,6 +164,7 @@ LIBC_START_MAIN (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
       ;
     auxvec = (ElfW(auxv_t) *) evp;
   }
+  (void) auxvec;
 #  endif
   //_dl_aux_init (auxvec);
   if (GL(dl_phdr) == NULL)
