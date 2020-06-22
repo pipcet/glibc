@@ -81,7 +81,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # include <libidn/idna.h>
 extern int __idna_to_unicode_lzlz (const char *input, char **output,
 #endif
-				   
+
 #ifndef min
 # define min(x,y) (((x) > (y)) ? (y) : (x))
 #endif /* min */
