@@ -36,7 +36,7 @@ weak_extern (_nl_C_LC_CTYPE_tolower)
    The references in the initializer are weak, so the parts of
    the structure that are never referred to will be zero.  */
 
-struct __locale_struct _nl_global_locale attribute_hidden =
+struct __locale_struct _nl_global_locale =
   {
     .__locales =
     {
