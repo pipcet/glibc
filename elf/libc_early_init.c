@@ -25,3 +25,12 @@ __libc_early_init (_Bool initial)
   /* Initialize ctype data.  */
   __ctype_init ();
 }
+
+#if IS_IN(libc)
+void
+__libc_but_not_ld_early_init (_Bool initial)
+{
+  /* Initialize ctype data.  */
+  __ctype_init ();
+}
+#endif
