@@ -36,6 +36,7 @@
 
 #include <stdint.h>
 #include <link.h>
+#include <../elf/libc-early-init.h>
 
 /* The application defines this, of course.  */
 extern int main (int argc, char **argv, char **envp);
@@ -53,9 +54,14 @@ extern int __libc_start_main (int (*main) (int, char **, char **),
 void
 _start (int argc, char **argv) __attribute__((stackcall));
 
+extern void
+__libc_but_not_ld_early_init (_Bool initial);
+
 void __attribute__((stackcall))
 _start (int argc, char **argv)
 {
+  __libc_early_init (true);
+  __libc_but_not_ld_early_init (true);
   /* The generic code actually assumes that envp follows argv.  */
 
   __libc_start_main (&main,
