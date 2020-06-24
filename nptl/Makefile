@@ -278,7 +278,7 @@ tests = tst-attr2 tst-attr3 tst-default-attr \
 	tst-sem17 \
 	tst-tsd3 tst-tsd4 \
 	tst-cancel4 tst-cancel4_1 tst-cancel4_2 tst-cancel5 \
-	tst-cancel7 tst-cancel13 \
+	tst-cancel7 \
 	tst-cancel16 tst-cancel17 tst-cancel20 tst-cancel24 \
 	tst-cleanup4 \
 	tst-signal3 \
@@ -307,7 +307,7 @@ tests-container =  tst-pthread-getattr
 tests-internal := tst-robustpi8 tst-rwlock19 tst-rwlock20 \
 		  tst-sem11 tst-sem12 tst-sem13 \
 		  tst-barrier5 tst-signal7 tst-mutex8 tst-mutex8-static \
-		  tst-mutexpi8 tst-mutexpi8-static tst-cancel25 \
+		  tst-mutexpi8 tst-mutexpi8-static \
 		  tst-setgetname \
 
 xtests = tst-setuid1 tst-setuid1-static tst-setuid2 \
@@ -358,7 +358,6 @@ endif
 LDFLAGS-pthread.so = -Wl,--enable-new-dtags,-z,nodelete,-z,initfirst
 
 tests += tst-cancelx4 tst-cancelx5 tst-cancelx7 \
-	 tst-cancelx13 \
 	 tst-cancelx16 tst-cancelx17 tst-cancelx20 \
 	 tst-cleanupx4
 
@@ -477,7 +476,6 @@ CFLAGS-tst-cancelx5.c += -Wno-error
 CFLAGS-tst-cancelx4.c += -fexceptions
 CFLAGS-tst-cancelx5.c += -fexceptions
 CFLAGS-tst-cancelx7.c += -fexceptions
-CFLAGS-tst-cancelx13.c += -fexceptions
 CFLAGS-tst-cancelx16.c += -fexceptions
 CFLAGS-tst-cancelx17.c += -fexceptions
 CFLAGS-tst-cancelx20.c += -fexceptions -fasynchronous-unwind-tables
