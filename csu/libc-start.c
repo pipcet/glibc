@@ -124,6 +124,8 @@ STATIC int LIBC_START_MAIN (int (*main) (int, char **, char **
      __attribute__ ((noreturn));
 
 
+#include <thinthin.h>
+
 /* Note: the fini parameter is ignored here for shared library.  It
    is registered with __cxa_atexit.  This had the disadvantage that
    finalizers were called in more than one place.  */
@@ -140,6 +142,7 @@ LIBC_START_MAIN (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
   /* Result of the 'main' function.  */
   int result;
 
+  __thinthin_recopy ();
   __libc_multiple_libcs = &_dl_starting_up && !_dl_starting_up;
 
 #ifndef SHARED
@@ -318,6 +321,7 @@ LIBC_START_MAIN (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
       THREAD_SETMEM (self, cleanup_jmp_buf, &unwind_buf);
 
       /* Run the program.  */
+      __thinthin_recopy ();
       result = main (argc, argv, __environ MAIN_AUXVEC_PARAM);
     }
   else
@@ -349,6 +353,7 @@ LIBC_START_MAIN (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
     }
 #else
   /* Nothing fancy, just call the function.  */
+  __thinthin_recopy ();
   result = main (argc, argv, __environ MAIN_AUXVEC_PARAM);
 #endif
 

@@ -55,3 +55,4 @@
     .import3_pic thinthin,getegid,__thinthin_getegid
     .import3_pic thinthin,newfstatat,__thinthin_newfstatat
     .import3_pic thinthin,getpid,__thinthin_getpid
+    .import3_pic thinthin,recopy,__thinthin_recopy

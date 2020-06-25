@@ -78,5 +78,6 @@ extern long __thinthin_unlinkat(long dirfd, const char *path, long) __AS;
 extern long __thinthin_utimensat(long, const char *, const struct timespec *, long) __AS;
 extern long __thinthin_wait4(long, int *, long, struct rusage *) __AS;
 extern long __thinthin_write(long, const void *, long) __AS;
+extern long __thinthin_recopy(void) __AS;
 
 #undef __AS

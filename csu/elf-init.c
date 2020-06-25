@@ -65,6 +65,8 @@ struct multifile_header {
   unsigned long long fini_array_end;
 };
 
+#include <thinthin.h>
+
 void
 __libc_csu_init_multifile (int argc, char **argv, char **envp)
 {
@@ -73,6 +75,7 @@ __libc_csu_init_multifile (int argc, char **argv, char **envp)
     void (**array_start)(int, char **, char **) = (void (**)(int, char **, char **))(long)mfh->preinit_array_start;
     void (**array_end)(int, char **, char **) = (void (**)(int, char **, char **))(long)mfh->preinit_array_end;
     while (array_start < array_end) {
+      __thinthin_recopy();
       (**array_start)(argc, argv, envp);
       array_start++;
     }
@@ -84,6 +87,7 @@ __libc_csu_init_multifile (int argc, char **argv, char **envp)
     void (**array_start)(int, char **, char **) = (void (**)(int, char **, char **))(long)mfh->init_array_start;
     void (**array_end)(int, char **, char **) = (void (**)(int, char **, char **))(long)mfh->init_array_end;
     while (array_start < array_end) {
+      __thinthin_recopy();
       (**array_start)(argc, argv, envp);
       array_start++;
     }
