@@ -196,8 +196,10 @@ sysdep_routines += cthreads
 endif
 
 ifeq (io, $(subdir))
-sysdep_routines += f_setlk close_nocancel_nostatus read_nocancel \
-		   pread64_nocancel write_nocancel pwrite64_nocancel
+sysdep_routines += f_setlk close_nocancel close_nocancel_nostatus \
+		   fcntl_nocancel open_nocancel openat_nocancel read_nocancel \
+		   pread64_nocancel write_nocancel pwrite64_nocancel \
+		   wait4_nocancel
 endif
 
 ifeq (misc, $(subdir))
