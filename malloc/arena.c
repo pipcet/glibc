@@ -274,17 +274,6 @@ next_env_entry (char ***position)
 #endif
 
 
-#ifdef SHARED
-static void *
-__failing_morecore (ptrdiff_t d)
-{
-  return (void *) MORECORE_FAILURE;
-}
-
-extern struct dl_open_hook *_dl_open_hook;
-libc_hidden_proto (_dl_open_hook);
-#endif
-
 static void
 ptmalloc_init (void)
 {
@@ -292,18 +281,6 @@ ptmalloc_init (void)
     return;
 
   __malloc_initialized = 0;
-
-#ifdef SHARED
-  /* In case this libc copy is in a non-default namespace, never use brk.
-     Likewise if dlopened from statically linked program.  */
-  Dl_info di;
-  struct link_map *l;
-
-  if (_dl_open_hook != NULL
-      || (_dl_addr (ptmalloc_init, &di, &l, NULL) != 0
-          && l->l_ns != LM_ID_BASE))
-    __morecore = __failing_morecore;
-#endif
 
   thread_arena = &main_arena;
 
@@ -392,11 +369,6 @@ ptmalloc_init (void)
     __malloc_check_init ();
 #endif
 
-#if HAVE_MALLOC_INIT_HOOK
-  void (*hook) (void) = atomic_forced_read (__malloc_initialize_hook);
-  if (hook != NULL)
-    (*hook)();
-#endif
   __malloc_initialized = 1;
 }
 
