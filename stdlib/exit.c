@@ -24,6 +24,7 @@
 
 #include "set-hooks.h"
 DEFINE_HOOK (__libc_atexit, (void))
+extern void __libc_csu_fini_multifile (void);
 
 /* Initialize the flag that indicates exit function processing
    is complete. See concurrency notes in stdlib/exit.h where
@@ -130,6 +131,8 @@ __run_exit_handlers (int status, struct exit_function_list **listp,
 
   if (run_list_atexit)
     RUN_HOOK (__libc_atexit, ());
+
+  __libc_csu_fini_multifile ();
 
   _exit (status);
 }
