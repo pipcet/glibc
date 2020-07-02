@@ -21,7 +21,6 @@
         defun _dl_runtime_resolve, FiiiiiiiE
         nextcase
         nextcase
-        end
         i32.const 0
         return
         end
