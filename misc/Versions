@@ -162,7 +162,7 @@ libc {
     twalk_r;
   }
   GLIBC_2.32 {
-    # SHLIB_COMPAT (libc, GLIBC_2_0, GLIBC_2_32) used in sstk.c
+    __libc_single_threaded;
   }
   GLIBC_PRIVATE {
     __madvise;

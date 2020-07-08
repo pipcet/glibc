@@ -18,12 +18,21 @@
 
 #include <ctype.h>
 #include <libc-early-init.h>
+#include <rseq-internal.h>
+#include <sys/single_threaded.h>
 
 void
 __libc_early_init (_Bool initial)
 {
   /* Initialize ctype data.  */
   __ctype_init ();
+
+  /* Register rseq ABI to the kernel for the main program's libc.   */
+  if (initial)
+    rseq_register_current_thread ();
+
+  /* Only the outer namespace is marked as single-threaded.  */
+  __libc_single_threaded = initial;
 }
 
 #if IS_IN(libc)
