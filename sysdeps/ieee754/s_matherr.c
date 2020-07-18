@@ -17,14 +17,17 @@ static char rcsid[] = "$NetBSD: s_matherr.c,v 1.6 1995/05/10 20:47:53 jtc Exp $"
 #include <math-svid-compat.h>
 
 #undef matherr
-#if LIBM_SVID_COMPAT
 int
-weak_function
 __matherr(struct exception *x)
 {
 	int n=0;
 	if(x->arg1!=x->arg1) return 0;
 	return n;
 }
-compat_symbol (libm, __matherr, matherr, GLIBC_2_0);
-#endif
+int
+matherr(struct exception *x)
+{
+	int n=0;
+	if(x->arg1!=x->arg1) return 0;
+	return n;
+}

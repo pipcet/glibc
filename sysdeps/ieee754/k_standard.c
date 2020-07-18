@@ -95,6 +95,8 @@ static double zero = 0.0;	/* used as const */
  */
 
 
+#define matherr(x) 1
+
 double
 __kernel_standard(double x, double y, int type)
 {

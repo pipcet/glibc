@@ -84,8 +84,6 @@ __kernel_standard_l (long double x, long double y, int type)
 	}
       if (_LIB_VERSION == _POSIX_)
 	__set_errno (ERANGE);
-      else if (!matherr (&exc))
-	__set_errno (ERANGE);
       return exc.retval;
 
     case 222:
@@ -99,8 +97,6 @@ __kernel_standard_l (long double x, long double y, int type)
       if (x < zero && rintl (y) != y)
 	exc.retval = -zero;
       if (_LIB_VERSION == _POSIX_)
-	__set_errno (ERANGE);
-      else if (!matherr (&exc))
 	__set_errno (ERANGE);
       return exc.retval;
 
