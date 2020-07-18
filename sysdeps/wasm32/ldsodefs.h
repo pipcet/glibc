@@ -438,6 +438,9 @@ struct rtld_global
   EXTERN size_t _dl_tls_static_used;
   /* Alignment requirement of the static TLS block.  */
   EXTERN size_t _dl_tls_static_align;
+  /* Remaining amount of static TLS that may be used for optimizing
+     dynamic TLS access (e.g. with TLSDESC).  */
+  EXTERN size_t _dl_tls_static_optional;
 
 /* Number of additional entries in the slotinfo array of each slotinfo
    list element.  A large number makes it almost certain take we never
@@ -471,7 +474,7 @@ struct rtld_global
 #   define __rtld_local_attribute__ \
 	    __attribute__ ((visibility ("hidden"), section (".sdata")))
 #   undef __rtld_global_attribute__
-#   define __rtld_global_attribute__
+#   define __rtld_global_attribute__ __attribute__ ((section (".sdata")))
 #  else
 #   define __rtld_local_attribute__ __attribute__ ((visibility ("hidden")))
 #  endif
@@ -576,6 +579,11 @@ struct rtld_global_ro
      0 if not, -2 use the default (honor biases for normal
      binaries, don't honor for PIEs).  */
   EXTERN ElfW(Addr) _dl_use_load_bias;
+
+  /* Size of surplus space in the static TLS area for dynamically
+     loaded modules with IE-model TLS or for TLSDESC optimization.
+     See comments in elf/dl-tls.c where it is initialized.  */
+  EXTERN size_t _dl_tls_static_surplus;
 
   /* Name of the shared object to be profiled (if any).  */
   EXTERN const char *_dl_profile;
@@ -806,20 +814,43 @@ void _dl_signal_exception (int errcode, struct dl_exception *,
   __attribute__ ((__noreturn__));
 libc_hidden_proto (_dl_signal_exception)
 
-#define _dl_signal_error(errcode, object, occasion, string) do	      \
-    {								      \
-      (void) (string);						      \
-    } while (1)
+/* Like _dl_signal_exception, but creates the exception first.  */
+extern void _dl_signal_error (int errcode, const char *object,
+			      const char *occasion, const char *errstring)
+     __attribute__ ((__noreturn__));
+libc_hidden_proto (_dl_signal_error)
 
-#define _dl_signal_cexception(errcode, object, occasion) do	      \
-    {								      \
-      (void) (object);						      \
-    } while (1)
+/* Like _dl_signal_exception, but may return when called in the
+   context of _dl_receive_error.  This is only used during ld.so
+   bootstrap.  In static and profiled builds, this is equivalent to
+   _dl_signal_exception.  */
+#if IS_IN (rtld)
+extern void _dl_signal_cexception (int errcode, struct dl_exception *,
+				   const char *occasion) attribute_hidden;
+#else
+__attribute__ ((always_inline))
+static inline void
+_dl_signal_cexception (int errcode, struct dl_exception *exception,
+		       const char *occasion)
+{
+  _dl_signal_exception (errcode, exception, occasion);
+}
+#endif
 
 /* See _dl_signal_cexception above.  */
+#if IS_IN (rtld)
 extern void _dl_signal_cerror (int errcode, const char *object,
 			       const char *occasion, const char *errstring)
      attribute_hidden;
+#else
+__attribute__ ((always_inline))
+static inline void
+_dl_signal_cerror (int errcode, const char *object,
+			       const char *occasion, const char *errstring)
+{
+  _dl_signal_error (errcode, object, occasion, errstring);
+}
+#endif
 
 /* Call OPERATE, receiving errors from `dl_signal_cerror'.  Unlike
    `_dl_catch_error' the operation is resumed after the OPERATE
@@ -879,6 +910,10 @@ extern void _dl_setup_hash (struct link_map *map) attribute_hidden;
    bytes to be used in filling in the result.  */
 extern void _dl_rtld_di_serinfo (struct link_map *loader,
 				 Dl_serinfo *si, bool counting);
+
+/* Process PT_GNU_PROPERTY program header PH in module L after
+   PT_LOAD segments are mapped.  */
+void _dl_process_pt_gnu_property (struct link_map *l, const ElfW(Phdr) *ph);
 
 
 /* Search loaded objects' symbol tables for a definition of the symbol
@@ -1066,6 +1101,10 @@ extern size_t _dl_count_modids (void) attribute_hidden;
 
 /* Calculate offset of the TLS blocks in the static TLS block.  */
 extern void _dl_determine_tlsoffset (void) attribute_hidden;
+
+/* Calculate the size of the static TLS surplus, when the given
+   number of audit modules are loaded.  */
+void _dl_tls_static_surplus_init (size_t naudit) attribute_hidden;
 
 #ifndef SHARED
 /* Set up the TCB for statically linked applications.  This is called

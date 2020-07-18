@@ -51,6 +51,7 @@ static const union sys_errname_t
 #include <errlist.h>
 #undef _S
 } };
+#define offsetof(type,ident) ((size_t)&(((type*)0)->ident))
 
 static const unsigned short _sys_errnameidx[] =
 {

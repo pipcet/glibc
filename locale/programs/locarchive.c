@@ -37,7 +37,6 @@
 #include <stdint.h>
 #include <sys/mman.h>
 #include <sys/param.h>
-#include <sys/shm.h>
 #include <sys/stat.h>
 
 #include <libc-mmap.h>
