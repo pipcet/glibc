@@ -66,7 +66,8 @@ tests := tstscanf test_rdwr test-popen tstgetln test-fseek \
 	 tst-scanf-round \
 	 tst-renameat2 tst-bz11319 tst-bz11319-fortify2 \
 	 scanf14a scanf16a \
-	 tst-printf-bz25691
+	 tst-printf-bz25691 \
+	 tst-vfprintf-width-prec-alloc
 
 
 test-srcs = tst-unbputc tst-printf tst-printfsz-islongdouble
@@ -83,6 +84,8 @@ generated += tst-printf-bz18872.c tst-printf-bz18872.mtrace \
 	     tst-vfprintf-width-prec.mtrace tst-vfprintf-width-prec-mem.out \
 	     tst-printf-bz25691.mtrace tst-printf-bz25691-mem.out
 endif
+
+tests-special += $(objpfx)tst-errno-manual.out
 
 include ../Rules
 
@@ -126,6 +129,15 @@ $(objpfx)tst-printf-bz18872.c: tst-printf-bz18872.sh
 
 $(objpfx)tst-%-mem.out: $(objpfx)tst-%.out
 	$(common-objpfx)malloc/mtrace $(objpfx)tst-$*.mtrace > $@; \
+	$(evaluate-test)
+
+errlist-h = $(firstword $(wildcard $(addsuffix /errlist.h,$(sysdirs) .)))
+
+$(objpfx)tst-errno-manual.out: tst-errno-manual.py \
+			       $(errlist-h) \
+			       $(..)manual/errno.texi
+	$(PYTHON) tst-errno-manual.py -m $(..)manual/errno.texi \
+				      -e $(errlist-h) > $@; \
 	$(evaluate-test)
 
 CFLAGS-vfprintf.c += -Wno-uninitialized

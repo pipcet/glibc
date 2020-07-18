@@ -102,6 +102,10 @@ struct cpu_features
   unsigned long int shared_cache_size;
   /* Threshold to use non temporal store.  */
   unsigned long int non_temporal_threshold;
+  /* Threshold to use "rep movsb".  */
+  unsigned long int rep_movsb_threshold;
+  /* Threshold to use "rep stosb".  */
+  unsigned long int rep_stosb_threshold;
 };
 
 /* Used from outside of glibc to get access to the CPU features
@@ -277,7 +281,7 @@ extern const struct cpu_features *__get_cpu_features (void)
 #define bit_cpu_PAT		(1u << 16)
 #define bit_cpu_PSE_36		(1u << 17)
 #define bit_cpu_PSN		(1u << 18)
-#define bit_cpu_CLFSH		(1u << 20)
+#define bit_cpu_CLFSH		(1u << 19)
 #define bit_cpu_DS		(1u << 21)
 #define bit_cpu_ACPI		(1u << 22)
 #define bit_cpu_MMX		(1u << 23)
@@ -393,6 +397,7 @@ extern const struct cpu_features *__get_cpu_features (void)
 #define bit_cpu_XSAVEC		(1u << 1)
 #define bit_cpu_XGETBV_ECX_1	(1u << 2)
 #define bit_cpu_XSAVES		(1u << 3)
+#define bit_cpu_XFD		(1u << 4)
 
 /* COMMON_CPUID_INDEX_80000007.  */
 
@@ -578,6 +583,7 @@ extern const struct cpu_features *__get_cpu_features (void)
 #define index_cpu_XSAVEC	COMMON_CPUID_INDEX_D_ECX_1
 #define index_cpu_XGETBV_ECX_1	COMMON_CPUID_INDEX_D_ECX_1
 #define index_cpu_XSAVES	COMMON_CPUID_INDEX_D_ECX_1
+#define index_cpu_XFD		COMMON_CPUID_INDEX_D_ECX_1
 
 /* COMMON_CPUID_INDEX_80000007.  */
 
@@ -763,6 +769,7 @@ extern const struct cpu_features *__get_cpu_features (void)
 #define reg_XSAVEC		eax
 #define reg_XGETBV_ECX_1	eax
 #define reg_XSAVES		eax
+#define reg_XFD			eax
 
 /* COMMON_CPUID_INDEX_80000007.  */
 

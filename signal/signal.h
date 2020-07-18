@@ -27,7 +27,7 @@
 __BEGIN_DECLS
 
 #include <bits/types.h>
-#include <bits/signum.h>
+#include <bits/signum-generic.h>
 
 #include <bits/types/sig_atomic_t.h>
 
@@ -282,16 +282,10 @@ extern int sigqueue (__pid_t __pid, int __sig, const union sigval __val)
 
 #endif /* Use POSIX.  */
 
-/* Get machine-dependent `struct sigcontext' and signal subcodes.  */
-# include <bits/sigcontext.h>
-
 #ifdef __USE_MISC
 
-/* Names of the signals.  This variable exists only for compatibility.
-   Use `strsignal' instead (see <string.h>).  */
-//extern const char *const _sys_siglist[_NSIG];
-//extern const char *const sys_siglist[_NSIG];
-
+/* Get machine-dependent `struct sigcontext' and signal subcodes.  */
+# include <bits/sigcontext.h>
 
 /* Restore the state saved in SCP.  */
 extern int sigreturn (struct sigcontext *__scp) __THROW;

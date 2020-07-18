@@ -109,6 +109,12 @@
 /* AArch64 big endian ABI */
 #undef HAVE_AARCH64_BE
 
+/* AArch64 BTI support enabled.  */
+#define HAVE_AARCH64_BTI 0
+
+/* AArch64 PAC-RET code generation is enabled.  */
+#define HAVE_AARCH64_PAC_RET 0
+
 /* C-SKY ABI version.  */
 #undef CSKYABI
 
@@ -160,10 +166,6 @@
 /* Define if obsolete RPC code should be made available for user-level code
    to link against.  */
 #undef LINK_OBSOLETE_RPC
-
-/* Define if obsolete libnsl code should be made available for user-level
-   code to link against.  */
-#undef LINK_OBSOLETE_NSL
 
 /* Define if Systemtap <sys/sdt.h> probes should be defined.  */
 #undef USE_STAP_PROBE

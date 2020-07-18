@@ -81,7 +81,7 @@ psiginfo (const siginfo_t *pinfo, const char *s)
 #if 0
   const char *desc;
   if (pinfo->si_signo >= 0 && pinfo->si_signo < NSIG
-      && ((desc = _sys_siglist[pinfo->si_signo]) != NULL
+      && ((desc = __sys_siglist[pinfo->si_signo]) != NULL
 #ifdef SIGRTMIN
 	  || (pinfo->si_signo >= SIGRTMIN && pinfo->si_signo < SIGRTMAX)
 #endif

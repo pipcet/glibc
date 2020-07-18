@@ -15,22 +15,57 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
+#include <stdio.h>
+#include <errno.h>
+#include <libintl.h>
 #include <array_length.h>
-#include <stddef.h>
 
-const char *const _sys_errlist[] =
+const char *const _sys_errlist_internal[] =
   {
-    "Error 0",			/* 0 */
-    "Argument out of function's domain", /* 1 = EDOM */
-    "Result out of range",	/* 2 = ERANGE */
-    "Operation not implemented", /* 3 = ENOSYS */
-    "Invalid argument",		/* 4 = EINVAL */
-    "Illegal seek",		/* 5 = ESPIPE */
-    "Bad file descriptor",	/* 6 = EBADF */
-    "Cannot allocate memory",	/* 7 = ENOMEM */
-    "Permission denied",	/* 8 = EACCES */
-    "Too many open files in system", /* 9 = ENFILE */
-    "Too many open files",	/* 10 = EMFILE */
+#define _S(n, str)         [n] = str,
+#include <errlist.h>
+#undef _S
   };
 
-const int _sys_nerr = array_length (_sys_errlist);
+const char *
+__get_errlist (int errnum)
+{
+  if (errnum >= 0 && errnum < array_length (_sys_errlist_internal))
+    return _sys_errlist_internal[errnum];
+  return NULL;
+}
+
+static const union sys_errname_t
+{
+  struct
+  {
+#define MSGSTRFIELD1(line) str##line
+#define MSGSTRFIELD(line)  MSGSTRFIELD1(line)
+#define _S(n, str)         char MSGSTRFIELD(__LINE__)[sizeof(str)];
+#include <errlist.h>
+#undef _S
+  };
+  char str[0];
+} _sys_errname = { {
+#define _S(n, s) s,
+#include <errlist.h>
+#undef _S
+} };
+
+static const unsigned short _sys_errnameidx[] =
+{
+#define _S(n, s) [n] = offsetof(union sys_errname_t, MSGSTRFIELD(__LINE__)),
+#include <errlist.h>
+#undef _S
+};
+
+const char *
+__get_errname (int errnum)
+{
+  if (errnum < 0 || errnum >= array_length (_sys_errnameidx)
+      || (errnum > 0 && _sys_errnameidx[errnum] == 0))
+    return NULL;
+  return _sys_errname.str + _sys_errnameidx[errnum];
+}
+
+#include <errlist-compat.c>

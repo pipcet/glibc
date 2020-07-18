@@ -396,8 +396,7 @@ class Context(object):
                         extra_glibcs=[{'variant': 'disable-multi-arch',
                                        'cfg': ['--disable-multi-arch']},
                                       {'variant': 'enable-obsolete',
-                                       'cfg': ['--enable-obsolete-rpc',
-                                               '--enable-obsolete-nsl']},
+                                       'cfg': ['--enable-obsolete-rpc']},
                                       {'variant': 'static-pie',
                                        'cfg': ['--enable-static-pie']},
                                       {'variant': 'x32-static-pie',
@@ -414,8 +413,7 @@ class Context(object):
                                       {'variant': 'enable-obsolete',
                                        'arch': 'i686',
                                        'ccopts': '-m32 -march=i686',
-                                       'cfg': ['--enable-obsolete-rpc',
-                                               '--enable-obsolete-nsl']},
+                                       'cfg': ['--enable-obsolete-rpc']},
                                       {'arch': 'i486',
                                        'ccopts': '-m32 -march=i486'},
                                       {'arch': 'i586',
@@ -892,8 +890,7 @@ class Context(object):
         # Some other files have such dependencies but do not need to
         # be touched because nothing in a build depends on the files
         # in question.
-        for f in ('sysdeps/gnu/errlist.c',
-                  'sysdeps/mach/hurd/bits/errno.h'):
+        for f in ('sysdeps/mach/hurd/bits/errno.h',):
             to_touch = os.path.join(srcdir, f)
             subprocess.run(['touch', '-c', to_touch], check=True)
         for dirpath, dirnames, filenames in os.walk(srcdir):

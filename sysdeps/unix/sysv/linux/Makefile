@@ -85,13 +85,15 @@ sysdep_headers += sys/mount.h sys/acct.h \
 		  bits/siginfo-arch.h bits/siginfo-consts-arch.h \
 		  bits/procfs.h bits/procfs-id.h bits/procfs-extra.h \
 		  bits/procfs-prregset.h bits/mman-map-flags-generic.h \
-		  bits/msq-pad.h bits/shmlba.h bits/shm-pad.h \
+		  bits/shmlba.h \
 		  bits/termios-struct.h bits/termios-c_cc.h \
 		  bits/termios-c_iflag.h bits/termios-c_oflag.h \
 		  bits/termios-baud.h bits/termios-c_cflag.h \
 		  bits/termios-c_lflag.h bits/termios-tcflow.h \
 		  bits/termios-misc.h \
 		  bits/types/struct_semid_ds.h \
+		  bits/types/struct_msqid_ds.h \
+		  bits/types/struct_shmid_ds.h \
 		  bits/ipc-perm.h \
 		  sys/rseq.h bits/rseq.h
 
