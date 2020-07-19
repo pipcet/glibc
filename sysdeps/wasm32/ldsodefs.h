@@ -837,6 +837,7 @@ _dl_signal_cexception (int errcode, struct dl_exception *exception,
 {
   _dl_signal_exception (errcode, exception, occasion);
 }
+#define _dl_signal_cexception(errcode,object,occasion) do { } while(1)
 #endif
 
 /* See _dl_signal_cexception above.  */
