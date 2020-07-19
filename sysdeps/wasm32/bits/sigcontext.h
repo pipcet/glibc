@@ -19,5 +19,10 @@
 # error "Never use <bits/sigcontext.h> directly; include <signal.h> instead."
 #endif
 
+#ifndef _BITS_SIGCONTEXT_H
+#define _BITS_SIGCONTEXT_H
+
 struct sigcontext {
 };
+
+#endif
