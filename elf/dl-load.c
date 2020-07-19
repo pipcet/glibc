@@ -562,7 +562,7 @@ decompose_rpath (struct r_search_path_struct *sps,
   struct r_search_path_elem **result;
   size_t nelems;
   /* Initialize to please the compiler.  */
-  const char *errstring = NULL;
+  //const char *errstring = NULL;
 
   /* First see whether we must forget the RUNPATH and RPATH from this
      object.  */
@@ -607,7 +607,7 @@ decompose_rpath (struct r_search_path_struct *sps,
   char *copy = __strdup (rpath);
   if (copy == NULL)
     {
-      errstring = N_("cannot create RUNPATH/RPATH copy");
+      //errstring = N_("cannot create RUNPATH/RPATH copy");
       goto signal_error;
     }
 
@@ -624,7 +624,6 @@ decompose_rpath (struct r_search_path_struct *sps,
   if (result == NULL)
     {
       free (copy);
-      errstring = N_("cannot create cache for search path");
     signal_error:
       _dl_signal_error (ENOMEM, NULL, NULL, errstring);
     }
@@ -686,7 +685,7 @@ _dl_init_paths (const char *llp)
   size_t round_size;
   struct link_map __attribute__ ((unused)) *l = NULL;
   /* Initialize to please the compiler.  */
-  const char *errstring = NULL;
+  //const char *errstring = NULL;
 
   /* Fill in the information about the application's RPATH and the
      directories addressed by the LD_LIBRARY_PATH environment variable.  */
@@ -700,7 +699,7 @@ _dl_init_paths (const char *llp)
     malloc ((nsystem_dirs_len + 1) * sizeof (struct r_search_path_elem *));
   if (rtld_search_dirs.dirs == NULL)
     {
-      errstring = N_("cannot create search path array");
+      //errstring = N_("cannot create search path array");
     signal_error:
       _dl_signal_error (ENOMEM, NULL, NULL, errstring);
     }
@@ -713,7 +712,6 @@ _dl_init_paths (const char *llp)
 				     * sizeof (*rtld_search_dirs.dirs[0]));
   if (rtld_search_dirs.dirs[0] == NULL)
     {
-      errstring = N_("cannot create cache for search path");
       goto signal_error;
     }
 
@@ -809,7 +807,6 @@ _dl_init_paths (const char *llp)
 	malloc ((nllp + 1) * sizeof (struct r_search_path_elem *));
       if (env_path_list.dirs == NULL)
 	{
-	  errstring = N_("cannot create cache for search path");
 	  goto signal_error;
 	}
 

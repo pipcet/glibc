@@ -338,8 +338,6 @@ _dl_protect_relro (struct link_map *l)
   if (start != end
       && __mprotect ((void *) start, end - start, PROT_READ) < 0)
     {
-      static const char errstring[] = N_("\
-cannot apply additional memory protection after relocation");
       _dl_signal_error (errno, l->l_name, NULL, errstring);
     }
 }

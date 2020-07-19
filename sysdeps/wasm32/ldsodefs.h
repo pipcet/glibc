@@ -819,6 +819,7 @@ extern void _dl_signal_error (int errcode, const char *object,
 			      const char *occasion, const char *errstring)
      __attribute__ ((__noreturn__));
 libc_hidden_proto (_dl_signal_error)
+#define _dl_signal_error(errcode,object,occasion,string) do { } while(1)
 
 /* Like _dl_signal_exception, but may return when called in the
    context of _dl_receive_error.  This is only used during ld.so
@@ -827,6 +828,7 @@ libc_hidden_proto (_dl_signal_error)
 #if IS_IN (rtld)
 extern void _dl_signal_cexception (int errcode, struct dl_exception *,
 				   const char *occasion) attribute_hidden;
+#define _dl_signal_cexception(errcode,object,occasion) do { } while(1)
 #else
 __attribute__ ((always_inline))
 static inline void
