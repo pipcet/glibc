@@ -56,6 +56,10 @@ size_t _dl_tls_static_align;
 
 /* Generation counter for the dtv.  */
 size_t _dl_tls_generation;
+size_t _dl_tls_static_surplus;
+/* Remaining amount of static TLS that may be used for optimizing
+   dynamic TLS access (e.g. with TLSDESC).  */
+size_t _dl_tls_static_optional;
 
 
 /* Additional definitions needed by TLS initialization.  */
