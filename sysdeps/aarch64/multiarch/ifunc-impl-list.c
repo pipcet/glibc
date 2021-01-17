@@ -1,5 +1,5 @@
 /* Enumerate available IFUNC implementations of a function.  AARCH64 version.
-   Copyright (C) 2017-2020 Free Software Foundation, Inc.
+   Copyright (C) 2017-2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -42,11 +42,13 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 	      IFUNC_IMPL_ADD (array, i, memcpy, 1, __memcpy_thunderx)
 	      IFUNC_IMPL_ADD (array, i, memcpy, 1, __memcpy_thunderx2)
 	      IFUNC_IMPL_ADD (array, i, memcpy, 1, __memcpy_falkor)
+	      IFUNC_IMPL_ADD (array, i, memcpy, 1, __memcpy_simd)
 	      IFUNC_IMPL_ADD (array, i, memcpy, 1, __memcpy_generic))
   IFUNC_IMPL (i, name, memmove,
 	      IFUNC_IMPL_ADD (array, i, memmove, 1, __memmove_thunderx)
 	      IFUNC_IMPL_ADD (array, i, memmove, 1, __memmove_thunderx2)
 	      IFUNC_IMPL_ADD (array, i, memmove, 1, __memmove_falkor)
+	      IFUNC_IMPL_ADD (array, i, memmove, 1, __memmove_simd)
 	      IFUNC_IMPL_ADD (array, i, memmove, 1, __memmove_generic))
   IFUNC_IMPL (i, name, memset,
 	      /* Enable this on non-falkor processors too so that other cores
@@ -61,7 +63,7 @@ __libc_ifunc_impl_list (const char *name, struct libc_ifunc_impl *array,
 
   IFUNC_IMPL (i, name, strlen,
 	      IFUNC_IMPL_ADD (array, i, strlen, 1, __strlen_asimd)
-	      IFUNC_IMPL_ADD (array, i, strlen, 1, __strlen_generic))
+	      IFUNC_IMPL_ADD (array, i, strlen, 1, __strlen_mte))
 
   return i;
 }

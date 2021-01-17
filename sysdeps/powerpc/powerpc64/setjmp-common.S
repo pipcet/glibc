@@ -1,5 +1,5 @@
 /* setjmp for PowerPC64.
-   Copyright (C) 1995-2020 Free Software Foundation, Inc.
+   Copyright (C) 1995-2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -217,7 +217,7 @@ L(no_vmx):
 	li	r3,0
 	blr
 #elif defined SHARED
-	b	JUMPTARGET (__sigjmp_save_symbol)
+	b	JUMPTARGET (NOTOC (__sigjmp_save_symbol))
 #else
 	mflr	r0
 	std	r0,FRAME_LR_SAVE(r1)

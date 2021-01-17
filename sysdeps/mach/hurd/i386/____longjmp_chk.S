@@ -1,4 +1,4 @@
-/* Copyright (C) 2001-2020 Free Software Foundation, Inc.
+/* Copyright (C) 2001-2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -60,7 +60,14 @@ ENTRY (____longjmp_chk)
 	PTR_DEMANGLE (%ecx)
 #endif
 
-	movl	%gs:SIGSTATE_OFFSET,%edi
+	movw	%ds, %si
+	movw	%gs, %di
+	cmpw	%si, %di
+	jz	.Lok		/* TLS not initialized yet */
+
+	movl	%gs:SIGSTATE_OFFSET, %edi
+	testl	%edi, %edi
+	jz	.Lok		/* sigstate not initialized yet */
 
 	testl	$SS_ONSTACK, (HURD_SIGSTATE__SIGALTSTACK__OFFSET + SIGALTSTACK__SS_FLAGS__OFFSET)(%edi)
 	jnz	.Lonstack

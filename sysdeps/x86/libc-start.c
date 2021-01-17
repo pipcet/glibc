@@ -1,4 +1,4 @@
-/* Copyright (C) 2015-2020 Free Software Foundation, Inc.
+/* Copyright (C) 2015-2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -20,7 +20,6 @@
    PIE.  */
 # include <startup.h>
 # include <ldsodefs.h>
-# include <cpu-features.h>
 # include <cpu-features.c>
 
 extern struct cpu_features _dl_x86_cpu_features;

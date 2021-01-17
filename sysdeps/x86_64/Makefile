@@ -18,7 +18,7 @@ tests += tst-mallocalign1
 endif
 
 ifeq ($(subdir),string)
-sysdep_routines += cacheinfo strcasecmp_l-nonascii strncase_l-nonascii
+sysdep_routines += strcasecmp_l-nonascii strncase_l-nonascii
 gen-as-const-headers += locale-defines.sym
 endif
 
@@ -57,7 +57,7 @@ modules-names += x86_64/tst-x86_64mod-1
 LDFLAGS-tst-x86_64mod-1.so = -Wl,-soname,tst-x86_64mod-1.so
 ifneq (no,$(have-tunables))
 # Test the state size for XSAVE when XSAVEC is disabled.
-tst-x86_64-1-ENV = GLIBC_TUNABLES=glibc.cpu.hwcaps=-XSAVEC_Usable
+tst-x86_64-1-ENV = GLIBC_TUNABLES=glibc.cpu.hwcaps=-XSAVEC
 endif
 
 $(objpfx)tst-x86_64-1: $(objpfx)x86_64/tst-x86_64mod-1.so
@@ -71,10 +71,10 @@ CFLAGS-tst-platformmod-2.c = -mno-avx
 LDFLAGS-tst-platformmod-2.so = -Wl,-soname,tst-platformmod-2.so
 $(objpfx)tst-platform-1: $(objpfx)tst-platformmod-1.so
 $(objpfx)tst-platform-1.out: $(objpfx)x86_64/tst-platformmod-2.so
-# Turn off AVX512F_Usable and AVX2_Usable so that GLRO(dl_platform) is
+# Turn off AVX512F and AVX2 so that GLRO(dl_platform) is
 # always set to x86_64.
 tst-platform-1-ENV = LD_PRELOAD=$(objpfx)\$$PLATFORM/tst-platformmod-2.so \
-	GLIBC_TUNABLES=glibc.cpu.hwcaps=-AVX512F_Usable,-AVX2_Usable
+	GLIBC_TUNABLES=glibc.cpu.hwcaps=-AVX512F,-AVX2
 endif
 
 tests += tst-audit3 tst-audit4 tst-audit5 tst-audit6 tst-audit7 \
@@ -144,7 +144,46 @@ CFLAGS-tst-auditmod10b.c += $(AVX512-CFLAGS)
 CFLAGS-tst-avx512-aux.c += $(AVX512-CFLAGS)
 CFLAGS-tst-avx512mod.c += $(AVX512-CFLAGS)
 endif
+
+$(objpfx)tst-glibc-hwcaps: $(objpfx)libmarkermod2-1.so \
+  $(objpfx)libmarkermod3-1.so $(objpfx)libmarkermod4-1.so
+$(objpfx)tst-glibc-hwcaps.out: \
+  $(objpfx)libmarkermod2.so \
+    $(objpfx)glibc-hwcaps/x86-64-v2/libmarkermod2.so \
+  $(objpfx)libmarkermod3.so \
+    $(objpfx)glibc-hwcaps/x86-64-v2/libmarkermod3.so \
+    $(objpfx)glibc-hwcaps/x86-64-v3/libmarkermod3.so \
+  $(objpfx)libmarkermod4.so \
+    $(objpfx)glibc-hwcaps/x86-64-v2/libmarkermod4.so \
+    $(objpfx)glibc-hwcaps/x86-64-v3/libmarkermod4.so \
+    $(objpfx)glibc-hwcaps/x86-64-v4/libmarkermod4.so \
+
+$(objpfx)glibc-hwcaps/x86-64-v2/libmarkermod2.so: $(objpfx)libmarkermod2-2.so
+	$(make-target-directory)
+	cp $< $@
+$(objpfx)glibc-hwcaps/x86-64-v2/libmarkermod3.so: $(objpfx)libmarkermod3-2.so
+	$(make-target-directory)
+	cp $< $@
+$(objpfx)glibc-hwcaps/x86-64-v3/libmarkermod3.so: $(objpfx)libmarkermod3-3.so
+	$(make-target-directory)
+	cp $< $@
+$(objpfx)glibc-hwcaps/x86-64-v2/libmarkermod4.so: $(objpfx)libmarkermod4-2.so
+	$(make-target-directory)
+	cp $< $@
+$(objpfx)glibc-hwcaps/x86-64-v3/libmarkermod4.so: $(objpfx)libmarkermod4-3.so
+	$(make-target-directory)
+	cp $< $@
+$(objpfx)glibc-hwcaps/x86-64-v4/libmarkermod4.so: $(objpfx)libmarkermod4-4.so
+	$(make-target-directory)
+	cp $< $@
+
+ifeq (no,$(build-hardcoded-path-in-tests))
+# This is an ld.so.cache test, and RPATH/RUNPATH in the executable
+# interferes with its test objectives.
+tests-container += tst-glibc-hwcaps-cache
 endif
+
+endif # $(subdir) == elf
 
 ifeq ($(subdir),csu)
 gen-as-const-headers += tlsdesc.sym rtld-offsets.sym

@@ -1,5 +1,5 @@
 /* Early initialization of libc.so, libc.so side.
-   Copyright (C) 2020 Free Software Foundation, Inc.
+   Copyright (C) 2020-2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -18,8 +18,12 @@
 
 #include <ctype.h>
 #include <libc-early-init.h>
-#include <rseq-internal.h>
+#include <libc-internal.h>
 #include <sys/single_threaded.h>
+
+#ifdef SHARED
+_Bool __libc_initial;
+#endif
 
 void
 __libc_early_init (_Bool initial)
@@ -27,12 +31,12 @@ __libc_early_init (_Bool initial)
   /* Initialize ctype data.  */
   __ctype_init ();
 
-  /* Register rseq ABI to the kernel for the main program's libc.   */
-  if (initial)
-    rseq_register_current_thread ();
-
   /* Only the outer namespace is marked as single-threaded.  */
   __libc_single_threaded = initial;
+
+#ifdef SHARED
+  __libc_initial = initial;
+#endif
 }
 
 #if IS_IN(libc)

@@ -1,4 +1,4 @@
-# Copyright (C) 1991-2020 Free Software Foundation, Inc.
+# Copyright (C) 1991-2021 Free Software Foundation, Inc.
 # This file is part of the GNU C Library.
 
 # The GNU C Library is free software; you can redistribute it and/or
@@ -25,7 +25,8 @@ include ../Makeconfig
 headers	:= netinet/ether.h netinet/in.h netinet/in_systm.h \
 	   netinet/if_ether.h netinet/igmp.h \
 	   netinet/tcp.h netinet/ip.h $(wildcard arpa/*.h protocols/*.h) \
-	   aliases.h ifaddrs.h netinet/ip6.h netinet/icmp6.h bits/in.h
+	   aliases.h ifaddrs.h netinet/ip6.h netinet/icmp6.h bits/in.h \
+	   rpc/netdb.h
 
 routines := htonl htons		\
 	    inet_lnaof inet_mkadr	\
@@ -122,5 +123,5 @@ endif
 # The test uses dlopen indirectly and would otherwise load system
 # objects.
 tst-idna_name_classify-ENV = \
-  LD_LIBRARY_PATH=$(objpfx):$(common-objpfx):$(common-objpfx)elf
+  LD_LIBRARY_PATH=$(ld-library-path):$(common-objpfx):$(common-objpfx)elf
 $(objpfx)tst-idna_name_classify.out: $(gen-locales)

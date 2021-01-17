@@ -1,5 +1,5 @@
 /* Malloc implementation for multiple threads without lock contention.
-   Copyright (C) 2001-2020 Free Software Foundation, Inc.
+   Copyright (C) 2001-2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
    Contributed by Wolfram Gloger <wg@malloc.de>, 2001.
 
@@ -391,13 +391,13 @@ dump_heap (heap_info *heap)
                    ~MALLOC_ALIGN_MASK);
   for (;; )
     {
-      fprintf (stderr, "chunk %p size %10lx", p, (long) p->size);
+      fprintf (stderr, "chunk %p size %10lx", p, (long) chunksize_nomask(p));
       if (p == top (heap->ar_ptr))
         {
           fprintf (stderr, " (top)\n");
           break;
         }
-      else if (p->size == (0 | PREV_INUSE))
+      else if (chunksize_nomask(p) == (0 | PREV_INUSE))
         {
           fprintf (stderr, " (fence)\n");
           break;
@@ -484,7 +484,7 @@ new_heap (size_t size, size_t top_pad)
             }
         }
     }
-  if (__mprotect (p2, size, PROT_READ | PROT_WRITE) != 0)
+  if (__mprotect (p2, size, MTAG_MMAP_FLAGS | PROT_READ | PROT_WRITE) != 0)
     {
       __munmap (p2, HEAP_MAX_SIZE);
       return 0;
@@ -514,7 +514,7 @@ grow_heap (heap_info *h, long diff)
     {
       if (__mprotect ((char *) h + h->mprotect_size,
                       (unsigned long) new_size - h->mprotect_size,
-                      PROT_READ | PROT_WRITE) != 0)
+                      MTAG_MMAP_FLAGS | PROT_READ | PROT_WRITE) != 0)
         return -2;
 
       h->mprotect_size = new_size;

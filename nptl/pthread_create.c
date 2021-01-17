@@ -1,4 +1,4 @@
-/* Copyright (C) 2002-2020 Free Software Foundation, Inc.
+/* Copyright (C) 2002-2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
    Contributed by Ulrich Drepper <drepper@redhat.com>, 2002.
 
@@ -26,6 +26,7 @@
 #include <hp-timing.h>
 #include <ldsodefs.h>
 #include <atomic.h>
+#include <libc-diag.h>
 #include <libc-internal.h>
 #include <resolv.h>
 #include <kernel-features.h>
@@ -33,7 +34,6 @@
 #include <default-sched.h>
 #include <futex-internal.h>
 #include <tls-setup.h>
-#include <rseq-internal.h>
 #include "libioP.h"
 #include <sys/single_threaded.h>
 
@@ -213,9 +213,9 @@ __find_in_stack_list (struct pthread *pd)
   list_t *entry;
   struct pthread *result = NULL;
 
-  lll_lock (stack_cache_lock, LLL_PRIVATE);
+  lll_lock (GL (dl_stack_cache_lock), LLL_PRIVATE);
 
-  list_for_each (entry, &stack_used)
+  list_for_each (entry, &GL (dl_stack_used))
     {
       struct pthread *curp;
 
@@ -228,7 +228,7 @@ __find_in_stack_list (struct pthread *pd)
     }
 
   if (result == NULL)
-    list_for_each (entry, &__stack_user)
+    list_for_each (entry, &GL (dl_stack_user))
       {
 	struct pthread *curp;
 
@@ -240,7 +240,7 @@ __find_in_stack_list (struct pthread *pd)
 	  }
       }
 
-  lll_unlock (stack_cache_lock, LLL_PRIVATE);
+  lll_unlock (GL (dl_stack_cache_lock), LLL_PRIVATE);
 
   return result;
 }
@@ -386,9 +386,6 @@ START_THREAD_DEFN
   /* Initialize pointers to locale data.  */
   __ctype_init ();
 
-  /* Register rseq TLS to the kernel.  */
-  rseq_register_current_thread ();
-
 #ifndef __ASSUME_SET_ROBUST_LIST
   if (__set_robust_list_avail >= 0)
 #endif
@@ -404,7 +401,16 @@ START_THREAD_DEFN
   struct pthread_unwind_buf unwind_buf;
 
   int not_first_call;
+  DIAG_PUSH_NEEDS_COMMENT;
+#if __GNUC_PREREQ (7, 0)
+  /* This call results in a -Wstringop-overflow warning because struct
+     pthread_unwind_buf is smaller than jmp_buf.  setjmp and longjmp
+     do not use anything beyond the common prefix (they never access
+     the saved signal mask), so that is a false positive.  */
+  DIAG_IGNORE_NEEDS_COMMENT (11, "-Wstringop-overflow=");
+#endif
   not_first_call = setjmp ((struct __jmp_buf_tag *) unwind_buf.cancel_jmp_buf);
+  DIAG_POP_NEEDS_COMMENT;
 
   /* No previous handlers.  NB: This must be done after setjmp since the
      private space in the unwind jump buffer may overlap space used by
@@ -584,15 +590,6 @@ START_THREAD_DEFN
      The 'exit' implementation in the kernel will signal when the
      process is really dead since 'clone' got passed the CLONE_CHILD_CLEARTID
      flag.  The 'tid' field in the TCB will be set to zero.
-
-     rseq TLS is still registered at this point.  Rely on implicit
-     unregistration performed by the kernel on thread teardown.  This is not a
-     problem because the rseq TLS lives on the stack, and the stack outlives
-     the thread.  If TCB allocation is ever changed, additional steps may be
-     required, such as performing explicit rseq unregistration before
-     reclaiming the rseq TLS area memory.  It is NOT sufficient to block
-     signals because the kernel may write to the rseq area even without
-     signals.
 
      The exit code is zero since in case all threads exit by calling
      'pthread_exit' the exit status must be 0 (zero).  */

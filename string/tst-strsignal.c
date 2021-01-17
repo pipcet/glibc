@@ -1,6 +1,6 @@
 /* Test for strsignal.
 
-   Copyright (C) 2020 Free Software Foundation, Inc.
+   Copyright (C) 2020-2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -20,6 +20,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <signal.h>
+#include <stdlib.h>
 #include <locale.h>
 #include <array_length.h>
 
@@ -29,6 +30,8 @@
 static int
 do_test (void)
 {
+  unsetenv ("LANGUAGE");
+
   xsetlocale (LC_ALL, "C");
 
   TEST_COMPARE_STRING (strsignal (SIGINT),     "Interrupt");

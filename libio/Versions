@@ -160,6 +160,5 @@ libc {
 
     __fseeko64;
     __ftello64;
-    __libc_readline_unlocked;
   }
 }

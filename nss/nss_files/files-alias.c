@@ -1,5 +1,5 @@
 /* Mail alias file parser in nss_files module.
-   Copyright (C) 1996-2020 Free Software Foundation, Inc.
+   Copyright (C) 1996-2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1996.
 
@@ -29,6 +29,7 @@
 #include <kernel-features.h>
 
 #include "nsswitch.h"
+#include <nss_files.h>
 
 NSS_DECLARE_MODULE_FUNCTIONS (files)
 
@@ -49,7 +50,7 @@ internal_setent (FILE **stream)
 
   if (*stream == NULL)
     {
-      *stream = fopen ("/etc/aliases", "rce");
+      *stream = __nss_files_fopen ("/etc/aliases");
 
       if (*stream == NULL)
 	status = errno == EAGAIN ? NSS_STATUS_TRYAGAIN : NSS_STATUS_UNAVAIL;
@@ -215,7 +216,7 @@ get_next_alias (FILE *stream, const char *match, struct aliasent *result,
 
 		      first_unused = cp;
 
-		      listfile = fopen (&cp[9], "rce");
+		      listfile = __nss_files_fopen (&cp[9]);
 		      /* If the file does not exist we simply ignore
 			 the statement.  */
 		      if (listfile != NULL

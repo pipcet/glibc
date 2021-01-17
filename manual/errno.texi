@@ -1207,9 +1207,9 @@ to @code{errno}.
 The function @code{perror} is declared in @file{stdio.h}.
 @end deftypefun
 
-@deftypefun void strerrorname_np (int @var{errnum})
+@deftypefun {const char *} strerrorname_np (int @var{errnum})
 @standards{GNU, string.h}
-@safety{@prelim{}@mtsafe{}@assafe{}@acsafe{}}
+@safety{@mtsafe{}@assafe{}@acsafe{}}
 This function returns the name describing the error @var{errnum} or
 @code{NULL} if there is no known constant with this value (e.g "EINVAL"
 for @code{EINVAL}).
@@ -1218,9 +1218,9 @@ for @code{EINVAL}).
 This function is a GNU extension, declared in the header file @file{string.h}.
 @end deftypefun
 
-@deftypefun void strerrordesc_np (int @var{errnum})
+@deftypefun {const char *} strerrordesc_np (int @var{errnum})
 @standards{GNU, string.h}
-@safety{@prelim{}@mtsafe{}@assafe{}@acsafe{}}
+@safety{@mtsafe{}@assafe{}@acsafe{}}
 This function returns the message describing the error @var{errnum} or
 @code{NULL} if there is no known constant with this value (e.g "Invalid
 argument" for @code{EINVAL}).  Different than @code{strerror} the returned

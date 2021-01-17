@@ -171,6 +171,19 @@ NOTE: @option{--enable-cet} has been tested for i686, x86_64 and x32
 on non-CET processors.  @option{--enable-cet} has been tested for
 i686, x86_64 and x32 on CET processors.
 
+@item --enable-memory-tagging
+Enable memory tagging support if the architecture supports it.  When
+@theglibc{} is built with this option then the resulting library will
+be able to control the use of tagged memory when hardware support is
+present by use of the tunable @samp{glibc.mem.tagging}.  This includes
+the generation of tagged memory when using the @code{malloc} APIs.
+
+At present only AArch64 platforms with MTE provide this functionality,
+although the library will still operate (without memory tagging) on
+older versions of the architecture.
+
+The default is to disable support for memory tagging.
+
 @item --disable-profile
 Don't build libraries with profiling information.  You may want to use
 this option if you don't plan to do profiling.
@@ -218,14 +231,9 @@ increased program load times.
 @item --enable-pt_chown
 The file @file{pt_chown} is a helper binary for @code{grantpt}
 (@pxref{Allocation, Pseudo-Terminals}) that is installed setuid root to
-fix up pseudo-terminal ownership.  It is not built by default because
-systems using the Linux kernel are commonly built with the @code{devpts}
-filesystem enabled and mounted at @file{/dev/pts}, which manages
-pseudo-terminal ownership automatically.  By using
-@samp{--enable-pt_chown}, you may build @file{pt_chown} and install it
-setuid and owned by @code{root}.  The use of @file{pt_chown} introduces
-additional security risks to the system and you should enable it only if
-you understand and accept those risks.
+fix up pseudo-terminal ownership on GNU/Hurd.  It is not required on
+GNU/Linux, and @theglibc{} will not use the installed @file{pt_chown}
+program when configured with @option{--enable-pt_chown}.
 
 @item --disable-werror
 By default, @theglibc{} is built with @option{-Werror}.  If you wish
@@ -512,6 +520,10 @@ Library with support for IEEE long double.
 @c powerpc64le performs an autoconf test to verify the compiler compiles with
 @c commands like "$CC -c foo.c -mabi=ibmlongdouble -mlong-double-128".
 
+For ARC architecture builds, GCC 8.3 or higher is needed.
+
+For s390x architecture builds, GCC 7.1 or higher is needed (See gcc Bug 98269).
+
 For multi-arch support it is recommended to use a GCC which has been built with
 support for GNU indirect functions.  This ensures that correct debugging
 information is generated for functions selected by IFUNC resolvers.  This
@@ -536,6 +548,8 @@ verified to work to build @theglibc{}.
 For PowerPC 64-bits little-endian (powerpc64le), @command{objcopy} is required
 to support @option{--update-section}.  This option requires binutils 2.26 or
 newer.
+
+ARC architecture needs @code{binutils} 2.32 or higher for TLS related fixes.
 
 @item
 GNU @code{texinfo} 4.7 or later

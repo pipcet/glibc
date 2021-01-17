@@ -1,4 +1,4 @@
-/* Copyright (C) 1998-2020 Free Software Foundation, Inc.
+/* Copyright (C) 1998-2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
    Contributed by Thorsten Kukuk <kukuk@suse.de>, 1998.
 
@@ -29,10 +29,11 @@
 #include <libc-lock.h>
 #include <kernel-features.h>
 #include <scratch_buffer.h>
+#include <nss_files.h>
 
 NSS_DECLARE_MODULE_FUNCTIONS (compat)
 
-static service_user *ni;
+static nss_action_list ni;
 static enum nss_status (*initgroups_dyn_impl) (const char *, gid_t,
 					       long int *, long int *,
 					       gid_t **, long int, int *);
@@ -122,13 +123,10 @@ internal_setgrent (ent_t *ent)
   else
     ent->blacklist.current = 0;
 
-  ent->stream = fopen ("/etc/group", "rme");
+  ent->stream = __nss_files_fopen ("/etc/group");
 
   if (ent->stream == NULL)
     status = errno == EAGAIN ? NSS_STATUS_TRYAGAIN : NSS_STATUS_UNAVAIL;
-  else
-    /* We take care of locking ourself.  */
-    __fsetlocking (ent->stream, FSETLOCKING_BYCALLER);
 
   return status;
 }

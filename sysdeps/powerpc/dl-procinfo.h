@@ -1,5 +1,5 @@
 /* Processor capability information handling macros.  PowerPC version.
-   Copyright (C) 2005-2020 Free Software Foundation, Inc.
+   Copyright (C) 2005-2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -96,6 +96,7 @@ _dl_string_platform (const char *str)
 	  if (str[1] == '0')
 	    {
 	      ret = _DL_FIRST_PLATFORM + PPC_PLATFORM_POWER10;
+	      str++;
 	    }
 	  else
 	    return -1;

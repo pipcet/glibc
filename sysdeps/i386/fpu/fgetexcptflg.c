@@ -1,5 +1,5 @@
 /* Store current representation for exceptions.
-   Copyright (C) 1997-2020 Free Software Foundation, Inc.
+   Copyright (C) 1997-2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
    Contributed by Ulrich Drepper <drepper@cygnus.com>, 1997.
 
@@ -34,7 +34,7 @@ __fegetexceptflag (fexcept_t *flagp, int excepts)
   *flagp = temp & excepts & FE_ALL_EXCEPT;
 
   /* If the CPU supports SSE, we clear the MXCSR as well.  */
-  if (HAS_CPU_FEATURE (SSE))
+  if (CPU_FEATURE_USABLE (SSE))
     {
       unsigned int sse_exc;
 

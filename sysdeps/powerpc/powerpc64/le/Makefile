@@ -38,6 +38,14 @@ if [ ! -z "$(filter libm.so libc.so,$(notdir $1))" ]; then \
 fi
 endef
 
+# Ensure a .gnu.attributes section is present by building an ibm128 file with
+# -mgnu-attribute in both libm and libc shared libraries.  Prior to GCC 11 this
+# section was implicitly included via static libgcc ibm128 routines.
+ifeq ($(subdir),math)
+$(objpfx)m_ldexpl.os: CFLAGS += -mgnu-attribute
+$(objpfx)s_ldexpl.os: CFLAGS += -mgnu-attribute
+endif
+
 endif # ifeq ($(build-shared),yes)
 endif # ifeq ($(ibm128-fcts),yes)
 
@@ -180,3 +188,31 @@ ifeq ($(subdir),nptl)
 CFLAGS-tst-thread_local1.cc += -mno-float128
 CFLAGS-tst-minstack-throw.cc += -mno-float128
 endif
+
+ifeq ($(subdir),elf)
+$(objpfx)tst-glibc-hwcaps: \
+  $(objpfx)libmarkermod2-1.so $(objpfx)libmarkermod3-1.so
+$(objpfx)tst-glibc-hwcaps.out: \
+  $(objpfx)libmarkermod2.so \
+    $(objpfx)glibc-hwcaps/power9/libmarkermod2.so \
+  $(objpfx)libmarkermod3.so \
+    $(objpfx)glibc-hwcaps/power9/libmarkermod3.so \
+    $(objpfx)glibc-hwcaps/power10/libmarkermod3.so \
+
+$(objpfx)glibc-hwcaps/power9/libmarkermod2.so: $(objpfx)libmarkermod2-2.so
+	$(make-target-directory)
+	cp $< $@
+$(objpfx)glibc-hwcaps/power9/libmarkermod3.so: $(objpfx)libmarkermod3-2.so
+	$(make-target-directory)
+	cp $< $@
+$(objpfx)glibc-hwcaps/power10/libmarkermod3.so: $(objpfx)libmarkermod3-3.so
+	$(make-target-directory)
+	cp $< $@
+
+ifeq (no,$(build-hardcoded-path-in-tests))
+# This is an ld.so.cache test, and RPATH/RUNPATH in the executable
+# interferes with its test objectives.
+tests-container += tst-glibc-hwcaps-cache
+endif
+
+endif # $(subdir) == elf

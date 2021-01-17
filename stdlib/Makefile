@@ -1,4 +1,4 @@
-# Copyright (C) 1991-2020 Free Software Foundation, Inc.
+# Copyright (C) 1991-2021 Free Software Foundation, Inc.
 # This file is part of the GNU C Library.
 
 # The GNU C Library is free software; you can redistribute it and/or
@@ -56,7 +56,6 @@ routines	:=							      \
 	system canonicalize						      \
 	a64l l64a							      \
 	rpmatch strfmon strfmon_l getsubopt xpg_basename fmtmsg		      \
-	strtoimax strtoumax wcstoimax wcstoumax				      \
 	getcontext setcontext makecontext swapcontext
 aux =	grouping groupingwc tens_in_limb
 
@@ -206,7 +205,7 @@ $(objpfx)isomac: isomac.c
 $(objpfx)tst-fmtmsg.out: tst-fmtmsg.sh $(objpfx)tst-fmtmsg
 	$(SHELL) $< $(common-objpfx) '$(test-program-prefix-before-env)' \
 		 '$(run-program-env)' '$(test-program-prefix-after-env)' \
-		 $(common-objpfx)stdlib/ > $@; \
+		 $(common-objpfx)stdlib/; \
 	$(evaluate-test)
 
 $(objpfx)tst-putenv: $(objpfx)tst-putenvmod.so
@@ -237,7 +236,7 @@ $(objpfx)tst-tls-atexit-nodelete.out: $(objpfx)tst-tls-atexit-lib.so
 $(objpfx)tst-setcontext3.out: tst-setcontext3.sh $(objpfx)tst-setcontext3
 	$(SHELL) $< $(common-objpfx) '$(test-program-prefix-before-env)' \
 		 '$(run-program-env)' '$(test-program-prefix-after-env)' \
-		 $(common-objpfx)stdlib/ > $@; \
+		 $(common-objpfx)stdlib/; \
 	$(evaluate-test)
 
 $(objpfx)tst-makecontext: $(libdl)

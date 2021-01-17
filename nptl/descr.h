@@ -1,4 +1,4 @@
-/* Copyright (C) 2002-2020 Free Software Foundation, Inc.
+/* Copyright (C) 2002-2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
    Contributed by Ulrich Drepper <drepper@redhat.com>, 2002.
 
@@ -95,7 +95,13 @@ struct pthread_unwind_buf
 struct xid_command
 {
   int syscall_no;
-  long int id[3];
+  /* Enforce zero-extension for the pointer argument in
+
+     int setgroups (size_t size, const gid_t *list);
+
+     The kernel XID arguments are unsigned and do not require sign
+     extension.  */
+  unsigned long int id[3];
   volatile int cntr;
   volatile int error; /* -1: no call yet, 0: success seen, >0: error seen.  */
 };
@@ -156,7 +162,8 @@ struct pthread
     void *__padding[24];
   };
 
-  /* This descriptor's link on the `stack_used' or `__stack_user' list.  */
+  /* This descriptor's link on the GL (dl_stack_used) or
+     GL (dl_stack_user) list.  */
   list_t list;
 
   /* Thread ID - which is also a 'is this thread descriptor (and

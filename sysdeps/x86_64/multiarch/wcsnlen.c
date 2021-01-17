@@ -1,6 +1,6 @@
 /* Multiple versions of wcsnlen.
    All versions must be listed in ifunc-impl-list.c.
-   Copyright (C) 2017-2020 Free Software Foundation, Inc.
+   Copyright (C) 2017-2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -36,11 +36,11 @@ IFUNC_SELECTOR (void)
   const struct cpu_features* cpu_features = __get_cpu_features ();
 
   if (!CPU_FEATURES_ARCH_P (cpu_features, Prefer_No_VZEROUPPER)
-      && CPU_FEATURES_ARCH_P (cpu_features, AVX2_Usable)
+      && CPU_FEATURE_USABLE_P (cpu_features, AVX2)
       && CPU_FEATURES_ARCH_P (cpu_features, AVX_Fast_Unaligned_Load))
     return OPTIMIZE (avx2);
 
-  if (CPU_FEATURES_CPU_P (cpu_features, SSE4_1))
+  if (CPU_FEATURE_USABLE_P (cpu_features, SSE4_1))
     return OPTIMIZE (sse4_1);
 
   return OPTIMIZE (sse2);

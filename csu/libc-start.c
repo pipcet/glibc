@@ -1,4 +1,4 @@
-/* Copyright (C) 1998-2020 Free Software Foundation, Inc.
+/* Copyright (C) 1998-2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -21,6 +21,7 @@
 #include <unistd.h>
 #include <ldsodefs.h>
 #include <exit-thread.h>
+#include <libc-diag.h>
 #include <libc-internal.h>
 #include <elf/libc-early-init.h>
 #include <stdbool.h>
@@ -217,12 +218,11 @@ LIBC_START_MAIN (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
 # endif
 
 # ifdef DL_SYSDEP_OSCHECK
-  if (!__libc_multiple_libcs)
-    {
-      /* This needs to run to initiliaze _dl_osversion before TLS
-	 setup might check it.  */
-      DL_SYSDEP_OSCHECK (__libc_fatal);
-    }
+  {
+    /* This needs to run to initiliaze _dl_osversion before TLS
+       setup might check it.  */
+    DL_SYSDEP_OSCHECK (__libc_fatal);
+  }
 # endif
 
 #if 0
@@ -307,7 +307,16 @@ LIBC_START_MAIN (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
   struct pthread_unwind_buf unwind_buf;
 
   int not_first_call;
+  DIAG_PUSH_NEEDS_COMMENT;
+#if __GNUC_PREREQ (7, 0)
+  /* This call results in a -Wstringop-overflow warning because struct
+     pthread_unwind_buf is smaller than jmp_buf.  setjmp and longjmp
+     do not use anything beyond the common prefix (they never access
+     the saved signal mask), so that is a false positive.  */
+  DIAG_IGNORE_NEEDS_COMMENT (11, "-Wstringop-overflow=");
+#endif
   not_first_call = setjmp ((struct __jmp_buf_tag *) unwind_buf.cancel_jmp_buf);
+  DIAG_POP_NEEDS_COMMENT;
   if (__glibc_likely (! not_first_call))
     {
       struct pthread *self = THREAD_SELF;

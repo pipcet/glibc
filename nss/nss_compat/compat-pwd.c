@@ -1,4 +1,4 @@
-/* Copyright (C) 1996-2020 Free Software Foundation, Inc.
+/* Copyright (C) 1996-2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
    Contributed by Thorsten Kukuk <kukuk@vt.uni-paderborn.de>, 1996.
 
@@ -27,13 +27,14 @@
 #include <string.h>
 #include <libc-lock.h>
 #include <kernel-features.h>
+#include <nss_files.h>
 
 #include "netgroup.h"
 #include "nisdomain.h"
 
 NSS_DECLARE_MODULE_FUNCTIONS (compat)
 
-static service_user *ni;
+static nss_action_list ni;
 static enum nss_status (*setpwent_impl) (int stayopen);
 static enum nss_status (*getpwnam_r_impl) (const char *name,
 					   struct passwd * pwd, char *buffer,
@@ -223,13 +224,10 @@ internal_setpwent (ent_t *ent, int stayopen, int needent)
 
   if (ent->stream == NULL)
     {
-      ent->stream = fopen ("/etc/passwd", "rme");
+      ent->stream = __nss_files_fopen ("/etc/passwd");
 
       if (ent->stream == NULL)
 	status = errno == EAGAIN ? NSS_STATUS_TRYAGAIN : NSS_STATUS_UNAVAIL;
-      else
-	/* We take care of locking ourself.  */
-	__fsetlocking (ent->stream, FSETLOCKING_BYCALLER);
     }
   else
     rewind (ent->stream);

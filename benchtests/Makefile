@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2020 Free Software Foundation, Inc.
+# Copyright (C) 2013-2021 Free Software Foundation, Inc.
 # This file is part of the GNU C Library.
 
 # The GNU C Library is free software; you can redistribute it and/or
@@ -27,7 +27,11 @@ bench-math := acos acosh asin asinh atan atanh cos cosh exp exp2 log log2 \
 	      log2f sincosf sinf cosf isnan isinf isfinite hypot logb logbf \
 	      exp10f
 
-bench-pthread := pthread_once thread_create
+ifneq (,$(filter yes,$(float128-fcts) $(float128-alias-fcts)))
+bench-math += expf128 powf128 sinf128
+endif
+
+bench-pthread := pthread_once thread_create pthread-locks
 
 bench-string := ffs ffsll
 
@@ -105,6 +109,7 @@ $(addprefix $(objpfx)bench-,$(bench-math)): $(libm)
 $(addprefix $(objpfx)bench-,$(math-benchset)): $(libm)
 $(addprefix $(objpfx)bench-,$(bench-pthread)): $(shared-thread-library)
 $(addprefix $(objpfx)bench-,$(bench-malloc)): $(shared-thread-library)
+$(addprefix $(objpfx)bench-,pthread-locks): $(libm)
 
 
 

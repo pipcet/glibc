@@ -1,5 +1,5 @@
 # Makefile for support library, used only at build and test time
-# Copyright (C) 2016-2020 Free Software Foundation, Inc.
+# Copyright (C) 2016-2021 Free Software Foundation, Inc.
 # This file is part of the GNU C Library.
 
 # The GNU C Library is free software; you can redistribute it and/or
@@ -34,6 +34,9 @@ libsupport-routines = \
   ignore_stderr \
   next_to_fault \
   oom_error \
+  resolv_response_context_duplicate \
+  resolv_response_context_free \
+  resolv_test \
   set_fortify_handler \
   support-xfstat \
   support-xstat \
@@ -42,6 +45,7 @@ libsupport-routines = \
   support_capture_subprocess \
   support_capture_subprocess_check \
   support_chroot \
+  support_copy_file \
   support_copy_file_range \
   support_descriptor_supports_holes \
   support_descriptors \
@@ -88,14 +92,17 @@ libsupport-routines = \
   xasprintf \
   xbind \
   xcalloc \
+  xchdir \
   xchroot \
   xclock_gettime \
   xclose \
+  xchmod \
   xconnect \
   xcopy_file_range \
   xdlfcn \
   xdlmopen \
   xdup2 \
+  xfchmod \
   xfclose \
   xfopen \
   xfork \
@@ -197,8 +204,16 @@ CFLAGS-support_paths.c = \
 		-DLIBDIR_PATH=\"$(libdir)\" \
 		-DBINDIR_PATH=\"$(bindir)\" \
 		-DSBINDIR_PATH=\"$(sbindir)\" \
+		-DSLIBDIR_PATH=\"$(slibdir)\" \
 		-DROOTSBINDIR_PATH=\"$(rootsbindir)\" \
 		-DCOMPLOCALEDIR_PATH=\"$(complocaledir)\"
+
+# In support_timespec_check_in_range we may be passed a very tight
+# range for which we should produce a correct result for expected
+# being withing the observed range.  The code uses double internally
+# in support_timespec_check_in_range and for that computation we use
+# -fexcess-precision=standard.
+CFLAGS-timespec.c += -fexcess-precision=standard
 
 ifeq (,$(CXX))
 LINKS_DSO_PROGRAM = links-dso-program-c
@@ -242,6 +257,7 @@ tests = \
   tst-test_compare \
   tst-test_compare_blob \
   tst-test_compare_string \
+  tst-timespec \
   tst-xreadlink \
   tst-xsigstack \
 

@@ -311,6 +311,21 @@ AC_ARG_ENABLE([experimental-malloc],
 	      [experimental_malloc=yes])
 AC_SUBST(experimental_malloc)
 
+AC_ARG_ENABLE([memory-tagging],
+	      AC_HELP_STRING([--enable-memory-tagging],
+			     [enable memory tagging if supported by the architecture @<:@default=no@:>@]),
+	      [memory_tagging=$enableval],
+	      [memory_tagging=no])
+if test "$memory_tagging" = yes; then
+  # Only enable this on architectures that support it.
+  case $host_cpu in
+    aarch64)
+      AC_DEFINE(USE_MTAG)
+      ;;
+  esac
+fi
+AC_SUBST(memory_tagging)
+
 AC_ARG_ENABLE([crypt],
               AC_HELP_STRING([--disable-crypt],
                              [do not build nor install the passphrase hashing library, libcrypt]),
@@ -375,17 +390,6 @@ fi
 AC_SUBST(libc_cv_nss_crypt)
 AC_SUBST(libc_cv_static_nss_crypt)
 
-
-AC_ARG_ENABLE([obsolete-rpc],
-              AC_HELP_STRING([--enable-obsolete-rpc],
-                             [build and install the obsolete RPC code for link-time usage]),
-              [link_obsolete_rpc=$enableval],
-              [link_obsolete_rpc=no])
-AC_SUBST(link_obsolete_rpc)
-
-if test "$link_obsolete_rpc" = yes; then
-  AC_DEFINE(LINK_OBSOLETE_RPC)
-fi
 
 AC_ARG_ENABLE([systemtap],
               [AS_HELP_STRING([--enable-systemtap],
@@ -1424,17 +1428,6 @@ else
 fi
 rm -f conftest*])
 AC_SUBST(libc_cv_has_glob_dat)
-
-AC_CACHE_CHECK(linker output format, libc_cv_output_format, [dnl
-if libc_cv_output_format=`
-${CC-cc} -nostartfiles -nostdlib $no_ssp -Wl,--print-output-format 2>&AS_MESSAGE_LOG_FD`
-then
-  :
-else
-  libc_cv_output_format=
-fi
-test -n "$libc_cv_output_format" || libc_cv_output_format=unknown])
-AC_SUBST(libc_cv_output_format)
 
 AC_CACHE_CHECK(for -fno-toplevel-reorder -fno-section-anchors, libc_cv_fno_toplevel_reorder, [dnl
 cat > conftest.c <<EOF

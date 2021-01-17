@@ -1,5 +1,5 @@
 /* Useful functions for tests that use struct timespec.
-   Copyright (C) 2019-2020 Free Software Foundation, Inc.
+   Copyright (C) 2019-2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -47,6 +47,14 @@ void test_timespec_before_impl (const char *file, int line,
 void test_timespec_equal_or_after_impl (const char *file, int line,
                                         const struct timespec left,
                                         const struct timespec right);
+
+time_t support_timespec_ns (struct timespec time);
+
+struct timespec support_timespec_normalize (struct timespec time);
+
+int support_timespec_check_in_range (struct timespec expected, struct timespec observed,
+				  double lower_bound, double upper_bound);
+
 
 /* Check that the timespec on the left represents a time before the
    time on the right. */

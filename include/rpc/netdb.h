@@ -1,5 +1,5 @@
 #ifndef _RPC_NETDB_H
-#include <sunrpc/rpc/netdb.h>
+#include <inet/rpc/netdb.h>
 
 # ifndef _ISOMAC
 
@@ -23,12 +23,6 @@ extern int __getrpcent_r (struct rpcent *__result_buf, char *__buffer,
      attribute_hidden;
 extern int __old_getrpcent_r (struct rpcent *__result_buf, char *__buffer,
 			      size_t __buflen, struct rpcent **__result);
-
-struct parser_data;
-extern int _nss_files_parse_rpcent (char *line, struct rpcent *result,
-				    struct parser_data *data,
-				    size_t datalen, int *errnop);
-libnss_files_hidden_proto (_nss_files_parse_rpcent)
 
 #define DECLARE_NSS_PROTOTYPES(service)					      \
 extern enum nss_status _nss_ ## service ## _setrpcent (int);		      \

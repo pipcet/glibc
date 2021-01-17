@@ -4,14 +4,60 @@ endif
 
 ifeq ($(subdir),elf)
 sysdep-dl-routines += dl-get-cpu-features
+sysdep_headers += sys/platform/x86.h
 
-tests += tst-get-cpu-features tst-get-cpu-features-static
+tests += tst-get-cpu-features tst-get-cpu-features-static \
+	 tst-cpu-features-cpuinfo tst-cpu-features-supports
 tests-static += tst-get-cpu-features-static
+ifeq (yes,$(enable-x86-isa-level))
+tests += tst-isa-level-1
+modules-names += tst-isa-level-mod-1-baseline \
+		 tst-isa-level-mod-1-v2 \
+		 tst-isa-level-mod-1-v3 \
+		 tst-isa-level-mod-1-v4 \
+
+# X86 ISA level baseline
+CFLAGS-tst-isa-level-mod-1-baseline.c += -DINCLUDE_X86_ISA_LEVEL \
+					 -DISA_LEVEL=0x1 \
+					 -march=x86-64
+# X86 ISA level v2
+CFLAGS-tst-isa-level-mod-1-v2.c += -DINCLUDE_X86_ISA_LEVEL \
+				   -DISA_LEVEL=0x3 \
+				   -march=x86-64
+# X86 ISA level v3
+CFLAGS-tst-isa-level-mod-1-v3.c += -DINCLUDE_X86_ISA_LEVEL \
+				   -DISA_LEVEL=0x7 \
+				   -march=x86-64
+# X86 ISA level v4
+CFLAGS-tst-isa-level-mod-1-v4.c += -DINCLUDE_X86_ISA_LEVEL \
+				   -DISA_LEVEL=0xf \
+				   -march=x86-64
+
+$(objpfx)tst-isa-level-1: $(libdl)
+$(objpfx)tst-isa-level-1.out: $(objpfx)tst-isa-level-mod-1-baseline.so \
+			      $(objpfx)tst-isa-level-mod-1-v2.so \
+			      $(objpfx)tst-isa-level-mod-1-v3.so \
+			      $(objpfx)tst-isa-level-mod-1-v4.so
 endif
+endif
+
+ifeq ($(subdir),math)
+tests += tst-ldbl-nonnormal-printf
+endif # $(subdir) == math
 
 ifeq ($(subdir),setjmp)
 gen-as-const-headers += jmp_buf-ssp.sym
 sysdep_routines += __longjmp_cancel
+ifneq ($(enable-cet),no)
+ifneq ($(have-tunables),no)
+tests += tst-setjmp-cet
+tst-setjmp-cet-ENV = GLIBC_TUNABLES=glibc.cpu.x86_ibt=on:glibc.cpu.x86_shstk=on
+endif
+endif
+endif
+
+ifeq ($(subdir),string)
+sysdep_routines += cacheinfo
 endif
 
 ifneq ($(enable-cet),no)

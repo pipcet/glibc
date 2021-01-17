@@ -1,5 +1,5 @@
 /* Common code for file-based database parsers in nss_files module.
-   Copyright (C) 1996-2020 Free Software Foundation, Inc.
+   Copyright (C) 1996-2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -21,6 +21,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <nss_files.h>
 
 /* These symbols are defined by the including source file:
 
@@ -86,7 +87,7 @@ struct parser_data
 #ifdef EXTERN_PARSER
 
 /* The parser is defined in a different module.  */
-extern int parse_line (char *line, struct STRUCTURE *result,
+extern int parse_line (char *line, void *result,
 		       struct parser_data *data, size_t datalen, int *errnop
 		       EXTRA_ARGS_DECL);
 
@@ -98,10 +99,11 @@ extern int parse_line (char *line, struct STRUCTURE *result,
 
 # define LINE_PARSER(EOLSET, BODY)					      \
 parser_stclass int							      \
-parse_line (char *line, struct STRUCTURE *result,			      \
+parse_line (char *line, void *generic_result,				      \
 	    struct parser_data *data, size_t datalen, int *errnop	      \
 	    EXTRA_ARGS_DECL)						      \
 {									      \
+  struct STRUCTURE *result = generic_result;				      \
   ENTDATA_DECL (data)							      \
   BUFFER_PREPARE							      \
   char *p = strpbrk (line, EOLSET "\n");				      \

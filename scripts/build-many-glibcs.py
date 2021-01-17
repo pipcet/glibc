@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # Build many configurations of glibc.
-# Copyright (C) 2016-2020 Free Software Foundation, Inc.
+# Copyright (C) 2016-2021 Free Software Foundation, Inc.
 # This file is part of the GNU C Library.
 #
 # The GNU C Library is free software; you can redistribute it and/or
@@ -162,6 +162,15 @@ class Context(object):
                                        'cfg': ['--disable-multi-arch']}])
         self.add_config(arch='aarch64_be',
                         os_name='linux-gnu')
+        self.add_config(arch='arc',
+                        os_name='linux-gnu',
+                        gcc_cfg=['--disable-multilib', '--with-cpu=hs38'])
+        self.add_config(arch='arc',
+                        os_name='linux-gnuhf',
+                        gcc_cfg=['--disable-multilib', '--with-cpu=hs38_linux'])
+        self.add_config(arch='arceb',
+                        os_name='linux-gnu',
+                        gcc_cfg=['--disable-multilib', '--with-cpu=hs38'])
         self.add_config(arch='alpha',
                         os_name='linux-gnu')
         self.add_config(arch='arm',
@@ -203,7 +212,8 @@ class Context(object):
                         os_name='gnu')
         self.add_config(arch='ia64',
                         os_name='linux-gnu',
-                        first_gcc_cfg=['--with-system-libunwind'])
+                        first_gcc_cfg=['--with-system-libunwind'],
+                        binutils_cfg=['--enable-obsolete'])
         self.add_config(arch='m68k',
                         os_name='linux-gnu',
                         gcc_cfg=['--disable-multilib'])
@@ -338,6 +348,21 @@ class Context(object):
         self.add_config(arch='powerpc64le',
                         os_name='linux-gnu',
                         gcc_cfg=['--disable-multilib', '--enable-secureplt'])
+        self.add_config(arch='riscv32',
+                        os_name='linux-gnu',
+                        variant='rv32imac-ilp32',
+                        gcc_cfg=['--with-arch=rv32imac', '--with-abi=ilp32',
+                                 '--disable-multilib'])
+        self.add_config(arch='riscv32',
+                        os_name='linux-gnu',
+                        variant='rv32imafdc-ilp32',
+                        gcc_cfg=['--with-arch=rv32imafdc', '--with-abi=ilp32',
+                                 '--disable-multilib'])
+        self.add_config(arch='riscv32',
+                        os_name='linux-gnu',
+                        variant='rv32imafdc-ilp32d',
+                        gcc_cfg=['--with-arch=rv32imafdc', '--with-abi=ilp32d',
+                                 '--disable-multilib'])
         self.add_config(arch='riscv64',
                         os_name='linux-gnu',
                         variant='rv64imac-lp64',
@@ -356,7 +381,9 @@ class Context(object):
         self.add_config(arch='s390x',
                         os_name='linux-gnu',
                         glibcs=[{},
-                                {'arch': 's390', 'ccopts': '-m31'}])
+                                {'arch': 's390', 'ccopts': '-m31'}],
+                        extra_glibcs=[{'variant': 'O3',
+                                       'cflags': '-O3'}])
         self.add_config(arch='sh3',
                         os_name='linux-gnu')
         self.add_config(arch='sh3eb',
@@ -395,8 +422,6 @@ class Context(object):
                                 {'arch': 'i686', 'ccopts': '-m32 -march=i686'}],
                         extra_glibcs=[{'variant': 'disable-multi-arch',
                                        'cfg': ['--disable-multi-arch']},
-                                      {'variant': 'enable-obsolete',
-                                       'cfg': ['--enable-obsolete-rpc']},
                                       {'variant': 'static-pie',
                                        'cfg': ['--enable-static-pie']},
                                       {'variant': 'x32-static-pie',
@@ -410,10 +435,6 @@ class Context(object):
                                        'arch': 'i686',
                                        'ccopts': '-m32 -march=i686',
                                        'cfg': ['--disable-multi-arch']},
-                                      {'variant': 'enable-obsolete',
-                                       'arch': 'i686',
-                                       'ccopts': '-m32 -march=i686',
-                                       'cfg': ['--enable-obsolete-rpc']},
                                       {'arch': 'i486',
                                        'ccopts': '-m32 -march=i486'},
                                       {'arch': 'i586',
@@ -744,13 +765,13 @@ class Context(object):
 
     def checkout(self, versions):
         """Check out the desired component versions."""
-        default_versions = {'binutils': 'vcs-2.34',
+        default_versions = {'binutils': 'vcs-2.35',
                             'gcc': 'vcs-10',
                             'glibc': 'vcs-mainline',
-                            'gmp': '6.2.0',
-                            'linux': '5.7',
-                            'mpc': '1.1.0',
-                            'mpfr': '4.0.2',
+                            'gmp': '6.2.1',
+                            'linux': '5.10',
+                            'mpc': '1.2.1',
+                            'mpfr': '4.1.0',
                             'mig': 'vcs-mainline',
                             'gnumach': 'vcs-mainline',
                             'hurd': 'vcs-mainline'}
@@ -1221,6 +1242,7 @@ def install_linux_headers(policy, cmdlist):
     """Install Linux kernel headers."""
     arch_map = {'aarch64': 'arm64',
                 'alpha': 'alpha',
+                'arc': 'arc',
                 'arm': 'arm',
                 'csky': 'csky',
                 'hppa': 'parisc',
@@ -1260,7 +1282,8 @@ class Config(object):
     """A configuration for building a compiler and associated libraries."""
 
     def __init__(self, ctx, arch, os_name, variant=None, gcc_cfg=None,
-                 first_gcc_cfg=None, glibcs=None, extra_glibcs=None):
+                 first_gcc_cfg=None, binutils_cfg=None, glibcs=None,
+                 extra_glibcs=None):
         """Initialize a Config object."""
         self.ctx = ctx
         self.arch = arch
@@ -1279,6 +1302,10 @@ class Config(object):
             self.first_gcc_cfg = []
         else:
             self.first_gcc_cfg = first_gcc_cfg
+        if binutils_cfg is None:
+            self.binutils_cfg = []
+        else:
+            self.binutils_cfg = binutils_cfg
         if glibcs is None:
             glibcs = [{'variant': variant}]
         if extra_glibcs is None:
@@ -1312,7 +1339,7 @@ class Config(object):
                                '--disable-gdbserver',
                                '--disable-libdecnumber',
                                '--disable-readline',
-                               '--disable-sim'])
+                               '--disable-sim'] + self.binutils_cfg)
         if self.os.startswith('linux'):
             install_linux_headers(LinuxHeadersPolicyForBuild(self), cmdlist)
         self.build_gcc(cmdlist, True)
@@ -1473,6 +1500,9 @@ class GlibcPolicyDefault(object):
         ]
         if glibc.os == 'gnu':
             self.configure_args.append('MIG=%s' % glibc.tool_name('mig'))
+        if glibc.cflags:
+            self.configure_args.append('CFLAGS=%s' % glibc.cflags)
+            self.configure_args.append('CXXFLAGS=%s' % glibc.cflags)
         self.configure_args += glibc.cfg
 
     def configure(self, cmdlist):
@@ -1541,7 +1571,7 @@ class Glibc(object):
     """A configuration for building glibc."""
 
     def __init__(self, compiler, arch=None, os_name=None, variant=None,
-                 cfg=None, ccopts=None):
+                 cfg=None, ccopts=None, cflags=None):
         """Initialize a Glibc object."""
         self.ctx = compiler.ctx
         self.compiler = compiler
@@ -1563,7 +1593,11 @@ class Glibc(object):
             self.cfg = []
         else:
             self.cfg = cfg
+        # ccopts contain ABI options and are passed to configure as CC / CXX.
         self.ccopts = ccopts
+        # cflags contain non-ABI options like -g or -O and are passed to
+        # configure as CFLAGS / CXXFLAGS.
+        self.cflags = cflags
 
     def tool_name(self, tool):
         """Return the name of a cross-compilation tool."""

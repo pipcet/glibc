@@ -1,5 +1,5 @@
 /* Free resources stored in thread-local variables on thread exit.
-   Copyright (C) 2003-2020 Free Software Foundation, Inc.
+   Copyright (C) 2003-2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -22,6 +22,7 @@
 #include <rpc/rpc.h>
 #include <string.h>
 #include <tls-internal.h>
+#include <shlib-compat.h>
 
 /* Thread shutdown function.  Note that this function must be called
    for threads during shutdown for correctness reasons.  Unlike
@@ -30,7 +31,9 @@
 void
 __libc_thread_freeres (void)
 {
-  call_function_static_weak (__rpc_thread_destroy);
+#if SHLIB_COMPAT (libc, GLIBC_2_0, GLIBC_2_32)
+  __rpc_thread_destroy ();
+#endif
   call_function_static_weak (__res_thread_freeres);
   __glibc_tls_internal_free ();
 
