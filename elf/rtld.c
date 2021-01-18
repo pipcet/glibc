@@ -771,9 +771,6 @@ cannot allocate TLS data structures for initial thread\n");
   const char *lossage = TLS_INIT_TP (tcbp);
   if (__glibc_unlikely (lossage != NULL))
     _dl_fatal_printf ("cannot set up thread-local storage: %s\n", lossage);
-#if THREAD_GSCOPE_IN_TCB
-  list_add (&THREAD_SELF->list, &GL (dl_stack_user));
-#endif
   tls_init_tp_called = true;
 
   return tcbp;
@@ -1113,11 +1110,6 @@ dl_main (const ElfW(Phdr) *phdr,
     && defined __rtld_lock_default_lock_recursive
   GL(dl_rtld_lock_recursive) = rtld_lock_default_lock_recursive;
   GL(dl_rtld_unlock_recursive) = rtld_lock_default_unlock_recursive;
-#endif
-
-#if THREAD_GSCOPE_IN_TCB
-  INIT_LIST_HEAD (&GL (dl_stack_used));
-  INIT_LIST_HEAD (&GL (dl_stack_user));
 #endif
 
   /* The explicit initialization here is cheaper than processing the reloc
@@ -1603,7 +1595,7 @@ dl_main (const ElfW(Phdr) *phdr,
 	 in _dl_map_object_from_fd.  */
       if (main_map->l_info[DT_SONAME] != NULL
 	  && (strcmp (((const char *) D_PTR (main_map, l_info[DT_STRTAB])
-		      + main_map->l_info[DT_SONAME]->d_un.d_val), LIBC_SO)
+		      + main_map->l_info[DT_SONAME]->d_un.d_val), "libc.so")
 	      == 0))
 	GL(dl_ns)[LM_ID_BASE].libc_map = main_map;
 
@@ -2408,9 +2400,6 @@ dl_main (const ElfW(Phdr) *phdr,
       if (__glibc_unlikely (lossage != NULL))
 	_dl_fatal_printf ("cannot set up thread-local storage: %s\n",
 			  lossage);
-#if THREAD_GSCOPE_IN_TCB
-      list_add (&THREAD_SELF->list, &GL (dl_stack_user));
-#endif
     }
 
   /* Make sure no new search directories have been added.  */

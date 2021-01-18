@@ -16,6 +16,7 @@
    <https://www.gnu.org/licenses/>.  */
 
 #include <sys/stat.h>
+#include <sys/fcntl.h>
 #include <errno.h>
 
 int

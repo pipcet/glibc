@@ -17,6 +17,7 @@
    <https://www.gnu.org/licenses/>.  */
 
 #include <nsswitch.h>
+#include <stdlib.h>
 
 #include <string.h>
 #include <libc-lock.h>

@@ -186,13 +186,7 @@ int (*_dl_make_stack_executable_hook) (void **) = _dl_make_stack_executable;
 /* Function in libpthread to wait for termination of lookups.  */
 void (*_dl_wait_lookup_done) (void);
 
-#if THREAD_GSCOPE_IN_TCB
-list_t _dl_stack_used;
-list_t _dl_stack_user;
-int _dl_stack_cache_lock;
-#else
 int _dl_thread_gscope_count;
-#endif
 struct dl_scope_free_list *_dl_scope_free_list;
 
 #ifdef NEED_DL_SYSINFO
@@ -324,13 +318,6 @@ _dl_non_dynamic_init (void)
 
   /* With vDSO setup we can initialize the function pointers.  */
   setup_vdso_pointers ();
-
-  /* Initialize the data structures for the search paths for shared
-     objects.  */
-  _dl_init_paths (getenv ("LD_LIBRARY_PATH"), "LD_LIBRARY_PATH",
-		  /* No glibc-hwcaps selection support in statically
-		     linked binaries.  */
-		  NULL, NULL);
 
   /* Remember the last search directory added at startup.  */
   _dl_init_all_dirs = GL(dl_all_dirs);

@@ -106,8 +106,6 @@ struct dl_main_state
 static inline void
 call_init_paths (const struct dl_main_state *state)
 {
-  _dl_init_paths (state->library_path, state->library_path_source,
-                  state->glibc_hwcaps_prepend, state->glibc_hwcaps_mask);
 }
 
 /* Print ld.so usage information and exit.  */

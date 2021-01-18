@@ -21,8 +21,6 @@
 #include <sys/param.h>
 #include <stddef.h>
 
-typedef long ptrdiff_t;
-
 /* Execute FILE, searching in the `PATH' environment variable if
    it contains no slashes, with all arguments after FILE until a
    NULL pointer and environment from `environ'.  */

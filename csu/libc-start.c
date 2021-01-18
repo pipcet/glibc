@@ -144,7 +144,6 @@ LIBC_START_MAIN (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
   int result;
 
   __thinthin_recopy ();
-  __libc_multiple_libcs = &_dl_starting_up && !_dl_starting_up;
 
   char **ev = &argv[argc + 1];
 

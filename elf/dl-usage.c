@@ -59,19 +59,15 @@ print_search_path_for_help_1 (struct r_search_path_elem **list)
 
   for (; *list != NULL; ++list)
     {
-      _dl_write (STDOUT_FILENO, "  ", 2);
-      const char *name = (*list)->dirname;
       size_t namelen = (*list)->dirnamelen;
       if (namelen == 0)
         {
           /* The empty string denotes the current directory.  */
-          name = ".";
           namelen = 1;
         }
       else if (namelen > 1)
         /* Remove the trailing slash.  */
         --namelen;
-      _dl_write (STDOUT_FILENO, name, namelen);
       _dl_printf (" (%s)\n", (*list)->what);
     }
 }
@@ -148,8 +144,6 @@ Subdirectories of glibc-hwcaps directories, in priority order:\n");
 static void
 print_hwcaps_subdirectories_name (const struct dl_hwcaps_split *split)
 {
-  _dl_write (STDOUT_FILENO, "  ", 2);
-  _dl_write (STDOUT_FILENO, split->segment, split->length);
 }
 
 /* Print the list of recognized glibc-hwcaps subdirectories.  */

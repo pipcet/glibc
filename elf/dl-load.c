@@ -1593,8 +1593,6 @@ open_verify (const char *name, int fd,
     char vendor[4];
   } expected_note = { 4, 16, 1, "GNU" };
   /* Initialize it to make the compiler happy.  */
-  const char *errstring = NULL;
-  int errval = 0;
 
 #ifdef SHARED
   /* Give the auditing libraries a chance.  */
@@ -1662,9 +1660,6 @@ open_verify (const char *name, int fd,
       /* Now run the tests.  */
       if (__glibc_unlikely (fbp->len < (ssize_t) sizeof (ElfW(Ehdr))))
 	{
-	  errval = errno;
-	  errstring = (errval == 0
-		       ? N_("file too short") : N_("cannot read file data"));
 	lose:
 	  if (free_name)
 	    {
@@ -1700,45 +1695,11 @@ open_verify (const char *name, int fd,
 	       | (ELFMAG3 << (EI_MAG0 * 8)))
 #endif
 	      )
-	    errstring = N_("invalid ELF header");
-	  else if (ehdr->e_ident[EI_CLASS] != ELFW(CLASS))
-	    {
-	      /* This is not a fatal error.  On architectures where
-		 32-bit and 64-bit binaries can be run this might
-		 happen.  */
-	      *found_other_class = true;
-	      goto close_and_out;
-	    }
-	  else if (ehdr->e_ident[EI_DATA] != byteorder)
-	    {
-	      if (BYTE_ORDER == BIG_ENDIAN)
-		errstring = N_("ELF file data encoding not big-endian");
-	      else
-		errstring = N_("ELF file data encoding not little-endian");
-	    }
-	  else if (ehdr->e_ident[EI_VERSION] != EV_CURRENT)
-	    errstring
-	      = N_("ELF file version ident does not match current one");
-	  /* XXX We should be able so set system specific versions which are
-	     allowed here.  */
-	  else if (!VALID_ELF_OSABI (ehdr->e_ident[EI_OSABI]))
-	    errstring = N_("ELF file OS ABI invalid");
-	  else if (!VALID_ELF_ABIVERSION (ehdr->e_ident[EI_OSABI],
-					  ehdr->e_ident[EI_ABIVERSION]))
-	    errstring = N_("ELF file ABI version invalid");
-	  else if (memcmp (&ehdr->e_ident[EI_PAD], &expected[EI_PAD],
-			   EI_NIDENT - EI_PAD) != 0)
-	    errstring = N_("nonzero padding in e_ident");
-	  else
-	    /* Otherwise we don't know what went wrong.  */
-	    errstring = N_("internal error");
-
 	  goto lose;
 	}
 
       if (__glibc_unlikely (ehdr->e_version != EV_CURRENT))
 	{
-	  errstring = N_("ELF file version does not match current one");
 	  goto lose;
 	}
       if (! __glibc_likely (elf_machine_matches_host (ehdr)))
@@ -1746,12 +1707,10 @@ open_verify (const char *name, int fd,
       else if (__glibc_unlikely (ehdr->e_type != ET_DYN
 				 && ehdr->e_type != ET_EXEC))
 	{
-	  errstring = N_("only ET_DYN and ET_EXEC can be loaded");
 	  goto lose;
 	}
       else if (__glibc_unlikely (ehdr->e_phentsize != sizeof (ElfW(Phdr))))
 	{
-	  errstring = N_("ELF file's phentsize not the expected size");
 	  goto lose;
 	}
 
@@ -1765,8 +1724,6 @@ open_verify (const char *name, int fd,
 				ehdr->e_phoff) != maplength)
 	    {
 	    read_error:
-	      errval = errno;
-	      errstring = N_("cannot read file data");
 	      goto lose;
 	    }
 	}

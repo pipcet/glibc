@@ -16,6 +16,7 @@
    <https://www.gnu.org/licenses/>.  */
 
 #include <sys/stat.h>
+#include <sys/fcntl.h>
 
 int
 __lstat64 (const char *file, struct stat64 *buf)

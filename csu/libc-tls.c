@@ -201,12 +201,6 @@ __libc_setup_tls (void)
   if (__builtin_expect (lossage != NULL, 0))
     _startup_fatal (lossage);
 
-#if THREAD_GSCOPE_IN_TCB
-  INIT_LIST_HEAD (&_dl_stack_used);
-  INIT_LIST_HEAD (&_dl_stack_user);
-  list_add (&THREAD_SELF->list, &_dl_stack_user);
-#endif
-
   /* Update the executable's link map with enough information to make
      the TLS routines happy.  */
   main_map->l_tls_align = align;

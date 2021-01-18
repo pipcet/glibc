@@ -22,6 +22,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <libc-internal.h>
+#include <stdio.h>
 
 /* Defined in brk.c.  */
 extern void *__curbrk;
@@ -36,22 +37,6 @@ __sbrk (intptr_t increment)
   /* Controls whether __brk (0) is called to read the brk value from
      the kernel.  */
   bool update_brk = __curbrk == NULL;
-
-#if defined (SHARED) && ! IS_IN (rtld)
-  if (!__libc_initial)
-    {
-      if (increment != 0)
-	{
-	  /* Do not allow changing the brk from an inner libc because
-	     it cannot be synchronized with the outer libc's brk.  */
-	  __set_errno (ENOMEM);
-	  return (void *) -1;
-	}
-      /* Querying the kernel's brk value from an inner namespace is
-	 fine.  */
-      update_brk = true;
-    }
-#endif
 
   if (update_brk)
     if (__brk (0) < 0)		/* Initialize the break.  */

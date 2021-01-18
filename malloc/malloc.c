@@ -3537,8 +3537,6 @@ libc_hidden_def (__libc_memalign)
 void *
 __libc_valloc (size_t bytes)
 {
-  void *p;
-
   if (__malloc_initialized < 0)
     ptmalloc_init ();
 

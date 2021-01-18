@@ -337,9 +337,9 @@ __sprofil (struct prof *profp, int profcnt, struct timeval *tvp,
 
   /* Install SIGPROF handler.  */
 #ifdef SA_SIGINFO
-  act.sa_sigaction= flags & PROF_UINT
-		    ? __profil_counter_uint
-		    : __profil_counter_ushort;
+  act.sa_sigaction= (flags & PROF_UINT)
+    ? (typeof(act.sa_sigaction)) __profil_counter_uint
+    : (typeof(act.sa_sigaction))__profil_counter_ushort;
   act.sa_flags = SA_SIGINFO;
 #else
   act.sa_handler = flags & PROF_UINT

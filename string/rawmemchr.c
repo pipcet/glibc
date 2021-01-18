@@ -37,7 +37,7 @@ RAWMEMCHR (const void *s, int c)
   DIAG_IGNORE_NEEDS_COMMENT (11, "-Wstringop-overread");
 #endif
   if (c != '\0')
-    return memchr (s, c, (size_t)-1);
+    return memchr (s, c, (size_t)0x7fffffff);
   DIAG_POP_NEEDS_COMMENT;
   return (char *)s + strlen (s);
 }

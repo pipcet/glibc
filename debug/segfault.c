@@ -35,10 +35,6 @@
    passed up by the signal handler.  */
 #include <sigcontextinfo.h>
 
-#ifdef SA_SIGINFO
-# define SIGCONTEXT siginfo_t *info, void *
-#endif
-
 /* Get code to possibly dump the content of all registers.  */
 #include <register-dump.h>
 
@@ -149,7 +145,7 @@ install_handler (void)
   const char *name;
 
 #ifdef SA_SIGINFO
-  sa.sa_sigaction = catch_segfault;
+  sa.sa_sigaction = (typeof(sa.sa_sigaction))catch_segfault;
   sa.sa_flags = SA_SIGINFO;
 #else
   sa.sa_handler = (void*) catch_segfault;

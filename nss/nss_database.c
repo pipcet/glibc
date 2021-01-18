@@ -23,6 +23,7 @@
 #include <assert.h>
 #include <atomic.h>
 #include <ctype.h>
+#include <errno.h>
 #include <file_change_detection.h>
 #include <libc-lock.h>
 #include <netdb.h>

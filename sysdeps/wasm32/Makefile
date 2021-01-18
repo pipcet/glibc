@@ -38,4 +38,5 @@ endif
 
 ifeq ($(subdir),io)
 sysdep_headers += bits/fcntl-linux.h
+sysdep_routines += fxstat64 xstat
 endif

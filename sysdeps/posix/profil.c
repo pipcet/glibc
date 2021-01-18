@@ -107,7 +107,7 @@ __profil (u_short *sample_buffer, size_t size, size_t offset, u_int scale)
   pc_scale = scale;
 
 #ifdef SA_SIGINFO
-  act.sa_sigaction = __profil_counter;
+  act.sa_sigaction = (typeof(act.sa_sigaction))__profil_counter;
   act.sa_flags = SA_SIGINFO;
 #else
   act.sa_handler = (void (*)(int))__profil_counter;

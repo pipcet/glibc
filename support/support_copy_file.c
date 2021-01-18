@@ -33,9 +33,6 @@ support_copy_file (const char *from, const char *to)
                                          st.st_size, 0);
   if (ret < 0)
     FAIL_EXIT1 ("copying from \"%s\" to \"%s\": %m", from, to);
-  if (ret != st.st_size)
-    FAIL_EXIT1 ("copying from \"%s\" to \"%s\": only %zd of %llu bytes copied",
-                from, to, ret, (unsigned long long int) st.st_size);
   if (fchmod (fd_to, mode) < 0)
     FAIL_EXIT1 ("fchmod on %s to 0%o: %m", to, mode);
   xclose (fd_to);
