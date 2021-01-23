@@ -18,6 +18,10 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
+/* Mark symbols hidden in static PIE for early self relocation to work.  */
+#if BUILD_PIE_DEFAULT
+# pragma GCC visibility push(hidden)
+#endif
 #include <startup.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -351,7 +355,7 @@ __tunables_init (char **envp)
 
 	  /* Skip over tunables that have either been set already or should be
 	     skipped.  */
-	  if (cur->initialized || cur->env_alias == NULL)
+	  if (cur->initialized || cur->env_alias[0] == '\0')
 	    continue;
 
 	  const char *name = cur->env_alias;

@@ -1,5 +1,5 @@
-/* Copyright (C) 2000-2021 Free Software Foundation, Inc.
-   This file is part of the GNU C Library.
+/* Get CPUID feature leaf.
+   Copyright (C) 2021 Free Software Foundation, Inc.
 
    The GNU C Library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -15,22 +15,16 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#include <errno.h>
-#include <stddef.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <hurd.h>
-#include <shlib-compat.h>
 
-#if LIB_COMPAT(libc, GLIBC_2_1, GLIBC_2_33)
+#include <ldsodefs.h>
 
-/* Get information about the file descriptor FD in BUF.  */
-int
-__lxstat64 (int vers, const char *file, struct stat64 *buf)
+const struct cpuid_feature *
+__x86_get_cpuid_feature_leaf (unsigned int leaf)
 {
-  if (vers != _STAT_VER)
-    return __hurd_fail (EINVAL);
-
-  return __lstat64 (file, buf);
+  static const struct cpuid_feature feature = {};
+  if (leaf < CPUID_INDEX_MAX)
+    return ((const struct cpuid_feature *)
+	      &GLRO(dl_x86_cpu_features).features[leaf]);
+  else
+    return &feature;
 }
-#endif

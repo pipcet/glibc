@@ -15,6 +15,10 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
+/* Mark symbols hidden in static PIE for early self relocation to work.  */
+#if BUILD_PIE_DEFAULT
+# pragma GCC visibility push(hidden)
+#endif
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -180,8 +184,12 @@ LIBC_START_MAIN (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
 
       if (0) {
       extern const ElfW(Ehdr) __ehdr_start
+# if BUILD_PIE_DEFAULT
+	__attribute__ ((visibility ("hidden")));
+# else
 	__attribute__ ((weak, visibility ("hidden")));
       if (&__ehdr_start != NULL)
+# endif
         {
           assert (__ehdr_start.e_phentsize == sizeof *GL(dl_phdr));
           GL(dl_phdr) = (const void *) &__ehdr_start + __ehdr_start.e_phoff;
@@ -196,6 +204,11 @@ LIBC_START_MAIN (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
   __tunables_init (__environ);
 
   ARCH_INIT_CPU_FEATURES ();
+
+  /* Do static pie self relocation after tunables and cpu features
+     are setup for ifunc resolvers. Before this point relocations
+     must be avoided.  */
+  _dl_relocate_static_pie ();
 
   /* Perform IREL{,A} relocations.  */
   ARCH_SETUP_IREL ();

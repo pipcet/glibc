@@ -1,4 +1,5 @@
-/* Copyright (C) 2000-2021 Free Software Foundation, Inc.
+/* Check IFUNC resolver with CPU_FEATURE_USABLE.
+   Copyright (C) 2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -15,22 +16,15 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#include <errno.h>
-#include <stddef.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <hurd.h>
-#include <shlib-compat.h>
+#include <stdlib.h>
+#include "tst-ifunc-isa.h"
 
-#if LIB_COMPAT(libc, GLIBC_2_1, GLIBC_2_33)
-
-/* Get information about the file descriptor FD in BUF.  */
-int
-__lxstat64 (int vers, const char *file, struct stat64 *buf)
+static int
+do_test (void)
 {
-  if (vers != _STAT_VER)
-    return __hurd_fail (EINVAL);
-
-  return __lstat64 (file, buf);
+  enum isa value = foo ();
+  enum isa expected = get_isa ();
+  return value == expected ? EXIT_SUCCESS : EXIT_FAILURE;
 }
-#endif
+
+#include <support/test-driver.c>
