@@ -56,7 +56,7 @@ opendir_tail (int fd)
   struct stat64 statbuf;
   if (__glibc_unlikely (__fstat64 (fd, &statbuf) < 0))
     goto lose;
-  if (__glibc_unlikely (! S_ISDIR (statbuf.st_mode)) && 0)
+  if (__glibc_unlikely (! S_ISDIR (statbuf.st_mode)))
     {
       __set_errno (ENOTDIR);
     lose:
@@ -97,15 +97,19 @@ __alloc_dir (int fd, bool close_fd, int flags, const struct stat64 *statp)
   /* We have to set the close-on-exit flag if the user provided the
      file descriptor.  */
   if (!close_fd
-      && __glibc_unlikely (__fcntl_nocancel (fd, F_SETFD, FD_CLOEXEC) < 0))
-	goto lose;
+      && __glibc_unlikely (__fcntl64_nocancel (fd, F_SETFD, FD_CLOEXEC) < 0))
+    return NULL;
 
-  const size_t default_allocation = (4 * BUFSIZ < sizeof (struct dirent64)
-				     ? sizeof (struct dirent64) : 4 * BUFSIZ);
-  const size_t small_allocation = (BUFSIZ < sizeof (struct dirent64)
-				   ? sizeof (struct dirent64) : BUFSIZ);
-  size_t allocation = default_allocation;
-#ifdef _STATBUF_ST_BLKSIZE
+  /* The st_blksize value of the directory is used as a hint for the
+     size of the buffer which receives struct dirent values from the
+     kernel.  st_blksize is limited to max_buffer_size, in case the
+     file system provides a bogus value.  */
+  enum { max_buffer_size = 1048576 };
+
+  const size_t allocation_size = 32768;
+  _Static_assert (allocation_size >= sizeof (struct dirent64),
+		  "allocation_size < sizeof (struct dirent64)");
+
   /* Increase allocation if requested, but not if the value appears to
      be bogus.  It will be between 32Kb and 1Mb.  */
   size_t allocation = MIN (MAX ((size_t) statp->st_blksize, allocation_size),
