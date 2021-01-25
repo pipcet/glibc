@@ -49,7 +49,7 @@ user2netname (char netname[MAXNETNAMELEN + 1], const uid_t uid,
   if ((strlen (dfltdom) + OPSYS_LEN + 3 + MAXIPRINT) > (size_t) MAXNETNAMELEN)
     return 0;
 
-  sprintf (netname, "%s.%d@%s", OPSYS, uid, dfltdom);
+  sprintf (netname, "%s.%d@%.*s", OPSYS, uid, MAXNETNAMELEN/2, dfltdom);
   i = strlen (netname);
   if (netname[i - 1] == '.')
     netname[i - 1] = '\0';
