@@ -227,6 +227,7 @@ realpath_stk (const char *name, char *resolved,
   scratch_buffer_init (rname_buf);
   char *rname_on_stack = rname_buf->data;
   char *rname = rname_on_stack;
+  dest = rname;
   bool end_in_extra_buffer = false;
   bool failed = true;
 
