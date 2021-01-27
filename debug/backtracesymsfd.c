@@ -54,8 +54,6 @@ __backtrace_symbols_fd (void *const *array, int size, int fd)
 
 	  if (info.dli_sname != NULL || map->l_addr != 0)
 	    {
-	      size_t diff;
-
 	      iov[last].iov_base = (void *) "(";
 	      iov[last].iov_len = 1;
 	      ++last;
@@ -78,12 +76,10 @@ __backtrace_symbols_fd (void *const *array, int size, int fd)
 	      if (array[cnt] >= (void *) info.dli_saddr)
 		{
 		  iov[last].iov_base = (void *) "+0x";
-		  diff = array[cnt] - info.dli_saddr;
 		}
 	      else
 		{
 		  iov[last].iov_base = (void *) "-0x";
-		  diff = info.dli_saddr - array[cnt];
 		}
 	      iov[last].iov_len = 3;
 	      ++last;
