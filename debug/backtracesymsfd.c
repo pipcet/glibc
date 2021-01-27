@@ -40,8 +40,6 @@ __backtrace_symbols_fd (void *const *array, int size, int fd)
 
   for (cnt = 0; cnt < size; ++cnt)
     {
-      char buf[WORD_WIDTH];
-      char buf2[WORD_WIDTH];
       Dl_info info;
       struct link_map *map;
       size_t last = 0;
@@ -90,11 +88,11 @@ __backtrace_symbols_fd (void *const *array, int size, int fd)
 	      iov[last].iov_len = 3;
 	      ++last;
 
-	      iov[last].iov_base = _itoa_word ((unsigned long int) diff,
-					       &buf2[WORD_WIDTH], 16, 0);
-	      iov[last].iov_len = (&buf2[WORD_WIDTH]
-				   - (char *) iov[last].iov_base);
-	      ++last;
+	      //iov[last].iov_base = _itoa_word ((unsigned long int) diff,
+	      //&buf2[WORD_WIDTH], 16, 0);
+	      //iov[last].iov_len = (&buf2[WORD_WIDTH]
+	      //- (char *) iov[last].iov_base);
+	      //++last;
 
 	      iov[last].iov_base = (void *) ")";
 	      iov[last].iov_len = 1;
