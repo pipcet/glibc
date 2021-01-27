@@ -55,7 +55,7 @@
 #define LOGIN_NAME_MAX          256
 
 /* Maximum host name length.  */
-#define HOST_NAME_MAX           64
+#define HOST_NAME_MAX           256
 
 /* Maximum message queue priority level.  */
 #define MQ_PRIO_MAX             32768
