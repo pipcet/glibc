@@ -6,3 +6,4 @@ posix
 gnu
 init_array
 unix/inet
+pthread
