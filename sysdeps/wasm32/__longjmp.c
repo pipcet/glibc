@@ -3,21 +3,19 @@
 #include <stdio.h>
 
 struct __stackframe {
-  long x0;
-  long x1;
-  long pc0;
-  long x15;
-  long dpc;
-  long x3;
-  long x4;
-  long x5;
-  long sp;
+  long x0;  /*  0 */
+  long x1;  /*  4 */
+  long pc0; /*  8 */
+  long x15; /* 12 */
+  long dpc; /* 16 */
+  long x3;  /* 20 */
+  long x4;  /* 24 */
+  long x5;  /* 28 */
+  long sp;  /* 32 */
 };
 
 void __longjmp(__jmp_buf env, int retval)
 {
-  long *stack = (long *)&stack;
-
   asm volatile(".flush\n\t");
 
   struct __stackframe *sf = (struct __stackframe *)env->__fp;
@@ -25,8 +23,6 @@ void __longjmp(__jmp_buf env, int retval)
   sf->pc0 = (long)env->__pc0;
   sf->dpc = (long)env->__rpc;
   sf->sp = (long)env->__sp;
-
-  stack = (long *)&stack;
 
   asm volatile("i32.const 8288\n\t"
                "%1\n\t"

@@ -47,8 +47,7 @@ __libc_sigsetjmp (jmp_buf env, int savemask)
   x = (void *)*(void **)x;
   x = (void *)*(void **)x;
 
-  asm volatile(
-               //"local.get $sp1\n\t"
+  asm volatile(//"local.get $sp1\n\t"
                //"i32.const -16\n\t"
                //"i32.add\n\t"
                //"i32.load a=2 0\n\t"
@@ -91,7 +90,7 @@ __libc_sigsetjmp (jmp_buf env, int savemask)
 
                "i32.const 0\n\t"
                "local.set $r1\n\t"
-               ".dpc .LI7\n\t"
+               ".dpc .LI7\n\t" /* XXX better label name */
                "local.set $dpc\n\t"
                "i32.const -1\n\t"
                "local.get $sp\n\t"
