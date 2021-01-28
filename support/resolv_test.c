@@ -1129,7 +1129,7 @@ resolv_test_start (struct resolv_redirect_config config)
   struct resolv_test *obj = xmalloc (sizeof (*obj));
   *obj = (struct resolv_test) {
     .config = config,
-    .lock = PTHREAD_MUTEX_INITIALIZER,
+    //.lock = PTHREAD_MUTEX_INITIALIZER,
   };
 
   if (!config.disable_redirect)
