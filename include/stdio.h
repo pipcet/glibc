@@ -228,16 +228,25 @@ libc_hidden_proto (__fseeko64)
 extern __typeof (ftello64) __ftello64;
 libc_hidden_proto (__ftello64)
 libc_hidden_proto (fflush)
+libc_hidden_proto (fflush_unlocked)
 extern __typeof (fflush_unlocked) __fflush_unlocked;
 libc_hidden_proto (__fflush_unlocked)
 extern __typeof (fread_unlocked) __fread_unlocked;
 libc_hidden_proto (__fread_unlocked)
+libc_hidden_proto (fwrite_unlocked)
+libc_hidden_proto (fgets_unlocked)
 extern __typeof (fgets_unlocked) __fgets_unlocked;
 libc_hidden_proto (__fgets_unlocked)
+libc_hidden_proto (fputs_unlocked)
 extern __typeof (fputs_unlocked) __fputs_unlocked;
 libc_hidden_proto (__fputs_unlocked)
+libc_hidden_proto (feof_unlocked)
 extern __typeof (feof_unlocked) __feof_unlocked attribute_hidden;
+libc_hidden_proto (ferror_unlocked)
 extern __typeof (ferror_unlocked) __ferror_unlocked attribute_hidden;
+libc_hidden_proto (getc_unlocked)
+libc_hidden_proto (fputc_unlocked)
+libc_hidden_proto (putc_unlocked)
 extern __typeof (putc_unlocked) __putc_unlocked attribute_hidden;
 libc_hidden_proto (fmemopen)
 /* The prototype needs repeating instead of using __typeof to use
