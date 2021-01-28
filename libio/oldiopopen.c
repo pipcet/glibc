@@ -49,7 +49,7 @@ typedef struct _IO_proc_file _IO_proc_file;
 static struct _IO_proc_file *old_proc_file_chain;
 
 #ifdef _IO_MTSAFE_IO
-static _IO_lock_t proc_file_chain_lock = _IO_lock_initializer;
+static _IO_lock_t proc_file_chain_lock __attribute__((used))= _IO_lock_initializer;
 
 static void
 unlock (void *not_used)

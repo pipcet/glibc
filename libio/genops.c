@@ -33,7 +33,7 @@
 #include <sched.h>
 
 #ifdef _IO_MTSAFE_IO
-static _IO_lock_t list_all_lock = _IO_lock_initializer;
+static _IO_lock_t list_all_lock __attribute__((used)) = _IO_lock_initializer;
 #endif
 
 static FILE *run_fp;
