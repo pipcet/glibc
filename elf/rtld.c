@@ -321,15 +321,17 @@ struct rtld_global _rtld_global =
      * executable stack but this is not true for all platforms.  */
     ._dl_stack_flags = DEFAULT_STACK_PERMS,
 #ifdef _LIBC_REENTRANT
-    ._dl_load_lock = _RTLD_LOCK_RECURSIVE_INITIALIZER,
-    ._dl_load_write_lock = _RTLD_LOCK_RECURSIVE_INITIALIZER,
+    //._dl_load_lock = _RTLD_LOCK_RECURSIVE_INITIALIZER,
+    //._dl_load_write_lock = _RTLD_LOCK_RECURSIVE_INITIALIZER,
 #endif
     ._dl_nns = 1,
     ._dl_ns =
     {
 #ifdef _LIBC_REENTRANT
       [LM_ID_BASE] = { ._ns_unique_sym_table
-		       = { .lock = _RTLD_LOCK_RECURSIVE_INITIALIZER } }
+		       = {
+	  //.lock = _RTLD_LOCK_RECURSIVE_INITIALIZER
+	} }
 #endif
     }
   };
