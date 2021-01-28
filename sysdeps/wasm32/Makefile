@@ -34,7 +34,7 @@ endif
 
 ifeq ($(subdir),misc)
 headers += pthread.h
-sysdep_routines += thinthin alloca_cutoff writev
+sysdep_routines += thinthin alloca_cutoff writev pthread
 endif
 
 ifeq ($(subdir),io)
