@@ -142,4 +142,8 @@ typedef int __libc_key_t;
 /* Get thread-specific data associated with KEY.  */
 #define __libc_getspecific(KEY)		((void) (KEY), (void *) 0)
 
+#define _IO_lock_inexpensive 1
+
+#define _LIBC_LOCK_RECURSIVE_INITIALIZER { 0 }
+
 #endif	/* libc-lock.h */
