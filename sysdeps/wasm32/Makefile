@@ -33,6 +33,7 @@ sysdep_routines += start errno-loc
 endif
 
 ifeq ($(subdir),misc)
+headers += pthread.h
 sysdep_routines += thinthin alloca_cutoff writev
 endif
 
