@@ -33,7 +33,7 @@ sysdep_routines += start errno-loc
 endif
 
 ifeq ($(subdir),misc)
-headers += pthread.h
+headers += pthread.h semaphore.h bits/semaphore.h bits/types/__pthread_spinlock_t.h bits/pthread.h
 sysdep_routines += thinthin alloca_cutoff writev pthread
 endif
 

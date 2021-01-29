@@ -55,7 +55,7 @@
 #define __CLOCKID_T_TYPE	__S32_TYPE
 #define __TIMER_T_TYPE		void *
 #define __BLKSIZE_T_TYPE	__SQUAD_TYPE
-#define __FSID_T_TYPE		struct { int __val[2]; }
+#define __FSID_T_TYPE		__UQUAD_TYPE
 #define __SSIZE_T_TYPE		__SLONGWORD_TYPE
 #define __SYSCALL_SLONG_TYPE	__SQUAD_TYPE
 #define __SYSCALL_ULONG_TYPE	__UQUAD_TYPE
