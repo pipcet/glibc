@@ -47,7 +47,7 @@
 #include <dl-tunables.h>
 #include <dl-auxv.h>
 
-extern char **_environ attribute_hidden;
+char **_environ attribute_hidden;
 extern char _end[] attribute_hidden;
 
 /* Protect SUID program against misuse of file descriptors.  */
