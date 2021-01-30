@@ -104,7 +104,6 @@ int pthread_attr_getstacksize(const pthread_attr_t *attr,
 
 pthread_t pthread_self(void)
 {
-  fprintf(stderr, "pthread_self\n");
   return 1;
 }
 
