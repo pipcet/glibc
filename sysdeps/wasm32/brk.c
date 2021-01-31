@@ -19,6 +19,7 @@
 #include <unistd.h>
 
 #include "thinthin.h"
+#include "zeropage.h"
 
 /* sbrk.c expects this.  */
 void *__curbrk = (void *)(32*1024*1024);
@@ -29,7 +30,10 @@ int
 __brk (void *addr)
 {
   if (addr)
-    __curbrk = addr;
+    {
+      __curbrk = addr;
+      __zeropage->top_of_sbrk = addr;
+    }
 
   return 0;
 #if 0
