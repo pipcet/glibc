@@ -5,6 +5,8 @@ struct __zeropage {
   unsigned long long bottom_of_sbrk;
 };
 
+#define __zeropage ((struct __zeropage *)(4096))
+
 struct __threadpage {
   unsigned long long next;
   unsigned long long prev;
