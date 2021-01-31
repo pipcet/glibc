@@ -32,7 +32,7 @@ __brk (void *addr)
   if (addr)
     {
       __curbrk = addr;
-      __zeropage->top_of_sbrk = addr;
+      __zeropage->top_of_sbrk = (unsigned long long)addr;
     }
 
   return 0;
