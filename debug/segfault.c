@@ -54,7 +54,7 @@ write_strsignal (int fd, int signal)
   char buf[30];
   char *ptr = buf;
   WRITE_STRING ("signal ");
-  write (fd, buf, &buf[sizeof (buf)] - ptr);
+  write (fd, ptr, &buf[sizeof (buf)] - ptr);
 }
 
 

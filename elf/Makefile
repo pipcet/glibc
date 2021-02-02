@@ -522,10 +522,6 @@ rtld-stubbed-symbols = \
   malloc \
   realloc \
 
-# The GCC arguments that implement $(rtld-stubbed-symbols).
-rtld-stubbed-symbols-args = \
-  $(patsubst %,-Wl$(comma)--defsym=%=0, $(rtld-stubbed-symbols))
-
 ifeq ($(have-ssp),yes)
 # rtld is not built with the stack protector, so these references will
 # go away in the rebuilds.
