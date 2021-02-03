@@ -1,3 +1,7 @@
+#ifndef __THINTHIN_H
+#define __THINTHIN_H
+#include <zeropage.h>
+
 #define INTERNAL_SYSCALL_ERRNO(rvar)            \
   (-(rvar))
 
@@ -79,5 +83,12 @@ extern long __thinthin_utimensat(long, const char *, const struct timespec *, lo
 extern long __thinthin_wait4(long, int *, long, struct rusage *) __AS;
 extern long __thinthin_write(long, const void *, long) __AS;
 extern long __thinthin_recopy(void) __AS;
+extern void *__thinthin_dlopen(const char *name) __AS;
+extern void *__thinthin_dlvsym(void *handle, const char *symbol, const char *version) __AS;
 
+
+extern long __thinthin_open_dynamic(const char *path, void *who, struct thinthin_libinfo *libinfo) __AS;
+extern long __thinthin_load_dynamic(long modid, void *mem) __AS;
+extern long __thinthin_dynamic_symbol(void **result, long modid, const char *symbol, const char *version) __AS;
 #undef __AS
+#endif
