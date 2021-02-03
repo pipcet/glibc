@@ -31,7 +31,7 @@
 char *
 dlerror (void)
 {
-  return __dlerror ();
+  return NULL;
 }
 
 #else
@@ -60,68 +60,7 @@ static void free_key_mem (void *mem);
 char *
 __dlerror (void)
 {
-  char *buf = NULL;
-  struct dl_action_result *result;
-
-# ifdef SHARED
-  if (!rtld_active ())
-    return _dlfcn_hook->dlerror ();
-# endif
-
-  /* If we have not yet initialized the buffer do it now.  */
-  __libc_once (once, init);
-
-  /* Get error string.  */
-  if (static_buf != NULL)
-    result = static_buf;
-  else
-    {
-      /* init () has been run and we don't use the static buffer.
-	 So we have a valid key.  */
-      result = (struct dl_action_result *) __libc_getspecific (key);
-      if (result == NULL)
-	result = &last_result;
-    }
-
-  /* Test whether we already returned the string.  */
-  if (result->returned != 0)
-    {
-      /* We can now free the string.  */
-      if (result->errstring != NULL)
-	{
-	  if (strcmp (result->errstring, "out of memory") != 0)
-	    free ((char *) result->errstring);
-	  result->errstring = NULL;
-	}
-    }
-  else if (result->errstring != NULL)
-    {
-      buf = (char *) result->errstring;
-      int n;
-      if (result->errcode == 0)
-	n = __asprintf (&buf, "%s%s%s",
-			result->objname,
-			result->objname[0] == '\0' ? "" : ": ",
-			_(result->errstring));
-      else
-	n = __asprintf (&buf, "%s%s%s: %s",
-			result->objname,
-			result->objname[0] == '\0' ? "" : ": ",
-			_(result->errstring),
-			strerror (result->errcode));
-      if (n != -1)
-	{
-	  /* We don't need the error string anymore.  */
-	  if (strcmp (result->errstring, "out of memory") != 0)
-	    free ((char *) result->errstring);
-	  result->errstring = buf;
-	}
-
-      /* Mark the error as returned.  */
-      result->returned = 1;
-    }
-
-  return buf;
+  return NULL;
 }
 # ifdef SHARED
 strong_alias (__dlerror, dlerror)
