@@ -1,3 +1,5 @@
+#ifndef __THINTHIN_ZEROPAGE_H
+#define __THINTHIN_ZEROPAGE_H
 struct __zeropage {
   unsigned long long top_of_memory;
   unsigned long long top_of_sbrk;
@@ -30,3 +32,11 @@ struct __threadpage {
 };
 
 #define __threadpage ((struct __threadpage *)(3 * 4096))
+
+struct thinthin_libinfo
+{
+  unsigned long long data;
+  unsigned long long data_end;
+  unsigned long long modid;
+};
+#endif
