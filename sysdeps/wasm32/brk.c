@@ -17,6 +17,7 @@
 
 #include <errno.h>
 #include <unistd.h>
+#include <stdio.h>
 
 #include "thinthin.h"
 #include "zeropage.h"
@@ -29,13 +30,17 @@ void *__curbrk = (void *)(32*1024*1024);
 int
 __brk (void *addr)
 {
-  if (addr)
+  /* printf ("brk %p %p\n", addr, (void *)(unsigned long)__zeropage->top_of_memory); */
+  if (addr && addr < (void *)(unsigned long)__zeropage->top_of_memory)
     {
       __curbrk = addr;
       __zeropage->top_of_sbrk = (unsigned long long)(unsigned long)addr;
+
+      return 0;
     }
 
-  return 0;
+  errno = ENOMEM;
+  return -1;
 #if 0
   int ret = __THINTHIN_SYSCALL(brk, addr);
 
