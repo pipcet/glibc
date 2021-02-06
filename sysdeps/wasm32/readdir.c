@@ -25,20 +25,23 @@
 struct dirent *
 __readdir (DIR *dirp)
 {
-  struct dirent64 *dirent = malloc(sizeof *dirent + 4096);
+  struct dirent *dirent = malloc(sizeof *dirent + 4096);
   char *d_name = dirent->d_name;
   bool isdir = false;
   while (read (dirp->fd, d_name, 1) == 1)
     {
-      if (*d_name++ == '/')
+      if (*d_name == '/')
 	isdir = true;
-      else if (*d_name++ == 0)
-	break;
+      else if (*d_name == 0)
+	{
+	  dirent->d_type = isdir ? DT_DIR : DT_REG;
+	  return dirent;
+	}
       else
 	isdir = false;
+      ++d_name;
     }
-  *d_name++ = 0;
-  dirent->d_type = isdir ? DT_DIR : DT_REG;
+  free (dirent);
   return NULL;
 }
 weak_alias (__readdir, readdir)
