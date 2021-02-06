@@ -55,6 +55,8 @@ opendir_tail (int fd)
      but it's cheap and we need the stat call for st_blksize anyway.  */
   struct stat64 statbuf;
   if (__glibc_unlikely (__fstat64 (fd, &statbuf) < 0))
+    ;
+#if 0
     goto lose;
   if (__glibc_unlikely (! S_ISDIR (statbuf.st_mode)))
     {
@@ -63,6 +65,7 @@ opendir_tail (int fd)
       __close_nocancel_nostatus (fd);
       return NULL;
     }
+#endif
 
   return __alloc_dir (fd, true, 0, &statbuf);
 }
@@ -112,7 +115,7 @@ __alloc_dir (int fd, bool close_fd, int flags, const struct stat64 *statp)
 
   /* Increase allocation if requested, but not if the value appears to
      be bogus.  It will be between 32Kb and 1Mb.  */
-  size_t allocation = MIN (MAX ((size_t) statp->st_blksize, allocation_size),
+  size_t allocation = MIN (MAX (0, allocation_size),
 			   max_buffer_size);
 
   DIR *dirp = (DIR *) malloc (sizeof (DIR) + allocation);
