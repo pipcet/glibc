@@ -19,7 +19,11 @@
 
 #include <unistd.h>
 
-/* Return the system page size.  */
+/* Return the system page size.  There's no such thing for
+ * WebAssembly, but GCC uses this function to get a good chunk size
+ * for its allocator, so return what x86 uses.  (WebAssembly does use
+ * 64 KiB pages for some internal purposes, but we don't want to
+ * expose that).  */
 int
 __getpagesize (void)
 {
