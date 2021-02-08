@@ -147,7 +147,7 @@ LIBC_START_MAIN (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
   /* Result of the 'main' function.  */
   int result;
 
-  __thinthin_recopy ();
+  //__thinthin_recopy ();
 
   char **ev = &argv[argc + 1];
 
@@ -237,11 +237,9 @@ LIBC_START_MAIN (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
   }
 # endif
 
-#if 0
   /* Initialize libpthread if linked in.  */
   if (__pthread_initialize_minimal != NULL)
     __pthread_initialize_minimal ();
-#endif
 
   /* Set up the pointer guard value.  */
   uintptr_t pointer_chk_guard = _dl_setup_pointer_guard (_dl_random,
@@ -341,7 +339,7 @@ LIBC_START_MAIN (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
       THREAD_SETMEM (self, cleanup_jmp_buf, &unwind_buf);
 
       /* Run the program.  */
-      __thinthin_recopy ();
+      //__thinthin_recopy ();
       result = main (argc, argv, __environ MAIN_AUXVEC_PARAM);
     }
   else
@@ -373,7 +371,7 @@ LIBC_START_MAIN (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
     }
 #else
   /* Nothing fancy, just call the function.  */
-  __thinthin_recopy ();
+  //__thinthin_recopy ();
   result = main (argc, argv, __environ MAIN_AUXVEC_PARAM);
 #endif
 

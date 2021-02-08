@@ -60,8 +60,6 @@ __libc_but_not_ld_early_init (_Bool initial);
 void __attribute__((stackcall))
 _start (int argc, char **argv)
 {
-  __libc_early_init (true);
-  __libc_but_not_ld_early_init (true);
   /* The generic code actually assumes that envp follows argv.  */
 
   __libc_start_main (&main,

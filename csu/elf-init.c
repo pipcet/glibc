@@ -68,31 +68,49 @@ struct multifile_header {
 #include <thinthin.h>
 
 void
+__libc_csu_init_multifile_header (struct multifile_header *mfh,
+				  int argc, char **argv, char **envp)
+{
+  if (mfh->terminator)
+    {
+      __libc_csu_init_multifile_header ((struct multifile_header *)(long)mfh->terminator, argc, argv, envp);
+    }
+
+  void (**array_start)(int, char **, char **) = (void (**)(int, char **, char **))(long)mfh->init_array_start;
+  void (**array_end)(int, char **, char **) = (void (**)(int, char **, char **))(long)mfh->init_array_end;
+  while (array_start < array_end)
+    {
+      (**array_start)(argc, argv, envp);
+      array_start++;
+    }
+}
+
+void
+__libc_csu_preinit_multifile_header (struct multifile_header *mfh,
+				     int argc, char **argv, char **envp)
+{
+  if (mfh->terminator)
+    {
+      __libc_csu_preinit_multifile_header ((struct multifile_header *)(long)mfh->terminator, argc, argv, envp);
+    }
+
+  void (**array_start)(int, char **, char **) = (void (**)(int, char **, char **))(long)mfh->preinit_array_start;
+  void (**array_end)(int, char **, char **) = (void (**)(int, char **, char **))(long)mfh->preinit_array_end;
+  while (array_start < array_end)
+    {
+      (**array_start)(argc, argv, envp);
+      array_start++;
+    }
+}
+
+void
 __libc_csu_init_multifile (int argc, char **argv, char **envp)
 {
   struct multifile_header *mfh = (struct multifile_header *)16384;
-  do {
-    void (**array_start)(int, char **, char **) = (void (**)(int, char **, char **))(long)mfh->preinit_array_start;
-    void (**array_end)(int, char **, char **) = (void (**)(int, char **, char **))(long)mfh->preinit_array_end;
-    while (array_start < array_end) {
-      __thinthin_recopy();
-      (**array_start)(argc, argv, envp);
-      array_start++;
-    }
-    mfh = (struct multifile_header *)(long)(mfh->terminator);
-  } while (mfh);
 
   mfh = (struct multifile_header *)16384;
-  do {
-    void (**array_start)(int, char **, char **) = (void (**)(int, char **, char **))(long)mfh->init_array_start;
-    void (**array_end)(int, char **, char **) = (void (**)(int, char **, char **))(long)mfh->init_array_end;
-    while (array_start < array_end) {
-      __thinthin_recopy();
-      (**array_start)(argc, argv, envp);
-      array_start++;
-    }
-    mfh = (struct multifile_header *)(long)(mfh->terminator);
-  } while (mfh);
+  __libc_csu_preinit_multifile_header(mfh, argc, argv, envp);
+  __libc_csu_init_multifile_header(mfh, argc, argv, envp);
 }
 
 void
@@ -137,24 +155,6 @@ __libc_csu_init (int argc, char **argv, char **envp)
 {
   /* For dynamically linked executables the preinit array is executed by
      the dynamic linker (before initializing any shared object).  */
-
-#ifndef LIBC_NONSHARED
-  /* For static executables, preinit happens right before init.  */
-  {
-    const size_t size = __preinit_array_end - __preinit_array_start;
-    size_t i;
-    for (i = 0; i < size; i++)
-      (*__preinit_array_start [i]) (argc, argv, envp);
-  }
-#endif
-
-#if ELF_INITFINI
-  _init ();
-#endif
-
-  const size_t size = __init_array_end - __init_array_start;
-  for (size_t i = 0; i < size; i++)
-      (*__init_array_start [i]) (argc, argv, envp);
 
 #ifdef MULTIFILE
   __libc_csu_init_multifile (argc, argv, envp);
