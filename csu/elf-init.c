@@ -116,12 +116,10 @@ __libc_csu_init_multifile (int argc, char **argv, char **envp)
 void
 __libc_csu_fini_multifile (void)
 {
-  struct multifile_header *next = NULL;
-  while (1)
+  return;
+  struct multifile_header *mfh = (struct multifile_header *)16384;
+  while (mfh)
     {
-      struct multifile_header *mfh = (struct multifile_header *)16384;
-      while ((struct multifile_header *)(long)(mfh->terminator) != next)
-	mfh = (struct multifile_header *)(long)(mfh->terminator);
       void (**array_start)(void) = (void (**)(void))(long)mfh->fini_array_start;
       void (**array_end)(void) = (void (**)(void))(long)mfh->fini_array_end;
       while (array_start < array_end)
@@ -129,9 +127,7 @@ __libc_csu_fini_multifile (void)
 	  array_end--;
 	  (**array_end)();
 	}
-      if (mfh == (struct multifile_header *)16384)
-	break;
-      next = mfh;
+      mfh = (struct multifile_header *)(long)mfh->terminator;
     }
 }
 #endif
