@@ -80,7 +80,7 @@ __libc_csu_init_multifile (int argc, char **argv, char **envp)
       array_start++;
     }
     mfh = (struct multifile_header *)(long)(mfh->terminator);
-  } while (mfh->terminator);
+  } while (mfh);
 
   mfh = (struct multifile_header *)16384;
   do {
@@ -92,7 +92,7 @@ __libc_csu_init_multifile (int argc, char **argv, char **envp)
       array_start++;
     }
     mfh = (struct multifile_header *)(long)(mfh->terminator);
-  } while (mfh->terminator);
+  } while (mfh);
 }
 
 void
