@@ -37,7 +37,7 @@ struct search_sem
   ino_t ino;
   int refcnt;
   sem_t *sem;
-  char name[NAME_MAX];
+  char name[NAME_MAX + 1];
 };
 
 /* Comparison function for search of existing mapping.  */
@@ -72,6 +72,7 @@ __sem_check_add_mapping (const char *name, int fd, sem_t *existing)
   size_t namelen = strlen (name);
   if (namelen > NAME_MAX)
     return SEM_FAILED;
+  namelen += 1;
 
   sem_t *result = SEM_FAILED;
 
