@@ -16,23 +16,31 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#include <shm-directory.h>
 #include <unistd.h>
 
 #if _POSIX_MAPPED_FILES
 
-# include <paths.h>
+#include <alloc_buffer.h>
+#include <shm-directory.h>
+#include <string.h>
 
-# define SHMDIR (_PATH_DEV "shm/")
-
-const char *
-__shm_directory (size_t *len)
+int
+__shm_get_name (struct shmdir_name *result, const char *name, bool sem_prefix)
 {
-  *len = sizeof SHMDIR - 1;
-  return SHMDIR;
+  while (name[0] == '/')
+    ++name;
+  size_t namelen = strlen (name);
+
+  struct alloc_buffer buffer
+    = alloc_buffer_create (result->name, sizeof (result->name));
+  alloc_buffer_copy_bytes (&buffer, SHMDIR, strlen (SHMDIR));
+  if (sem_prefix)
+    alloc_buffer_copy_bytes (&buffer, "sem.", strlen ("sem."));
+  alloc_buffer_copy_bytes (&buffer, name, namelen + 1);
+  if (namelen == 0 || memchr (name, '/', namelen) != NULL
+      || alloc_buffer_has_failed (&buffer))
+    return -1;
+  return 0;
 }
-# if IS_IN (libpthread)
-hidden_def (__shm_directory)
-# endif
 
 #endif

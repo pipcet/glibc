@@ -1,5 +1,5 @@
-/* Header for directory for shm/sem files.  NPTL version.
-   Copyright (C) 2014-2021 Free Software Foundation, Inc.
+/* Helper code for POSIX semaphore implementation.
+   Copyright (C) 2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
    The GNU C Library is free software; you can redistribute it and/or
@@ -16,16 +16,12 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#ifndef _SHM_DIRECTORY_H
+#ifndef _SEM_ROUTINES_H
+#define _SEM_ROUTINES_H
 
-#include <sysdeps/posix/shm-directory.h>
+sem_t * __sem_check_add_mapping (const char *name, int fd, sem_t *existing)
+  attribute_hidden;
 
-/* For NPTL the __shm_directory function lives in libpthread.
-   We don't want PLT calls from there.  But it's also used from
-   librt, so it cannot just be declared hidden.  */
+bool __sem_remove_mapping (sem_t *sem) attribute_hidden;
 
-#if IS_IN (libpthread)
-hidden_proto (__shm_directory)
 #endif
-
-#endif  /* shm-directory.h */
