@@ -339,7 +339,7 @@ LIBC_START_MAIN (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
       THREAD_SETMEM (self, cleanup_jmp_buf, &unwind_buf);
 
       /* Run the program.  */
-      //__thinthin_recopy ();
+      __thinthin_recopy ();
       result = main (argc, argv, __environ MAIN_AUXVEC_PARAM);
     }
   else
