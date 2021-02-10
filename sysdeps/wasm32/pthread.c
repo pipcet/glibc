@@ -1,5 +1,6 @@
 #include <pthread.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 int
 pthread_create (pthread_t *thr, const pthread_attr_t *attr,
@@ -20,21 +21,24 @@ int pthread_attr_destroy(pthread_attr_t *attr)
 
 int pthread_key_create(pthread_key_t *key, void (*destructor)(void*))
 {
+  *key = (pthread_key_t)malloc (sizeof (void *));
   return 0;
 }
 
 int pthread_key_delete(pthread_key_t key)
 {
+  free ((void **)key);
   return 0;
 }
 
 void *pthread_getspecific(pthread_key_t key)
 {
-  fprintf(stderr, "pthread_getspecific\n");
-  return NULL;
+  return *(void **)key;
 }
 int pthread_setspecific(pthread_key_t key, const void *value)
 {
+  void *value2 = (void *)value;
+  *(void **)key = value2;
   fprintf(stderr, "pthread_setspecific\n");
   return 0;
 }
