@@ -63,34 +63,6 @@ extern FILE *stdin;
 extern FILE *stdout;
 extern FILE *stderr;
 
-static void _IO_check_libio (void) __THROW __attribute__ ((constructor));
-
-/* This function determines which shared C library the application
-   was linked against. We then set up the stdin/stdout/stderr and
-   _IO_list_all accordingly. */
-
-static void
-_IO_check_libio (void)
-{
-  if (&_IO_stdin_used == NULL)
-    {
-      /* We are using the old one. */
-      stdin = (FILE *) &_IO_stdin_;
-      stdout = (FILE *) &_IO_stdout_;
-      stderr = (FILE *) &_IO_stderr_;
-      _IO_list_all = &_IO_stderr_;
-      stdin->_vtable_offset = stdout->_vtable_offset
-	= stderr->_vtable_offset =
-	((int) sizeof (struct _IO_FILE)
-	 - (int) sizeof (struct _IO_FILE_complete));
-
-      if (_IO_stdin_.vtable != &_IO_old_file_jumps
-	  || _IO_stdout_.vtable != &_IO_old_file_jumps
-	  || _IO_stderr_.vtable != &_IO_old_file_jumps)
-	IO_set_accept_foreign_vtables (&_IO_vtable_check);
-    }
-}
-
 #endif
 
 #endif
