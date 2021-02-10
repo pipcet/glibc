@@ -371,7 +371,7 @@ LIBC_START_MAIN (int (*main) (int, char **, char ** MAIN_AUXVEC_DECL),
     }
 #else
   /* Nothing fancy, just call the function.  */
-  //__thinthin_recopy ();
+  __thinthin_recopy ();
   result = main (argc, argv, __environ MAIN_AUXVEC_PARAM);
 #endif
 
