@@ -24,7 +24,16 @@ __libc_tsd_define (, const int32_t *, CTYPE_TOLOWER)
 __libc_tsd_define (, const int32_t *, CTYPE_TOUPPER)
 
 
+#if IS_IN(libc)
 void
+__ctype_init (void)
+__attribute__ ((constructor));
+#endif
+
+void
+#if IS_IN(libc)
+__attribute__ ((constructor))
+#endif
 __ctype_init (void)
 {
   const uint16_t **bp = __libc_tsd_address (const uint16_t *, CTYPE_B);
