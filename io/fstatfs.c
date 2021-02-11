@@ -27,6 +27,10 @@ __fstatfs (int fd, struct statfs *buf)
   __set_errno (ENOSYS);
   return -1;
 }
+int
+fstatfs (int fd, struct statfs *buf)
+{
+  __set_errno (ENOSYS);
+  return -1;
+}
 stub_warning (fstatfs)
-
-weak_alias (__fstatfs, fstatfs)
