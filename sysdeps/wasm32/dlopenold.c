@@ -35,12 +35,9 @@ __dlopen (const char *file, int mode DL_CALLER_DECL)
       errno = -error;
       return NULL;
     }
-  void *mem = malloc (libinfo.data_end - libinfo.data);
-  if (mem == NULL)
-    {
-      errno = ENOMEM;
-      return NULL;
-    }
+  void *mem = NULL;
+  if (posix_memalign (&mem, 4096, libinfo.data_end - libinfo.data + 0x4040 + 4095) < 0)
+    return NULL;
   int error2 = __thinthin_load_dynamic(libinfo.modid, mem);
   if (error2 < 0)
     {
