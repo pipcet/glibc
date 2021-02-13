@@ -16,8 +16,8 @@
    License along with the GNU C Library.  If not, see
    <http://www.gnu.org/licenses/>.  */
 
-#ifndef _ASMJS_BITS_SETJMP_H
-#define _ASMJS_BITS_SETJMP_H 1
+#ifndef _WASM32_BITS_SETJMP_H
+#define _WASM32_BITS_SETJMP_H 1
 
 #if !defined(_SETJMP_H) && !defined(_PTHREAD_H)
 # error "Never include <bits/setjmp.h> directly; use <setjmp.h> instead."
@@ -31,4 +31,4 @@ typedef struct __jmp_buf_internal_tag
     void * __sp;
   } __jmp_buf[1];
 
-#endif /* _ASMJS_BITS_SETJMP_H */
+#endif /* _WASM32_BITS_SETJMP_H */
