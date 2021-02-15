@@ -32,6 +32,8 @@ __times (struct tms *buffer)
       return (clock_t) -1;
     }
 
+  buffer->tms_utime = 0;
+  buffer->tms_stime = 0;
   __set_errno (ENOSYS);
   return (clock_t) -1;
 }
