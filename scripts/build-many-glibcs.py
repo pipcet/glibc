@@ -670,7 +670,7 @@ class Context(object):
 
     def do_build(self):
         """Do the actual build."""
-        cmd = ['make', '-j%d' % self.parallelism]
+        cmd = ['make', '-O', '-j%d' % self.parallelism]
         subprocess.run(cmd, cwd=self.builddir, check=True)
 
     def build_host_libraries(self):
@@ -769,7 +769,7 @@ class Context(object):
                             'gcc': 'vcs-10',
                             'glibc': 'vcs-mainline',
                             'gmp': '6.2.1',
-                            'linux': '5.10',
+                            'linux': '5.11',
                             'mpc': '1.2.1',
                             'mpfr': '4.1.0',
                             'mig': 'vcs-mainline',

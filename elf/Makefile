@@ -66,12 +66,12 @@ elide-routines.os = $(all-dl-routines) dl-support enbl-secure dl-origin \
 # interpreter and operating independent of libc.
 rtld-routines	= rtld $(all-dl-routines) dl-sysdep dl-environ dl-minimal \
   dl-error-minimal dl-conflict dl-hwcaps dl-hwcaps_split dl-hwcaps-subdirs \
-  dl-usage
+  dl-usage dl-diagnostics dl-diagnostics-kernel dl-diagnostics-cpu
 all-rtld-routines = $(rtld-routines) $(sysdep-rtld-routines)
 
 CFLAGS-dl-runtime.c += -fexceptions -fasynchronous-unwind-tables
 CFLAGS-dl-lookup.c += -fexceptions -fasynchronous-unwind-tables
-CFLAGS-dl-iterate-phdr.c += $(uses-callbacks)
+CFLAGS-dl-iteratephdr.c += $(uses-callbacks)
 
 # On targets without __builtin_memset, rtld.c uses a hand-coded loop
 # in _dl_start.  Make sure this isn't turned into a call to regular memset.
@@ -82,10 +82,6 @@ endif
 # Compile rtld itself without stack protection.
 # Also compile all routines in the static library that are elided from
 # the shared libc because they are in libc.a in the same way.
-
-define elide-stack-protector
-$(if $(filter $(@F),$(patsubst %,%$(1),$(2))), $(no-stack-protector))
-endef
 
 CFLAGS-.o += $(call elide-stack-protector,.o,$(elide-routines.os))
 CFLAGS-.op += $(call elide-stack-protector,.op,$(elide-routines.os))
@@ -160,7 +156,8 @@ tests-static-normal := tst-leaks1-static tst-array1-static tst-array5-static \
 	       tst-dl-iter-static \
 	       tst-tlsalign-static tst-tlsalign-extern-static \
 	       tst-linkall-static tst-env-setuid tst-env-setuid-tunables \
-	       tst-single_threaded-static tst-single_threaded-pthread-static
+	       tst-single_threaded-static tst-single_threaded-pthread-static \
+	       tst-dst-static
 
 tests-static-internal := tst-tls1-static tst-tls2-static \
 	       tst-ptrguard1-static tst-stackguard1-static \
@@ -240,7 +237,7 @@ tests += $(tests-execstack-$(have-z-execstack))
 ifeq ($(run-built-tests),yes)
 tests-special += $(objpfx)tst-leaks1-mem.out \
 		 $(objpfx)tst-leaks1-static-mem.out $(objpfx)noload-mem.out \
-		 $(objpfx)tst-ldconfig-X.out
+		 $(objpfx)tst-ldconfig-X.out $(objpfx)tst-rtld-help.out
 endif
 tlsmod17a-suffixes = 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19
 tlsmod18a-suffixes = 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19
@@ -394,8 +391,10 @@ tests-ifuncstatic := ifuncmain1static ifuncmain1picstatic \
 		ifuncmain2static ifuncmain2picstatic \
 		ifuncmain4static ifuncmain4picstatic \
 		ifuncmain5static ifuncmain5picstatic \
-		ifuncmain7static ifuncmain7picstatic \
-		ifuncmain9static ifuncmain9picstatic
+		ifuncmain7static ifuncmain7picstatic
+ifeq (yes,$(have-gcc-ifunc))
+tests-ifuncstatic += ifuncmain9static ifuncmain9picstatic
+endif
 tests-static += $(tests-ifuncstatic)
 tests-internal += $(tests-ifuncstatic)
 ifeq (yes,$(build-shared))
@@ -406,15 +405,20 @@ tests-internal += \
 	 ifuncmain1staticpic \
 	 ifuncmain2 ifuncmain2pic ifuncmain3 ifuncmain4 \
 	 ifuncmain5 ifuncmain5pic ifuncmain5staticpic \
-	 ifuncmain7 ifuncmain7pic \
-	 ifuncmain9 ifuncmain9pic
+	 ifuncmain7 ifuncmain7pic
+ifeq (yes,$(have-gcc-ifunc))
+tests-internal += ifuncmain9 ifuncmain9pic
+endif
 ifunc-test-modules = ifuncdep1 ifuncdep1pic ifuncdep2 ifuncdep2pic \
 		     ifuncdep5 ifuncdep5pic
 extra-test-objs += $(ifunc-test-modules:=.o)
 test-internal-extras += $(ifunc-test-modules)
 ifeq (yes,$(have-fpie))
 ifunc-pie-tests = ifuncmain1pie ifuncmain1vispie ifuncmain1staticpie \
-		  ifuncmain5pie ifuncmain6pie ifuncmain7pie ifuncmain9pie
+		  ifuncmain5pie ifuncmain6pie ifuncmain7pie
+ifeq (yes,$(have-gcc-ifunc))
+ifunc-pie-tests += ifuncmain9pie
+endif
 ifeq (yes,$(have-textrel_ifunc))
 ifunc-pie-tests += tst-ifunc-textrel
 endif
@@ -428,7 +432,8 @@ endif
 ifeq (yes,$(build-shared))
 ifeq ($(run-built-tests),yes)
 tests-special += $(objpfx)tst-pathopt.out $(objpfx)tst-rtld-load-self.out \
-		 $(objpfx)tst-rtld-preload.out $(objpfx)argv0test.out
+		 $(objpfx)tst-rtld-preload.out $(objpfx)argv0test.out \
+		 $(objpfx)tst-rtld-help.out
 endif
 tests-special += $(objpfx)check-textrel.out $(objpfx)check-execstack.out \
 		 $(objpfx)check-wx-segment.out \
@@ -665,6 +670,9 @@ CFLAGS-dl-cache.c += $(SYSCONF-FLAGS)
 CFLAGS-cache.c += $(SYSCONF-FLAGS)
 CFLAGS-rtld.c += $(SYSCONF-FLAGS)
 CFLAGS-dl-usage.c += $(SYSCONF-FLAGS) \
+  -D'RTLD="$(rtlddir)/$(rtld-installed-name)"'
+CFLAGS-dl-diagnostics.c += $(SYSCONF-FLAGS) \
+  -D'PREFIX="$(prefix)"' \
   -D'RTLD="$(rtlddir)/$(rtld-installed-name)"'
 
 cpp-srcs-left := $(all-rtld-routines:=.os)
@@ -1889,4 +1897,19 @@ $(objpfx)list-tunables.out: tst-rtld-list-tunables.sh $(objpfx)ld.so
 	    '$(run_program_env)' > $(objpfx)/tst-rtld-list-tunables.out
 	cmp tst-rtld-list-tunables.exp \
 	    $(objpfx)/tst-rtld-list-tunables.out > $@; \
+	$(evaluate-test)
+
+tst-dst-static-ENV = LD_LIBRARY_PATH='$$ORIGIN'
+
+$(objpfx)tst-rtld-help.out: $(objpfx)ld.so
+	$(test-wrapper) $(rtld-prefix) --help > $@; \
+	status=$$?; \
+	echo "info: ld.so exit status: $$status" >> $@; \
+	if ! grep -q 'Legacy HWCAP subdirectories under library search path directories' $@; then \
+	  echo "error: missing subdirectory pattern" >> $@; \
+	  if test $$status -eq 0; then \
+	    status=1; \
+	  fi; \
+	fi; \
+	(exit $$status); \
 	$(evaluate-test)

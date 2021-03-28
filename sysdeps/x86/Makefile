@@ -7,6 +7,8 @@ sysdep_routines += get-cpuid-feature-leaf
 sysdep-dl-routines += dl-get-cpu-features
 sysdep_headers += sys/platform/x86.h
 
+CFLAGS-get-cpuid-feature-leaf.o += $(no-stack-protector)
+
 tests += tst-get-cpu-features tst-get-cpu-features-static \
 	 tst-cpu-features-cpuinfo tst-cpu-features-cpuinfo-static \
 	 tst-cpu-features-supports tst-cpu-features-supports-static
@@ -14,6 +16,7 @@ tests-static += tst-get-cpu-features-static \
 		tst-cpu-features-cpuinfo-static \
 		tst-cpu-features-supports-static
 ifeq (yes,$(have-ifunc))
+ifeq (yes,$(have-gcc-ifunc))
 tests += \
   tst-ifunc-isa-1 \
   tst-ifunc-isa-1-static \
@@ -22,6 +25,7 @@ tests += \
 tests-static += \
   tst-ifunc-isa-1-static \
   tst-ifunc-isa-2-static
+endif
 endif
 ifeq (yes,$(enable-x86-isa-level))
 tests += tst-isa-level-1
@@ -210,4 +214,12 @@ $(objpfx)check-cet.out: $(..)sysdeps/x86/check-cet.awk \
 	$(evaluate-test)
 generated += check-cet.out
 endif
+endif
+
+ifeq ($(subdir),posix)
+tests += \
+  tst-sysconf-cache-linesize \
+  tst-sysconf-cache-linesize-static
+tests-static += \
+  tst-sysconf-cache-linesize-static
 endif

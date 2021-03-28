@@ -858,6 +858,7 @@ GLIBC_2.0 pthread_condattr_init F
 GLIBC_2.0 pthread_equal F
 GLIBC_2.0 pthread_exit F
 GLIBC_2.0 pthread_getschedparam F
+GLIBC_2.0 pthread_kill F
 GLIBC_2.0 pthread_mutex_destroy F
 GLIBC_2.0 pthread_mutex_init F
 GLIBC_2.0 pthread_mutex_lock F
@@ -1811,6 +1812,8 @@ GLIBC_2.2 __getmntent_r F
 GLIBC_2.2 __lxstat64 F
 GLIBC_2.2 __nl_langinfo_l F
 GLIBC_2.2 __open64 F
+GLIBC_2.2 __pread64 F
+GLIBC_2.2 __pwrite64 F
 GLIBC_2.2 __res_init F
 GLIBC_2.2 __res_nclose F
 GLIBC_2.2 __res_ninit F
@@ -1864,6 +1867,7 @@ GLIBC_2.2 getwchar F
 GLIBC_2.2 getwchar_unlocked F
 GLIBC_2.2 iruserok_af F
 GLIBC_2.2 localeconv F
+GLIBC_2.2 lseek64 F
 GLIBC_2.2 mcheck_check_all F
 GLIBC_2.2 mcheck_pedantic F
 GLIBC_2.2 memrchr F
@@ -1873,6 +1877,7 @@ GLIBC_2.2 mkstemp64 F
 GLIBC_2.2 moncontrol F
 GLIBC_2.2 msgctl F
 GLIBC_2.2 ngettext F
+GLIBC_2.2 open64 F
 GLIBC_2.2 posix_fadvise F
 GLIBC_2.2 posix_fadvise64 F
 GLIBC_2.2 posix_fallocate F
@@ -1900,10 +1905,14 @@ GLIBC_2.2 posix_spawnattr_setschedpolicy F
 GLIBC_2.2 posix_spawnattr_setsigdefault F
 GLIBC_2.2 posix_spawnattr_setsigmask F
 GLIBC_2.2 posix_spawnp F
+GLIBC_2.2 pread F
+GLIBC_2.2 pread64 F
 GLIBC_2.2 putwc F
 GLIBC_2.2 putwc_unlocked F
 GLIBC_2.2 putwchar F
 GLIBC_2.2 putwchar_unlocked F
+GLIBC_2.2 pwrite F
+GLIBC_2.2 pwrite64 F
 GLIBC_2.2 rcmd_af F
 GLIBC_2.2 readdir64 F
 GLIBC_2.2 readdir64_r F
@@ -2211,6 +2220,8 @@ GLIBC_2.33 mknod F
 GLIBC_2.33 mknodat F
 GLIBC_2.33 stat F
 GLIBC_2.33 stat64 F
+GLIBC_2.34 __libc_start_main F
+GLIBC_2.34 pthread_kill F
 GLIBC_2.4 _IO_fprintf F
 GLIBC_2.4 _IO_printf F
 GLIBC_2.4 _IO_sprintf F

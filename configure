@@ -4731,7 +4731,6 @@ fi
 fi
 
 # These programs are version sensitive.
-
 for ac_prog in gnumake gmake make
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
@@ -6591,6 +6590,34 @@ elif test "$libc_cv_ehdr_start" = broken; then
 $as_echo "$as_me: WARNING: linker is broken -- you should upgrade" >&2;}
 fi
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether the assembler requires one version per symbol" >&5
+$as_echo_n "checking whether the assembler requires one version per symbol... " >&6; }
+if ${libc_cv_symver_needs_alias+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+    cat > conftest.s <<EOF
+        .text
+testfunc:
+        .globl testfunc
+        .symver testfunc, testfunc1@VERSION1
+        .symver testfunc, testfunc1@VERSION2
+EOF
+  libc_cv_symver_needs_alias=no
+  if ${CC-cc} $ASFLAGS -c conftest.s 2>&5; then
+    libc_cv_symver_needs_alias=no
+  else
+    libc_cv_symver_needs_alias=yes
+  fi
+  rm conftest.*
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $libc_cv_symver_needs_alias" >&5
+$as_echo "$libc_cv_symver_needs_alias" >&6; }
+if test "$libc_cv_symver_needs_alias" = yes; then
+  $as_echo "#define SYMVER_NEEDS_ALIAS 1" >>confdefs.h
+
+fi
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for __builtin_trap with no external dependencies" >&5
 $as_echo_n "checking for __builtin_trap with no external dependencies... " >&6; }
 if ${libc_cv_builtin_trap+:} false; then :
@@ -6737,6 +6764,8 @@ if test x"$libc_cv_gcc_indirect_function" = xyes; then
   $as_echo "#define HAVE_GCC_IFUNC 1" >>confdefs.h
 
 fi
+config_vars="$config_vars
+have-gcc-ifunc = $libc_cv_gcc_indirect_function"
 
 # This is far from the AC_ARG_ENABLE that sets it so that a sysdeps
 # configure fragment can override the value to prevent this AC_DEFINE.

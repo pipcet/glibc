@@ -17,10 +17,16 @@
 
 #include <sys/fcntl.h>
 #include <sys/stat.h>
+#include <errno.h>
 
 int
 __fstat (int fd, struct stat *buf)
 {
+  if (fd < 0)
+    {
+      __set_errno (EBADF);
+      return -1;
+    }
   return __fstatat (fd, "", buf, AT_EMPTY_PATH);
 }
 

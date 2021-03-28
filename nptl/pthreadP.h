@@ -287,9 +287,11 @@ hidden_proto (__pthread_unwind_next)
 hidden_proto (__pthread_register_cancel)
 hidden_proto (__pthread_unregister_cancel)
 # ifdef SHARED
-extern void attribute_hidden pthread_cancel_init (void);
+/* The difference from __libc_unwind_link_get is that here, errors
+   terminate the process.  */
+struct unwind_link ;
+struct unwind_link *__pthread_unwind_link_get (void) attribute_hidden;
 # endif
-extern void __nptl_unwind_freeres (void) attribute_hidden;
 #endif
 
 
@@ -467,10 +469,10 @@ extern int __pthread_cond_wait (pthread_cond_t *cond, pthread_mutex_t *mutex);
 extern int __pthread_clockjoin_np64 (pthread_t threadid, void **thread_return,
                                      clockid_t clockid,
                                      const struct __timespec64 *abstime);
-libc_hidden_proto (__pthread_clockjoin_np64)
+libpthread_hidden_proto (__pthread_clockjoin_np64)
 extern int __pthread_timedjoin_np64 (pthread_t threadid, void **thread_return,
                                      const struct __timespec64 *abstime);
-libc_hidden_proto (__pthread_timedjoin_np64)
+libpthread_hidden_proto (__pthread_timedjoin_np64)
 extern int __pthread_cond_timedwait64 (pthread_cond_t *cond,
                                        pthread_mutex_t *mutex,
                                        const struct __timespec64 *abstime);
@@ -602,6 +604,67 @@ extern void __pthread_cleanup_pop (struct _pthread_cleanup_buffer *buffer,
 # undef pthread_cleanup_pop
 # define pthread_cleanup_pop(execute)                   \
   __pthread_cleanup_pop (&_buffer, (execute)); }
+
+# if defined __EXCEPTIONS && !defined __cplusplus
+/* Structure to hold the cleanup handler information.  */
+struct __pthread_cleanup_combined_frame
+{
+  void (*__cancel_routine) (void *);
+  void *__cancel_arg;
+  int __do_it;
+  struct _pthread_cleanup_buffer __buffer;
+};
+
+/* Special cleanup macros which register cleanup both using
+   __pthread_cleanup_{push,pop} and using cleanup attribute.  This is needed
+   for pthread_once, so that it supports both throwing exceptions from the
+   pthread_once callback (only cleanup attribute works there) and cancellation
+   of the thread running the callback if the callback or some routines it
+   calls don't have unwind information.  */
+
+static __always_inline void
+__pthread_cleanup_combined_routine (struct __pthread_cleanup_combined_frame
+				    *__frame)
+{
+  if (__frame->__do_it)
+    {
+      __frame->__cancel_routine (__frame->__cancel_arg);
+      __frame->__do_it = 0;
+      __pthread_cleanup_pop (&__frame->__buffer, 0);
+    }
+}
+
+static inline void
+__pthread_cleanup_combined_routine_voidptr (void *__arg)
+{
+  struct __pthread_cleanup_combined_frame *__frame
+    = (struct __pthread_cleanup_combined_frame *) __arg;
+  if (__frame->__do_it)
+    {
+      __frame->__cancel_routine (__frame->__cancel_arg);
+      __frame->__do_it = 0;
+    }
+}
+
+#  define pthread_cleanup_combined_push(routine, arg) \
+  do {									      \
+    void (*__cancel_routine) (void *) = (routine);			      \
+    struct __pthread_cleanup_combined_frame __clframe			      \
+      __attribute__ ((__cleanup__ (__pthread_cleanup_combined_routine)))      \
+      = { .__cancel_routine = __cancel_routine, .__cancel_arg = (arg),	      \
+	  .__do_it = 1 };						      \
+    __pthread_cleanup_push (&__clframe.__buffer,			      \
+			    __pthread_cleanup_combined_routine_voidptr,	      \
+			    &__clframe);
+
+#  define pthread_cleanup_combined_pop(execute) \
+    __pthread_cleanup_pop (&__clframe.__buffer, 0);			      \
+    __clframe.__do_it = 0;						      \
+    if (execute)							      \
+      __cancel_routine (__clframe.__cancel_arg);			      \
+  } while (0)
+
+# endif
 #endif
 
 extern void __pthread_cleanup_push_defer (struct _pthread_cleanup_buffer *buffer,

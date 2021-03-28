@@ -274,6 +274,19 @@ next_env_entry (char ***position)
 #endif
 
 
+#if defined(SHARED) || defined(USE_MTAG)
+static void *
+__failing_morecore (ptrdiff_t d)
+{
+  return (void *) MORECORE_FAILURE;
+}
+#endif
+
+#ifdef SHARED
+extern struct dl_open_hook *_dl_open_hook;
+libc_hidden_proto (_dl_open_hook);
+#endif
+
 static void
 ptmalloc_init (void)
 {
@@ -281,6 +294,29 @@ ptmalloc_init (void)
     return;
 
   __malloc_initialized = 0;
+
+#ifdef USE_MTAG
+  if ((TUNABLE_GET_FULL (glibc, mem, tagging, int32_t, NULL) & 1) != 0)
+    {
+      /* If the tunable says that we should be using tagged memory
+	 and that morecore does not support tagged regions, then
+	 disable it.  */
+      if (__MTAG_SBRK_UNTAGGED)
+	__morecore = __failing_morecore;
+
+      mtag_enabled = true;
+      mtag_mmap_flags = __MTAG_MMAP_FLAGS;
+    }
+#endif
+
+#ifdef SHARED
+  /* In case this libc copy is in a non-default namespace, never use
+     brk.  Likewise if dlopened from statically linked program.  The
+     generic sbrk implementation also enforces this, but it is not
+     used on Hurd.  */
+  if (!__libc_initial)
+    __morecore = __failing_morecore;
+#endif
 
   thread_arena = &main_arena;
 
@@ -484,7 +520,7 @@ new_heap (size_t size, size_t top_pad)
             }
         }
     }
-  if (__mprotect (p2, size, MTAG_MMAP_FLAGS | PROT_READ | PROT_WRITE) != 0)
+  if (__mprotect (p2, size, mtag_mmap_flags | PROT_READ | PROT_WRITE) != 0)
     {
       __munmap (p2, HEAP_MAX_SIZE);
       return 0;
@@ -514,7 +550,7 @@ grow_heap (heap_info *h, long diff)
     {
       if (__mprotect ((char *) h + h->mprotect_size,
                       (unsigned long) new_size - h->mprotect_size,
-                      MTAG_MMAP_FLAGS | PROT_READ | PROT_WRITE) != 0)
+                      mtag_mmap_flags | PROT_READ | PROT_WRITE) != 0)
         return -2;
 
       h->mprotect_size = new_size;

@@ -59,8 +59,8 @@ sem_open (const char *name, int oflag, ...)
   if ((oflag & O_CREAT) == 0 || (oflag & O_EXCL) == 0)
     {
     try_again:
-      fd = __libc_open (dirname.name,
-			(oflag & ~(O_CREAT|O_ACCMODE)) | O_NOFOLLOW | O_RDWR);
+      fd = open (dirname.name,
+		 (oflag & ~(O_CREAT|O_ACCMODE)) | O_NOFOLLOW | O_RDWR);
 
       if (fd == -1)
 	{
@@ -127,7 +127,7 @@ sem_open (const char *name, int oflag, ...)
 	    }
 
 	  /* Open the file.  Make sure we do not overwrite anything.  */
-	  fd = __libc_open (tmpfname, O_RDWR | O_CREAT | O_EXCL, mode);
+	  fd = open (tmpfname, O_RDWR | O_CREAT | O_EXCL, mode);
 	  if (fd == -1)
 	    {
 	      if (errno == EEXIST)
@@ -151,7 +151,7 @@ sem_open (const char *name, int oflag, ...)
 	  break;
 	}
 
-      if (TEMP_FAILURE_RETRY (__libc_write (fd, &sem.initsem, sizeof (sem_t)))
+      if (TEMP_FAILURE_RETRY (write (fd, &sem.initsem, sizeof (sem_t)))
 	  == sizeof (sem_t)
 	  /* Map the sem_t structure from the file.  */
 	  && (result = (sem_t *) mmap (NULL, sizeof (sem_t),
@@ -175,7 +175,7 @@ sem_open (const char *name, int oflag, ...)
 		  (void) unlink (tmpfname);
 
 		  /* Close the file.  */
-		  (void) __libc_close (fd);
+		  close (fd);
 
 		  goto try_again;
 		}
@@ -201,7 +201,7 @@ sem_open (const char *name, int oflag, ...)
     {
       /* Do not disturb errno.  */
       int save = errno;
-      __libc_close (fd);
+      close (fd);
       errno = save;
     }
 

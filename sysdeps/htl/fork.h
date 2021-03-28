@@ -1,6 +1,6 @@
-/* Register fork handlers.  Generic version.
-   Copyright (C) 2002-2021 Free Software Foundation, Inc.
+/* Copyright (C) 2002-2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
+   Contributed by Ulrich Drepper <drepper@redhat.com>, 2002.
 
    The GNU C Library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -16,14 +16,5 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-/* Function to call to unregister fork handlers.  */
-extern void __unregister_atfork (void *dso_handle) attribute_hidden;
-#define UNREGISTER_ATFORK(dso_handle) __unregister_atfork (dso_handle)
-
-
-/* C library side function to register new fork handlers.  */
-extern int __register_atfork (void (*__prepare) (void),
-			      void (*__parent) (void),
-			      void (*__child) (void),
-			      void *dso_handle);
-libc_hidden_proto (__register_atfork)
+#include <lowlevellock.h>
+#include <register-atfork.h>

@@ -84,6 +84,9 @@
 
 #include <config.h>
 
+/* Obtain the definition of symbol_version_reference.  */
+#include <libc-symver.h>
+
 /* When PIC is defined and SHARED isn't defined, we are building PIE
    by default.  */
 #if defined PIC && !defined SHARED
@@ -396,30 +399,18 @@ for linking")
    past the last element in SET.  */
 #define symbol_set_end_p(set, ptr) ((ptr) >= (void *const *) &__stop_##set)
 
-/* Use symbol_version_reference to specify the version a symbol
-   reference should link to.  Use symbol_version or
-   default_symbol_version for the definition of a versioned symbol.
-   The difference is that the latter is a no-op in non-shared
-   builds.  */
-#ifdef __ASSEMBLER__
-# define symbol_version_reference(real, name, version) \
-     .symver real, name##@##version
-#else  /* !__ASSEMBLER__ */
-# define symbol_version_reference(real, name, version) \
-  __asm__ (".symver " #real "," #name "@" #version)
-#endif
-
 #ifdef SHARED
 # define symbol_version(real, name, version) \
   symbol_version_reference(real, name, version)
 # define default_symbol_version(real, name, version) \
      _default_symbol_version(real, name, version)
+/* See <libc-symver.h>.  */
 # ifdef __ASSEMBLER__
 #  define _default_symbol_version(real, name, version) \
-     .symver real, name##@##@##version
+  _set_symbol_version (real, name@@version)
 # else
 #  define _default_symbol_version(real, name, version) \
-     __asm__ (".symver " #real "," #name "@@" #version)
+  _set_symbol_version (real, #name "@@" #version)
 # endif
 
 /* Evalutes to a string literal for VERSION in LIB.  */
