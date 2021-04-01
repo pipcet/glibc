@@ -531,8 +531,24 @@ init_cpu_features (struct cpu_features *cpu_features)
 	cpu_features->preferred[index_arch_Prefer_No_VZEROUPPER]
 	  |= bit_arch_Prefer_No_VZEROUPPER;
       else
-	cpu_features->preferred[index_arch_Prefer_No_AVX512]
-	  |= bit_arch_Prefer_No_AVX512;
+	{
+	  cpu_features->preferred[index_arch_Prefer_No_AVX512]
+	    |= bit_arch_Prefer_No_AVX512;
+
+	  /* Avoid RTM abort triggered by VZEROUPPER inside a
+	     transactionally executing RTM region.  */
+	  if (CPU_FEATURE_USABLE_P (cpu_features, RTM))
+	    cpu_features->preferred[index_arch_Prefer_No_VZEROUPPER]
+	      |= bit_arch_Prefer_No_VZEROUPPER;
+
+	  /* Since to compare 2 32-byte strings, 256-bit EVEX strcmp
+	     requires 2 loads, 3 VPCMPs and 2 KORDs while AVX2 strcmp
+	     requires 1 load, 2 VPCMPEQs, 1 VPMINU and 1 VPMOVMSKB,
+	     AVX2 strcmp is faster than EVEX strcmp.  */
+	  if (CPU_FEATURE_USABLE_P (cpu_features, AVX2))
+	    cpu_features->preferred[index_arch_Prefer_AVX2_STRCMP]
+	      |= bit_arch_Prefer_AVX2_STRCMP;
+	}
     }
   /* This spells out "AuthenticAMD" or "HygonGenuine".  */
   else if ((ebx == 0x68747541 && ecx == 0x444d4163 && edx == 0x69746e65)
@@ -654,6 +670,61 @@ no_cpuid:
 
 #if HAVE_TUNABLES
   TUNABLE_GET (hwcaps, tunable_val_t *, TUNABLE_CALLBACK (set_hwcaps));
+
+  bool disable_xsave_features = false;
+
+  if (!CPU_FEATURE_USABLE_P (cpu_features, OSXSAVE))
+    {
+      /* These features are usable only if OSXSAVE is usable.  */
+      CPU_FEATURE_UNSET (cpu_features, XSAVE);
+      CPU_FEATURE_UNSET (cpu_features, XSAVEOPT);
+      CPU_FEATURE_UNSET (cpu_features, XSAVEC);
+      CPU_FEATURE_UNSET (cpu_features, XGETBV_ECX_1);
+      CPU_FEATURE_UNSET (cpu_features, XFD);
+
+      disable_xsave_features = true;
+    }
+
+  if (disable_xsave_features
+      || (!CPU_FEATURE_USABLE_P (cpu_features, XSAVE)
+	  && !CPU_FEATURE_USABLE_P (cpu_features, XSAVEC)))
+    {
+      /* Clear xsave_state_size if both XSAVE and XSAVEC aren't usable.  */
+      cpu_features->xsave_state_size = 0;
+
+      CPU_FEATURE_UNSET (cpu_features, AVX);
+      CPU_FEATURE_UNSET (cpu_features, AVX2);
+      CPU_FEATURE_UNSET (cpu_features, AVX_VNNI);
+      CPU_FEATURE_UNSET (cpu_features, FMA);
+      CPU_FEATURE_UNSET (cpu_features, VAES);
+      CPU_FEATURE_UNSET (cpu_features, VPCLMULQDQ);
+      CPU_FEATURE_UNSET (cpu_features, XOP);
+      CPU_FEATURE_UNSET (cpu_features, F16C);
+      CPU_FEATURE_UNSET (cpu_features, AVX512F);
+      CPU_FEATURE_UNSET (cpu_features, AVX512CD);
+      CPU_FEATURE_UNSET (cpu_features, AVX512ER);
+      CPU_FEATURE_UNSET (cpu_features, AVX512PF);
+      CPU_FEATURE_UNSET (cpu_features, AVX512VL);
+      CPU_FEATURE_UNSET (cpu_features, AVX512DQ);
+      CPU_FEATURE_UNSET (cpu_features, AVX512BW);
+      CPU_FEATURE_UNSET (cpu_features, AVX512_4FMAPS);
+      CPU_FEATURE_UNSET (cpu_features, AVX512_4VNNIW);
+      CPU_FEATURE_UNSET (cpu_features, AVX512_BITALG);
+      CPU_FEATURE_UNSET (cpu_features, AVX512_IFMA);
+      CPU_FEATURE_UNSET (cpu_features, AVX512_VBMI);
+      CPU_FEATURE_UNSET (cpu_features, AVX512_VBMI2);
+      CPU_FEATURE_UNSET (cpu_features, AVX512_VNNI);
+      CPU_FEATURE_UNSET (cpu_features, AVX512_VPOPCNTDQ);
+      CPU_FEATURE_UNSET (cpu_features, AVX512_VP2INTERSECT);
+      CPU_FEATURE_UNSET (cpu_features, AVX512_BF16);
+      CPU_FEATURE_UNSET (cpu_features, AVX512_FP16);
+      CPU_FEATURE_UNSET (cpu_features, AMX_BF16);
+      CPU_FEATURE_UNSET (cpu_features, AMX_TILE);
+      CPU_FEATURE_UNSET (cpu_features, AMX_INT8);
+
+      CPU_FEATURE_UNSET (cpu_features, FMA4);
+    }
+
 #elif defined SHARED
   /* Reuse dl_platform, dl_hwcap and dl_hwcap_mask for x86.  The
      glibc.cpu.hwcap_mask tunable is initialized already, so no

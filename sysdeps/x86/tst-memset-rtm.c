@@ -1,6 +1,6 @@
-/* Copyright (C) 2002-2021 Free Software Foundation, Inc.
+/* Test case for memset inside a transactionally executing RTM region.
+   Copyright (C) 2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
-   Contributed by Ulrich Drepper <drepper@redhat.com>, 2002.
 
    The GNU C Library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -16,11 +16,30 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#include <lowlevellock.h>
-#include <register-atfork.h>
+#include <tst-string-rtm.h>
 
-/* The fork generation counter, defined in libpthread.  */
-extern unsigned long int __fork_generation attribute_hidden;
+#define LOOP 3000
+#define STRING_SIZE 1024
+char string1[STRING_SIZE];
 
-/* Pointer to the fork generation counter in the thread library.  */
-extern unsigned long int *__fork_generation_pointer attribute_hidden;
+__attribute__ ((noinline, noclone))
+static int
+prepare (void)
+{
+  memset (string1, 'a', STRING_SIZE);
+  return EXIT_SUCCESS;
+}
+
+__attribute__ ((noinline, noclone))
+static int
+function (void)
+{
+  memset (string1, 'a', STRING_SIZE);
+  return 0;
+}
+
+static int
+do_test (void)
+{
+  return do_test_1 ("memset", LOOP, prepare, function);
+}
