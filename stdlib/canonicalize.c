@@ -198,7 +198,7 @@ static char *
 realpath_stk (const char *name, char *resolved,
               struct scratch_buffer *rname_buf)
 {
-  char *dest;
+  char *dest = NULL;
   char const *start;
   char const *end;
   int num_links = 0;

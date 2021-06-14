@@ -301,7 +301,8 @@ STRCOLL (const STRING_TYPE *s1, const STRING_TYPE *s2, locale_t l)
      as described in comments in locale/weightwc.h.  */
   DIAG_PUSH_NEEDS_COMMENT;
   DIAG_IGNORE_Os_NEEDS_COMMENT (7, "-Wmaybe-uninitialized");
-  coll_seq seq1, seq2;
+  DIAG_IGNORE_Os_NEEDS_COMMENT (10, "-Wmaybe-uninitialized");
+  coll_seq seq1 = { 0 }, seq2 = { 0 };
   DIAG_POP_NEEDS_COMMENT;
   seq1.len = 0;
   seq1.idxmax = 0;
