@@ -21,6 +21,7 @@
 #include <string.h>
 #include <rpc/rpc.h>
 #include <shlib-compat.h>
+#include <libc-diag.h>
 
 #include "nsswitch.h"
 
@@ -49,7 +50,10 @@ user2netname (char netname[MAXNETNAMELEN + 1], const uid_t uid,
   if ((strlen (dfltdom) + OPSYS_LEN + 3 + MAXIPRINT) > (size_t) MAXNETNAMELEN)
     return 0;
 
+  DIAG_PUSH_NEEDS_COMMENT;
+  DIAG_IGNORE_NEEDS_COMMENT (12, "-Wformat-overflow=");
   sprintf (netname, "%s.%d@%s", OPSYS, uid, dfltdom);
+  DIAG_POP_NEEDS_COMMENT;
   i = strlen (netname);
   if (netname[i - 1] == '.')
     netname[i - 1] = '\0';
