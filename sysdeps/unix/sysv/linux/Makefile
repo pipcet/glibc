@@ -61,7 +61,7 @@ sysdep_routines += adjtimex clone umount umount2 readahead sysctl \
 		   open_by_handle_at mlock2 pkey_mprotect pkey_set pkey_get \
 		   timerfd_gettime timerfd_settime prctl \
 		   process_vm_readv process_vm_writev clock_adjtime \
-		   time64-support pselect32 \
+		   pselect32 \
 		   xstat fxstat lxstat xstat64 fxstat64 lxstat64 \
 		   fxstatat fxstatat64 \
 		   xmknod xmknodat convert_scm_timestamps
@@ -136,6 +136,19 @@ tests-time64 += \
   tst-timerfd-time64 \
 
 CFLAGS-tst-sigcontext-get_pc.c = -fasynchronous-unwind-tables
+
+ifeq (yes,$(build-shared))
+librt = $(common-objpfx)rt/librt.so
+else
+librt = $(common-objpfx)rt/librt.a
+endif
+
+$(objpfx)tst-ppoll: $(librt)
+$(objpfx)tst-ppoll-time64: $(librt)
+$(objpfx)tst-sigtimedwait: $(librt)
+$(objpfx)tst-sigtimedwait-time64: $(librt)
+$(objpfx)tst-timerfd: $(librt)
+$(objpfx)tst-timerfd-time64: $(librt)
 
 # Generate the list of SYS_* macros for the system calls (__NR_*
 # macros).  The file syscall-names.list contains all possible system
