@@ -1,6 +1,6 @@
-/* Copyright (C) 2002-2021 Free Software Foundation, Inc.
+/* mq_setattr system call wrapper.
+   Copyright (C) 2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
-   Contributed by Ulrich Drepper <drepper@redhat.com>, 2002.
 
    The GNU C Library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -16,11 +16,18 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
+#include <mqueue.h>
 #include <shlib-compat.h>
+#include <sysdep.h>
 
-#if OTHER_SHLIB_COMPAT (libpthread, GLIBC_2_0, GLIBC_2_3)
-# define __pthread_atfork __dyn_pthread_atfork
-# include "pthread_atfork.c"
-# undef __pthread_atfork
-compat_symbol (libpthread, __dyn_pthread_atfork, pthread_atfork, GLIBC_2_0);
+int
+__mq_setattr (mqd_t mqdes, const struct mq_attr *mqstat,
+              struct mq_attr * omqstat)
+{
+  return INLINE_SYSCALL_CALL (mq_getsetattr, mqdes, mqstat, omqstat);
+}
+versioned_symbol (libc, __mq_setattr, mq_setattr, GLIBC_2_34);
+libc_hidden_ver (__mq_setattr, mq_setattr)
+#if OTHER_SHLIB_COMPAT (librt, GLIBC_2_3_4, GLIBC_2_34)
+compat_symbol (librt, __mq_setattr, mq_setattr, GLIBC_2_3_4);
 #endif
