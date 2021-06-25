@@ -1,15 +1,107 @@
 libc {
+  GLIBC_2.1 {
+%if PTHREAD_IN_LIBC
+    aio_init;
+    aio_cancel;
+    aio_cancel64;
+    aio_error;
+    aio_error64;
+    aio_fsync;
+    aio_fsync64;
+    aio_read;
+    aio_read64;
+    aio_return;
+    aio_return64;
+    aio_suspend;
+    aio_suspend64;
+    aio_write;
+    aio_write64;
+    lio_listio;
+    lio_listio64;
+%endif
+  }
   GLIBC_2.2 {
     shm_open;
     shm_unlink;
   }
+  GLIBC_2.3.4 {
+%if PTHREAD_IN_LIBC
+    mq_close;
+    mq_getattr;
+    mq_notify;
+    mq_open;
+    mq_receive;
+    mq_send;
+    mq_setattr;
+    mq_timedreceive;
+    mq_timedsend;
+    mq_unlink;
+%endif
+  }
+  GLIBC_2.4 {
+%if PTHREAD_IN_LIBC
+    lio_listio;
+    lio_listio64;
+%endif
+  }
+  GLIBC_2.7 {
+%if PTHREAD_IN_LIBC
+   __mq_open_2;
+%endif
+  }
   GLIBC_2.34 {
+%if PTHREAD_IN_LIBC
+    __mq_open_2;
+    aio_cancel;
+    aio_cancel64;
+    aio_init;
+    aio_error;
+    aio_error64;
+    aio_fsync;
+    aio_fsync64;
+    aio_read;
+    aio_read64;
+    aio_return;
+    aio_return64;
+    aio_suspend;
+    aio_suspend64;
+    aio_write;
+    aio_write64;
+    lio_listio;
+    lio_listio64;
+    mq_close;
+    mq_getattr;
+    mq_notify;
+    mq_open;
+    mq_receive;
+    mq_send;
+    mq_setattr;
+    mq_timedreceive;
+    mq_timedsend;
+    mq_unlink;
+%endif
     shm_open;
     shm_unlink;
   }
+%if PTHREAD_IN_LIBC
+  GLIBC_PRIVATE {
+    __aio_enqueue_request;
+    __aio_find_req;
+    __aio_find_req_fd;
+    __aio_free_request;
+    __aio_notify;
+    __aio_notify_only;
+    __aio_remove_request;
+    __aio_requests_mutex;
+    __aio_sigqueue;
+  }
+%endif
 }
 librt {
   GLIBC_2.1 {
+%if PTHREAD_IN_LIBC
+    __librt_version_placeholder;
+%else
     aio_cancel;
     aio_cancel64;
     aio_error;
@@ -27,6 +119,7 @@ librt {
     aio_write64;
     lio_listio;
     lio_listio64;
+%endif
   }
   GLIBC_2.2 {
     timer_create;
@@ -36,6 +129,9 @@ librt {
     timer_settime;
   }
   GLIBC_2.3.4 {
+%if PTHREAD_IN_LIBC
+    __librt_version_placeholder;
+%else
     mq_close;
     mq_getattr;
     mq_notify;
@@ -46,12 +142,21 @@ librt {
     mq_timedreceive;
     mq_timedsend;
     mq_unlink;
+%endif
   }
   GLIBC_2.4 {
+%if PTHREAD_IN_LIBC
+    __librt_version_placeholder;
+%else
     lio_listio;
     lio_listio64;
+%endif
   }
   GLIBC_2.7 {
+%if PTHREAD_IN_LIBC
+    __librt_version_placeholder;
+%else
    __mq_open_2;
+%endif
   }
 }

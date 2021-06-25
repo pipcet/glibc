@@ -1,4 +1,4 @@
-/* Register fork handlers.  Generic version.
+/* Compat pthread_atfork implementation.
    Copyright (C) 2002-2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -13,14 +13,16 @@
    Lesser General Public License for more details.
 
    You should have received a copy of the GNU Lesser General Public
-   License along with the GNU C Library;  if not, see
+   License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
+#include <pthread_atfork_compat.h>
 #include <shlib-compat.h>
 
-#if SHLIB_COMPAT(libpthread, GLIBC_2_12, GLIBC_2_23)
+#if OTHER_SHLIB_COMPAT (libpthread, GLIBC_2_0, GLIBC_2_3)
 # define __pthread_atfork __dyn_pthread_atfork
-# include "pt-atfork.c"
+# include "pthread_atfork.c"
 # undef __pthread_atfork
-compat_symbol (libpthread, __dyn_pthread_atfork, pthread_atfork, GLIBC_2_12);
+compat_symbol (libpthread, __dyn_pthread_atfork, pthread_atfork,
+	       PTHREAD_ATFORK_COMPAT_INTRODUCED);
 #endif
