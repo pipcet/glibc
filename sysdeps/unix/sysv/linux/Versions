@@ -121,6 +121,13 @@ libc {
     posix_fallocate64;
     sys_sigabbrev;
     sys_siglist;
+
+    # Changed timer_t.  Only used by some 64-bit targets.
+    timer_create;
+    timer_delete;
+    timer_getoverrun;
+    timer_gettime;
+    timer_settime;
   }
   GLIBC_2.3.4 {
     sched_getaffinity; sched_setaffinity;
@@ -262,6 +269,8 @@ libc {
     __thrd_sleep64;
     __time64;
     __timegm64;
+    __timer_gettime64;
+    __timer_settime64;
     __timerfd_gettime64;
     __timerfd_settime64;
     __timespec_get64;
@@ -282,29 +291,23 @@ libc {
     __pread64_nocancel;
     __close_nocancel;
     __sigtimedwait;
-    __timer_active_sigev_thread;
-    __timer_active_sigev_thread_lock;
-    __timer_helper_once;
-    __timer_helper_tid;
-    __timer_start_helper_thread;
     # functions used by nscd
     __netlink_assert_response;
+  }
+}
+
+librt {
+  GLIBC_2.3.3 {
+    # Leftover from the int -> timer_t transition.  For ABIs that came later
+    # and do not have the symbol version, this version node is merged with
+    # the baseline version.
+    __librt_version_placeholder;
   }
 }
 
 ld {
   GLIBC_PRIVATE {
     __nptl_change_stack_perm;
-  }
-}
-
-librt {
-  GLIBC_2.34 {
-%ifdef TIME64_NON_DEFAULT
-    # 64-bit time_t support
-    __timer_gettime64;
-    __timer_settime64;
-%endif
   }
 }
 

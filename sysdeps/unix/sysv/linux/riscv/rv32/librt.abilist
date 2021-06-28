@@ -1,5 +1,1 @@
-GLIBC_2.33 timer_create F
-GLIBC_2.33 timer_delete F
-GLIBC_2.33 timer_getoverrun F
-GLIBC_2.33 timer_gettime F
-GLIBC_2.33 timer_settime F
+GLIBC_2.33 __librt_version_placeholder F

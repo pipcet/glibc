@@ -1,8 +1,7 @@
-# This script processes the output of 'readelf -W -s' on the libpthread.so
+# This script processes the output of 'readelf -W -D -s' on the libc.so
 # we've just built.  It checks for all the symbols used in td_symbol_list.
 
 BEGIN {
-%define DB_RTLD_VARIABLE(name) /* Nothing. */
 %define DB_MAIN_VARIABLE(name) /* Nothing. */
 %define DB_MAIN_SYMBOL(name) /* Nothing. */
 %define DB_MAIN_ARRAY_VARIABLE(name) /* Nothing. */
@@ -13,7 +12,7 @@ BEGIN {
    in_symtab = 0;
 }
 
-/Symbol table '.symtab'/ { in_symtab=1; next }
+/Symbol table for image/ { in_symtab=1; next }
 NF == 0 { in_symtab=0; next }
 
 !in_symtab { next }
@@ -24,6 +23,7 @@ END {
   status = 0;
 
   for (s in required) {
+    s = s "@@GLIBC_PRIVATE"
     if (s in seen) print s, "ok";
     else {
       status = 1;
@@ -33,6 +33,7 @@ END {
 
   any = "";
   for (s in th_unique) {
+    s = s "@@GLIBC_PRIVATE"
     if (s in seen) {
       any = s;
       break;

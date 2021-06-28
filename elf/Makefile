@@ -223,7 +223,8 @@ tests += restest1 preloadtest loadfail multiload origtest resolvfail \
 	 tst-single_threaded tst-single_threaded-pthread \
 	 tst-tls-ie tst-tls-ie-dlmopen argv0test \
 	 tst-glibc-hwcaps tst-glibc-hwcaps-prepend tst-glibc-hwcaps-mask \
-	 tst-tls20 tst-tls21 tst-dlmopen-dlerror tst-dlmopen-gethostbyname
+	 tst-tls20 tst-tls21 tst-dlmopen-dlerror tst-dlmopen-gethostbyname \
+	 tst-dl-is_dso
 #	 reldep9
 tests-internal += loadtest unload unload2 circleload1 \
 	 neededtest neededtest2 neededtest3 neededtest4 \
@@ -629,20 +630,14 @@ $(objpfx)trusted-dirs.st: Makefile $(..)Makeconfig
 CPPFLAGS-dl-load.c += -I$(objpfx). -I$(csu-objpfx).
 
 ifeq (yes,$(build-shared))
-$(inst_slibdir)/$(rtld-version-installed-name): $(objpfx)ld.so $(+force)
+$(inst_rtlddir)/$(rtld-installed-name): $(objpfx)ld.so $(+force)
 	$(make-target-directory)
 	$(do-install-program)
-
-$(inst_rtlddir)/$(rtld-installed-name): \
-  $(inst_slibdir)/$(rtld-version-installed-name) \
-  $(inst_slibdir)/libc-$(version).so
-	$(make-target-directory)
-	$(make-shlib-link)
 
 # Special target called by parent to install just the dynamic linker.
 .PHONY: ldso_install
 ldso_install: $(inst_rtlddir)/$(rtld-installed-name)
-endif
+endif # $(build-shared)
 
 
 # Workarounds for ${exec_prefix} expansion in configure variables.
@@ -1179,7 +1174,6 @@ localplt-built-dso := $(addprefix $(common-objpfx),\
 				  libc.so \
 				  elf/ld.so \
 				  math/libm.so \
-				  rt/librt.so \
 				  dlfcn/libdl.so \
 				  resolv/libresolv.so \
 		       )
@@ -1191,6 +1185,9 @@ localplt-built-dso += $(filter-out %_nonshared.a, $(shared-thread-library))
 endif
 ifeq ($(build-crypt),yes)
 localplt-built-dso += $(addprefix $(common-objpfx), crypt/libcrypt.so)
+endif
+ifneq ($(pthread-in-libc),yes)
+localplt-built-dso += $(addprefix $(common-objpfx), rt/librt.so)
 endif
 
 vpath localplt.data $(+sysdep_dirs)
