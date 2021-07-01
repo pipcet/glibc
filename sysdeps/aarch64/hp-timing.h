@@ -1,4 +1,4 @@
-/* Find pathnames matching a pattern.  Linux version.
+/* High precision, low overhead timing functions.  AArch64 version.
    Copyright (C) 2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -16,30 +16,32 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#include <sys/stat.h>
+#ifndef _HP_TIMING_H
+#define _HP_TIMING_H	1
 
-#if __TIMESIZE != 64
-# include <glob.h>
-# include <dirent.h>
-# include <sys/stat.h>
+#include <time.h>
+#include <stdint.h>
+#include <hp-timing-common.h>
+#include <libc-symbols.h>
 
-# define dirent dirent64
-# define __readdir(dirp) __readdir64 (dirp)
-
-# define glob_t glob64_time64_t
-# define __glob __glob64_time64
-
-# define globfree(pglob) __globfree64_time64 (pglob)
-
-# define COMPILE_GLOB64  1
-# define struct_stat     struct __stat64_t64
-# define struct_stat64   struct __stat64_t64
-# define GLOB_LSTAT      gl_lstat
-# define GLOB_STAT64     __stat64_time64
-# define GLOB_LSTAT64    __lstat64_time64
-
-# define COMPILE_GLOB64	1
-
-# include <posix/glob.c>
-libc_hidden_def (__glob64_time64)
+/* Don't use inline timer in ld.so.  */
+#if IS_IN(rtld)
+# define HP_TIMING_INLINE	(0)
+#else
+# define HP_TIMING_INLINE	(1)
 #endif
+
+typedef uint64_t hp_timing_t;
+
+#define HP_TIMING_NOW(var) \
+  __asm__ __volatile__ ("isb; mrs %0, cntvct_el0" : "=r" (var))
+
+/* Compute elapsed time in nanoseconds.  */
+#undef HP_TIMING_DIFF
+#define HP_TIMING_DIFF(Diff, Start, End)			\
+({  hp_timing_t freq;						\
+    __asm__ __volatile__ ("mrs %0, cntfrq_el0" : "=r" (freq));	\
+   (Diff) = ((End) - (Start)) * (UINT64_C(1000000000) / freq);	\
+})
+
+#endif	/* hp-timing.h */
