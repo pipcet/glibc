@@ -1,6 +1,6 @@
-/* Copyright (C) 1998-2021 Free Software Foundation, Inc.
+/* Placeholder compatibility symbols for libutil.  s390 version.
+   Copyright (C) 2021 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
-   Contributed by Zack Weinberg <zack@rabi.phys.columbia.edu>, 1998.
 
    The GNU C Library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
@@ -16,27 +16,8 @@
    License along with the GNU C Library; if not, see
    <https://www.gnu.org/licenses/>.  */
 
-#include <paths.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <errno.h>
+#include "utmp-compat.h"
+#include <login/libutil-compat.c>
 
-
-/* Unlock the slave pseudo terminal associated with the master pseudo
-   terminal specified by FD.  */
-int
-unlockpt (int fd)
-{
-  char buf[sizeof (_PATH_TTY) + 2];
-
-  /* BSD doesn't have a lock, but it does have `revoke'.  */
-  if (__ptsname_r (fd, buf, sizeof (buf)))
-    {
-      if (errno == ENOTTY)
-	__set_errno (EINVAL);
-      return -1;
-    }
-  return __revoke (buf);
-}
-libc_hidden_def (unlockpt)
+symbol_version (__libutil_version_placeholder_1,
+                __libutil_version_placeholder, UTMP_COMPAT_BASE);
