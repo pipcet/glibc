@@ -33,6 +33,7 @@
 # define closedir __closedir
 # define mempcpy __mempcpy
 # define lstat64 __lstat64
+# define feof_unlocked __feof_unlocked
 #endif
 
 /* Name of the file containing the module information in the directories
