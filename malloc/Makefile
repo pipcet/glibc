@@ -42,6 +42,7 @@ tests := mallocbug tst-malloc tst-valloc tst-calloc tst-obstack \
 	 tst-malloc-stats-cancellation \
 	 tst-tcfree1 tst-tcfree2 tst-tcfree3 \
 	 tst-safe-linking \
+	 tst-mallocalign1 \
 
 tests-static := \
 	 tst-interpose-static-nothread \
@@ -94,7 +95,9 @@ tests-exclude-mcheck = tst-mallocstate \
 	tst-malloc_info \
 	tst-memalign \
 	tst-posix_memalign \
-	tst-realloc
+	tst-realloc \
+	tst-pvalloc-fortify \
+	tst-reallocarray
 
 tests-mcheck = $(filter-out $(tests-exclude-mcheck), $(tests))
 
